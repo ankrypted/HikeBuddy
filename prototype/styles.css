@@ -1,0 +1,437 @@
+/* ============================================================
+   HikeBuddy Landing Page — styles.css
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --accent:       #7ecb3f;
+  --accent-dark:  #5aaa20;
+  --glass-bg:     rgba(255,255,255,0.08);
+  --glass-border: rgba(255,255,255,0.15);
+  --text-primary: #ffffff;
+  --text-muted:   rgba(255,255,255,0.65);
+  --card-radius:  18px;
+  --nav-h:        72px;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #0d1b2a;
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── Background Scene ───────────────────────────────────── */
+.scene-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.scene-svg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Fire animation */
+@keyframes flicker {
+  0%,100% { transform: scaleY(1)   scaleX(1)   translateY(0);  opacity: 0.9; }
+  25%      { transform: scaleY(1.05) scaleX(0.97) translateY(-2px); opacity: 1;   }
+  50%      { transform: scaleY(0.97) scaleX(1.03) translateY(1px);  opacity: 0.85;}
+  75%      { transform: scaleY(1.03) scaleX(0.98) translateY(-1px); opacity: 0.95;}
+}
+.fire          { transform-origin: center bottom; animation: flicker 1.6s ease-in-out infinite; }
+.fire-glow     { animation: flicker 1.4s ease-in-out infinite reverse; }
+
+/* ── Page Wrapper ───────────────────────────────────────── */
+.page-wrapper {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Navbar ─────────────────────────────────────────────── */
+.navbar {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  padding: 0 2.5rem;
+  height: var(--nav-h);
+}
+
+.logo {
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: #fff;
+  text-decoration: none;
+  letter-spacing: -0.02em;
+  margin-right: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+/* ── Dot pulse ── */
+.logo .dot {
+  color: var(--accent);
+  animation: dot-pulse 2.4s ease-in-out infinite;
+}
+@keyframes dot-pulse {
+  0%, 100% { color: var(--accent);  text-shadow: none; }
+  50%       { color: #b0f050; text-shadow: 0 0 10px rgba(126,203,63,0.7); }
+}
+
+/* ── Hiker icon wrapper ── */
+.logo-hiker { display: flex; align-items: center; flex-shrink: 0; }
+.hiker-svg  { width: 23px; height: 30px; }
+
+/* ── Hiking staff glow pulse ── */
+@keyframes staff-glow {
+  0%, 100% { filter: drop-shadow(0 0 2px rgba(126,203,63,0.5)); }
+  50%       { filter: drop-shadow(0 0 6px rgba(126,203,63,0.95)); }
+}
+.hiker-staff { animation: staff-glow 2s ease-in-out infinite; }
+
+/* ── Body bob (whole figure rises/falls with each step) ── */
+@keyframes hiker-bob {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-1.8px); }
+}
+.hiker-body { animation: hiker-bob 0.65s ease-in-out infinite; }
+
+/* ── Limb swing keyframes ── */
+@keyframes swing-a {
+  from { transform: rotate(-24deg); }
+  to   { transform: rotate( 24deg); }
+}
+@keyframes swing-b {
+  from { transform: rotate( 24deg); }
+  to   { transform: rotate(-24deg); }
+}
+
+/*
+  Natural walking gait:
+    left-arm  + right-leg  →  swing-a  (in phase)
+    right-arm + left-leg   →  swing-b  (counter-phase)
+  transform-origin uses fill-box so % coords map to the element's own bbox.
+  Each limb's joint (shoulder / hip) sits at the corner of its bbox:
+    arm-l / leg-l  →  right top  (joint is at the right-top corner, line goes lower-left)
+    arm-r / leg-r  →  left  top  (joint is at the left-top  corner, line goes lower-right)
+*/
+.hiker-arm-l {
+  transform-box: fill-box; transform-origin: right top;
+  animation: swing-a 0.65s ease-in-out infinite alternate;
+}
+.hiker-leg-r {
+  transform-box: fill-box; transform-origin: left top;
+  animation: swing-a 0.65s ease-in-out infinite alternate;
+}
+.hiker-arm-r {
+  transform-box: fill-box; transform-origin: left top;
+  animation: swing-b 0.65s ease-in-out infinite alternate;
+}
+.hiker-leg-l {
+  transform-box: fill-box; transform-origin: right top;
+  animation: swing-b 0.65s ease-in-out infinite alternate;
+}
+
+/* Speed up on hover — feels like the hiker is excited */
+.logo:hover .hiker-body,
+.logo:hover .hiker-arm-l,
+.logo:hover .hiker-arm-r,
+.logo:hover .hiker-leg-l,
+.logo:hover .hiker-leg-r { animation-duration: 0.32s; }
+
+.nav-links {
+  display: flex;
+  list-style: none;
+  gap: 2rem;
+}
+.nav-links a {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: #fff; }
+
+.search-btn {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid var(--glass-border);
+  border-radius: 50%;
+  width: 40px; height: 40px;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.search-btn:hover { background: rgba(255,255,255,0.18); }
+
+.menu-btn {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+}
+.menu-btn span {
+  display: block;
+  width: 22px; height: 2px;
+  background: #fff;
+  border-radius: 2px;
+  transition: transform 0.3s;
+}
+
+/* ── Hero ───────────────────────────────────────────────── */
+.hero {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 0 2.5rem 2.5rem;
+  position: relative;
+  min-height: calc(100vh - var(--nav-h));
+}
+
+.hero-content {
+  max-width: 520px;
+  margin-bottom: 2rem;
+}
+
+.hero-eyebrow {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: var(--text-muted);
+  margin-bottom: 0.6rem;
+  text-transform: uppercase;
+}
+
+.hero-title {
+  font-size: clamp(3rem, 7vw, 5.5rem);
+  font-weight: 800;
+  line-height: 1.0;
+  letter-spacing: -0.03em;
+  margin-bottom: 1rem;
+}
+
+.hero-subtitle {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  max-width: 380px;
+}
+
+/* ── CTA Card (glass) ───────────────────────────────────── */
+.glass {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.cta-card {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.2rem;
+  padding: 1rem 1.2rem 1rem 1.4rem;
+  border-radius: 16px;
+  margin-bottom: 1.8rem;
+  width: fit-content;
+}
+
+.cta-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.cta-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
+}
+.cta-sub {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.cta-arrow {
+  width: 40px; height: 40px;
+  background: var(--accent);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff;
+  text-decoration: none;
+  transition: background 0.2s, transform 0.2s;
+  flex-shrink: 0;
+}
+.cta-arrow:hover { background: var(--accent-dark); transform: translateX(3px); }
+
+/* ── Trail Cards ────────────────────────────────────────── */
+.trail-cards {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-end;
+  justify-content: flex-end;
+  position: absolute;
+  right: 2.5rem;
+  bottom: 2.5rem;
+}
+
+.trail-card {
+  width: 175px;
+  border-radius: var(--card-radius);
+  overflow: hidden;
+  border: 1px solid var(--glass-border);
+  background: rgba(10,20,30,0.4);
+  backdrop-filter: blur(6px);
+  transition: transform 0.3s, box-shadow 0.3s;
+  cursor: pointer;
+}
+.trail-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.5);
+}
+/* Middle card raised */
+.trail-card:nth-child(2) {
+  transform: translateY(-16px);
+}
+.trail-card:nth-child(2):hover {
+  transform: translateY(-24px);
+}
+
+.trail-img {
+  position: relative;
+  height: 200px;
+  overflow: hidden;
+}
+.trail-img-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.5) 100%);
+}
+.trail-illustration {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.trail-footer {
+  padding: 0.75rem 0.9rem 0.85rem;
+  background: rgba(10,20,30,0.6);
+}
+.trail-name {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin-bottom: 0.45rem;
+  color: #fff;
+}
+.trail-info-badge {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.trail-country {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+.trail-play {
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  width: 28px; height: 28px;
+  padding: 0;
+  transition: color 0.2s;
+}
+.trail-play:hover { color: var(--accent); }
+.trail-play svg { width: 100%; height: 100%; }
+
+/* ── Search Overlay ─────────────────────────────────────── */
+.search-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  backdrop-filter: blur(8px);
+  z-index: 100;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 120px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s;
+}
+.search-overlay.active {
+  opacity: 1;
+  pointer-events: all;
+}
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid var(--glass-border);
+  border-radius: 50px;
+  padding: 0.75rem 1.25rem;
+  width: min(560px, 90vw);
+}
+.search-box input {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  color: #fff;
+  font-size: 1.1rem;
+}
+.search-box input::placeholder { color: var(--text-muted); }
+.search-close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  cursor: pointer;
+  line-height: 1;
+  transition: color 0.2s;
+}
+.search-close:hover { color: #fff; }
+
+/* ── Responsive ─────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .trail-cards {
+    position: static;
+    justify-content: center;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+  }
+  .trail-card:nth-child(2) { transform: none; }
+  .trail-card:nth-child(2):hover { transform: translateY(-8px); }
+  .hero { padding-bottom: 2rem; }
+}
+
+@media (max-width: 640px) {
+  .navbar { padding: 0 1.25rem; }
+  .nav-links { display: none; }
+  .menu-btn { display: flex; }
+
+  .hero {
+    padding: 0 1.25rem 1.5rem;
+    align-items: flex-start;
+  }
+  .hero-title { font-size: 2.8rem; }
+
+  .trail-cards { gap: 0.75rem; }
+  .trail-card  { width: 140px; }
+  .trail-img   { height: 160px; }
+}

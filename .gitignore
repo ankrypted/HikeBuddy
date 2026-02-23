@@ -1,0 +1,37 @@
+# ── OS / editor ────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.suo
+*.user
+.idea/
+*.sublime-workspace
+
+# ── Screenshots / binary design artefacts ──────────────────────────────
+*.webp
+*.png
+*.jpg
+*.jpeg
+!docs/**/*.png
+!docs/**/*.jpg
+
+# ── Angular (also covered by frontend/.gitignore) ──────────────────────
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+frontend/coverage/
+frontend/tmp/
+
+# ── Environment / secrets ───────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+*.key
+secrets/
+
+# ── Spring Boot (for when backend is added) ─────────────────────────────
+backend/target/
+backend/.gradle/
+backend/build/
+backend/*.jar
+backend/src/main/resources/application-local.properties
+backend/src/main/resources/application-secret*.properties

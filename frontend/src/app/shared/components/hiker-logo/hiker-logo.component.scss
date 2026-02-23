@@ -1,0 +1,27 @@
+@use 'styles/variables' as v;
+
+.hb-logo {
+  font-size:       1.45rem;
+  font-weight:     800;
+  color:           #fff;
+  text-decoration: none;
+  letter-spacing:  -0.02em;
+  display:         flex;
+  align-items:     center;
+  gap:             0.45rem;
+}
+
+.logo-hiker {
+  display:     flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.hiker-svg {
+  width:  23px;
+  height: 30px;
+}
+
+.dot {
+  color: v.$accent-green;
+}

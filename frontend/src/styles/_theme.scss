@@ -1,0 +1,71 @@
+@use '@angular/material' as mat;
+
+// ─── Custom green palette (centered on #7ecb3f) ──────────────────────
+$hb-green: (
+  0:   #000000,
+  10:  #0b1f00,
+  20:  #1a3d00,
+  25:  #215000,
+  30:  #2c6300,
+  35:  #377700,
+  40:  #428c00,
+  50:  #5aaa20,
+  60:  #7ecb3f,
+  70:  #98e054,
+  80:  #b0f06a,
+  90:  #ccff91,
+  95:  #e2ffc0,
+  98:  #f3ffe5,
+  99:  #f9fff2,
+  100: #ffffff,
+);
+
+// ─── Custom neutral palette (centered on #0d1b2a) ────────────────────
+$hb-neutral: (
+  0:   #000000,
+  10:  #0d1b2a,
+  20:  #1a2d40,
+  25:  #213549,
+  30:  #283e53,
+  35:  #30475d,
+  40:  #385067,
+  50:  #4a6880,
+  60:  #638099,
+  70:  #7d99b4,
+  80:  #98b3cd,
+  90:  #b4cee8,
+  95:  #d3e6f8,
+  98:  #eaf4ff,
+  99:  #f5f9ff,
+  100: #ffffff,
+);
+
+// ─── M3 theme definition ─────────────────────────────────────────────
+$hikebuddy-theme: mat.define-theme((
+  color: (
+    theme-type: dark,
+    primary:    mat.$green-palette,
+    tertiary:   mat.$cyan-palette,
+  ),
+  typography: (
+    brand-family: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+    bold-weight:  800,
+  ),
+  density: (scale: 0),
+));
+
+// ─── Apply to :root ──────────────────────────────────────────────────
+:root {
+  @include mat.all-component-themes($hikebuddy-theme);
+
+  // Wrap in & {} to satisfy Sass mixed-decls rule (declarations after nested rules)
+  & {
+    --mat-app-background-color:               #0d1b2a;
+    --mat-toolbar-container-background-color: transparent;
+    --mat-card-container-color:               rgba(255, 255, 255, 0.06);
+    --mdc-elevated-card-container-color:      #112233;
+    --mat-sidenav-content-background-color:   #0d1b2a;
+    --mdc-filled-button-container-color:      #7ecb3f;
+    --mdc-filled-button-label-text-color:     #0d1b2a;
+  }
+}

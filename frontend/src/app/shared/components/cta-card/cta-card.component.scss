@@ -1,0 +1,49 @@
+@use 'styles/variables' as v;
+
+.cta-card {
+  display:        inline-flex;
+  align-items:    center;
+  gap:            1.2rem;
+  padding:        1rem 1.2rem 1rem 1.4rem;
+  border-radius:  16px;
+  margin-bottom:  1.8rem;
+  width:          fit-content;
+}
+
+.cta-text {
+  display:        flex;
+  flex-direction: column;
+  gap:            2px;
+}
+
+.cta-title {
+  font-size:   1rem;
+  font-weight: 700;
+  color:       #fff;
+}
+
+.cta-sub {
+  font-size: 0.78rem;
+  color:     v.$text-muted;
+}
+
+.cta-arrow {
+  width:           40px;
+  height:          40px;
+  background:      v.$accent-green;
+  border-radius:   50%;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  color:           #fff;
+  text-decoration: none;
+  flex-shrink:     0;
+  transition:      background 0.2s, transform 0.2s;
+
+  &:hover {
+    background: v.$accent-dark;
+    transform:  translateX(3px);
+  }
+
+  mat-icon { font-size: 20px; width: 20px; height: 20px; }
+}

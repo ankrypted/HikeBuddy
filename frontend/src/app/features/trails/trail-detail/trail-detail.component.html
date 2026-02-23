@@ -1,0 +1,86 @@
+<hb-scene-background aria-hidden="true" />
+
+<div class="detail-wrapper">
+  <hb-navbar />
+
+  @if (loading()) {
+    <div class="state-message">Loading trail…</div>
+  } @else if (error() || !trail()) {
+    <div class="state-message state-message--error">Trail not found.</div>
+  } @else {
+
+    <main class="trail-detail">
+
+      <!-- ── Hero ────────────────────────────────────────────────────── -->
+      <section class="trail-hero">
+        <div class="trail-chips">
+          <span class="chip chip--{{ trail()!.difficulty.toLowerCase() }}">
+            {{ trail()!.difficulty }}
+          </span>
+          <span class="chip">{{ trail()!.distanceKm }} km</span>
+          <span class="chip">↑ {{ trail()!.elevationGainM }} m</span>
+          <span class="chip">~ {{ formatDuration(trail()!.durationMinutes) }}</span>
+        </div>
+
+        <h1 class="trail-name">{{ trail()!.name }}</h1>
+        <p class="trail-region">{{ trail()!.region.name }}, {{ trail()!.region.country }}</p>
+
+        <div class="trail-rating">
+          <div class="stars">
+            @for (s of stars(trail()!.averageRating); track $index) {
+              <span class="star" [class.star--filled]="s === 'filled'">★</span>
+            }
+          </div>
+          <span class="rating-value">{{ trail()!.averageRating }}</span>
+          <span class="rating-count">({{ trail()!.reviewCount }} reviews)</span>
+        </div>
+      </section>
+
+      <!-- ── Description ───────────────────────────────────────────── -->
+      <section class="trail-description glass">
+        <h2>About This Trek</h2>
+        <p class="desc-text">{{ trail()!.description }}</p>
+
+        @if (trail()!.tags.length) {
+          <div class="trail-tags">
+            @for (tag of trail()!.tags; track tag) {
+              <span class="tag">{{ tag }}</span>
+            }
+          </div>
+        }
+      </section>
+
+      <!-- ── More Details CTA ──────────────────────────────────────── -->
+      <div class="more-details-row">
+        <button class="btn-more-details" disabled>More Details <span class="coming-soon">coming soon</span></button>
+      </div>
+
+      <!-- ── Reviews ──────────────────────────────────────────────── -->
+      <section class="reviews-section">
+        <h2 class="reviews-heading">Hiker Reviews</h2>
+
+        <div class="reviews-grid">
+          @for (review of reviews(); track review.id) {
+            <article class="review-card glass">
+              <div class="review-header">
+                <div class="reviewer-avatar">{{ review.authorAvatarInitials }}</div>
+                <div class="reviewer-meta">
+                  <span class="reviewer-name">{{ review.authorName }}</span>
+                  <span class="review-date">{{ review.visitedOn }}</span>
+                </div>
+                <div class="review-stars">
+                  @for (s of stars(review.rating); track $index) {
+                    <span class="star" [class.star--filled]="s === 'filled'">★</span>
+                  }
+                </div>
+              </div>
+              <p class="review-text">{{ review.comment }}</p>
+            </article>
+          }
+        </div>
+      </section>
+
+    </main>
+
+  }
+</div>

@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HikeBuddy — Discover Epic Trails</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- Background SVG Scene -->
+  <div class="scene-bg" aria-hidden="true">
+    <svg class="scene-svg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%"   stop-color="#0d1b2a"/>
+          <stop offset="40%"  stop-color="#1a3a4a"/>
+          <stop offset="75%"  stop-color="#2a6060"/>
+          <stop offset="100%" stop-color="#1e3a3a"/>
+        </linearGradient>
+        <linearGradient id="mountainL" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%"  stop-color="#b84a18"/>
+          <stop offset="60%" stop-color="#7a2e0a"/>
+          <stop offset="100%" stop-color="#3a1a08"/>
+        </linearGradient>
+        <linearGradient id="mountainR" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%"  stop-color="#4a5a6a"/>
+          <stop offset="100%" stop-color="#1a2a3a"/>
+        </linearGradient>
+        <linearGradient id="waterGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%"  stop-color="#1e4a50" stop-opacity="0.9"/>
+          <stop offset="100%" stop-color="#0d2530" stop-opacity="1"/>
+        </linearGradient>
+        <linearGradient id="moonGlow" cx="50%" cy="50%" r="50%" fx="50%" fy="50%" gradientUnits="objectBoundingBox" id="moonGlow">
+          <stop offset="0%"  stop-color="#fffae0" stop-opacity="1"/>
+          <stop offset="60%" stop-color="#f5e090" stop-opacity="0.6"/>
+          <stop offset="100%" stop-color="#f5e090" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+
+      <!-- Sky -->
+      <rect width="1440" height="900" fill="url(#skyGrad)"/>
+
+      <!-- Moon glow -->
+      <circle cx="120" cy="180" r="90" fill="#fffae0" opacity="0.12"/>
+      <circle cx="120" cy="180" r="55" fill="#fffae0" opacity="0.18"/>
+      <circle cx="120" cy="180" r="38" fill="#fffbe8" opacity="0.85"/>
+
+      <!-- Stars -->
+      <g fill="#ffffff" opacity="0.6">
+        <circle cx="300" cy="60"  r="1.2"/>
+        <circle cx="450" cy="40"  r="0.9"/>
+        <circle cx="620" cy="80"  r="1.0"/>
+        <circle cx="780" cy="30"  r="1.3"/>
+        <circle cx="900" cy="55"  r="0.8"/>
+        <circle cx="1050" cy="45" r="1.1"/>
+        <circle cx="1200" cy="70" r="0.9"/>
+        <circle cx="1350" cy="35" r="1.0"/>
+        <circle cx="200" cy="110" r="0.7"/>
+        <circle cx="500" cy="100" r="0.8"/>
+        <circle cx="700" cy="50"  r="0.6"/>
+      </g>
+
+      <!-- Birds -->
+      <g fill="none" stroke="#c8b88a" stroke-width="1.5" opacity="0.7">
+        <path d="M580 130 Q590 120 600 130"/>
+        <path d="M615 118 Q628 107 641 118"/>
+        <path d="M660 140 Q668 132 676 140"/>
+      </g>
+
+      <!-- Clouds -->
+      <g fill="#3a6a70" opacity="0.35">
+        <ellipse cx="900" cy="160" rx="120" ry="28"/>
+        <ellipse cx="980" cy="150" rx="80"  ry="20"/>
+        <ellipse cx="1100" cy="195" rx="100" ry="22"/>
+        <ellipse cx="800"  cy="200" rx="70"  ry="16"/>
+      </g>
+
+      <!-- Left orange mountain -->
+      <polygon points="0,600 250,180 500,600" fill="url(#mountainL)"/>
+      <polygon points="200,600 380,280 560,600" fill="#8a3510" opacity="0.7"/>
+
+      <!-- Right grey mountain -->
+      <polygon points="550,600 820,200 1100,600" fill="url(#mountainR)"/>
+      <polygon points="850,600 1050,300 1260,600" fill="#2a3a4a" opacity="0.8"/>
+
+      <!-- Pine trees - right cluster -->
+      <g fill="#1a2a1a">
+        <!-- Tree 1 -->
+        <polygon points="930,570 945,380 960,570"/>
+        <polygon points="926,520 945,420 964,520"/>
+        <!-- Tree 2 -->
+        <polygon points="980,570 996,400 1012,570"/>
+        <polygon points="976,520 996,440 1016,520"/>
+        <!-- Tree 3 -->
+        <polygon points="1040,570 1060,350 1080,570"/>
+        <polygon points="1035,510 1060,390 1085,510"/>
+        <!-- Tree 4 -->
+        <polygon points="1100,570 1115,420 1130,570"/>
+        <!-- Tree 5 tall -->
+        <polygon points="1060,570 1080,300 1100,570"/>
+        <polygon points="1055,480 1080,350 1105,480"/>
+        <polygon points="1050,540 1080,410 1110,540"/>
+      </g>
+
+      <!-- Left tree (dark orange bark) -->
+      <rect x="1380" y="100" width="22" height="800" fill="#8a3a10" rx="4"/>
+      <polygon points="1330,200 1391,80  1452,200"  fill="#1a3a1a"/>
+      <polygon points="1320,310 1391,160 1462,310"  fill="#1a3a1a"/>
+      <polygon points="1310,420 1391,250 1472,420"  fill="#1a3a1a"/>
+
+      <!-- Water / Lake -->
+      <rect x="0" y="560" width="1440" height="340" fill="url(#waterGrad)" opacity="0.95"/>
+
+      <!-- Water reflection shimmer -->
+      <g stroke="#3a8a90" stroke-width="1" opacity="0.15">
+        <line x1="0" y1="600" x2="1440" y2="600"/>
+        <line x1="0" y1="630" x2="1440" y2="630"/>
+        <line x1="0" y1="660" x2="1440" y2="660"/>
+        <line x1="0" y1="690" x2="1440" y2="690"/>
+      </g>
+
+      <!-- Boat -->
+      <ellipse cx="380" cy="645" rx="55" ry="9" fill="#2a2a1a" opacity="0.8"/>
+      <rect    x="360"  y="630" width="40" height="8" fill="#3a3a2a" rx="2"/>
+
+      <!-- Foreground rocks -->
+      <ellipse cx="150" cy="800" rx="90"  ry="35" fill="#1a1a1a" opacity="0.7"/>
+      <ellipse cx="320" cy="820" rx="70"  ry="28" fill="#1a1a1a" opacity="0.6"/>
+      <ellipse cx="500" cy="835" rx="55"  ry="22" fill="#1a1a1a" opacity="0.5"/>
+
+      <!-- Campfire glow -->
+      <ellipse cx="295" cy="855" rx="50" ry="12" fill="#ff6600" opacity="0.25" class="fire-glow"/>
+      <!-- Flames -->
+      <g class="fire">
+        <path d="M280,855 Q285,820 295,810 Q300,835 305,840 Q312,815 318,805 Q320,840 310,855 Z" fill="#ff8c00" opacity="0.9"/>
+        <path d="M285,855 Q290,830 295,820 Q300,840 308,850 Z" fill="#ffcc00" opacity="0.8"/>
+      </g>
+
+      <!-- Camping gear silhouettes -->
+      <rect x="240" y="840" width="8"  height="30" fill="#2a1a08" rx="2"/>
+      <rect x="256" y="845" width="6"  height="25" fill="#2a1a08" rx="2"/>
+      <ellipse cx="244" cy="840" rx="10" ry="5" fill="#3a2a10"/>
+    </svg>
+  </div>
+
+  <!-- Page wrapper -->
+  <div class="page-wrapper">
+
+    <!-- Navbar -->
+    <nav class="navbar">
+      <a href="#" class="logo" title="HikeBuddy — Discover Epic Trails">
+        <!-- Animated hiking figure -->
+        <span class="logo-hiker" aria-hidden="true">
+          <svg class="hiker-svg" viewBox="0 0 36 46" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Hiking staff (static, drawn first so it appears behind body) -->
+            <line class="hiker-staff" x1="24" y1="17" x2="30" y2="44"
+                  stroke="#7ecb3f" stroke-width="2.2" stroke-linecap="round"/>
+            <!-- Body group — whole figure bobs up/down -->
+            <g class="hiker-body">
+              <!-- Hat crown -->
+              <rect x="11" y="0.5" width="8" height="5.5" rx="2" fill="#b8e86a"/>
+              <!-- Hat brim -->
+              <rect x="8"  y="4"   width="15" height="2"   rx="1" fill="#d4f08a"/>
+              <!-- Head -->
+              <circle cx="15" cy="8" r="4.5" fill="white"/>
+              <!-- Backpack (green) -->
+              <rect x="10" y="14" width="5.5" height="8"   rx="1.5" fill="#7ecb3f"/>
+              <rect x="10.5" y="22" width="4.5" height="1.5" rx="0.75" fill="#5aaa20"/>
+              <!-- Torso -->
+              <line x1="15" y1="12.5" x2="15" y2="26"
+                    stroke="white" stroke-width="2.8" stroke-linecap="round"/>
+              <!-- Left arm  (pivot: shoulder at right-top of its bbox) -->
+              <g class="hiker-arm-l">
+                <line x1="15" y1="16" x2="8" y2="23.5"
+                      stroke="white" stroke-width="2" stroke-linecap="round"/>
+              </g>
+              <!-- Right arm (pivot: shoulder at left-top of its bbox) -->
+              <g class="hiker-arm-r">
+                <line x1="15" y1="16" x2="22" y2="22"
+                      stroke="white" stroke-width="2" stroke-linecap="round"/>
+              </g>
+              <!-- Left leg  (pivot: hip at right-top of its bbox) -->
+              <g class="hiker-leg-l">
+                <line x1="15" y1="26" x2="8"  y2="42"
+                      stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+              </g>
+              <!-- Right leg (pivot: hip at left-top of its bbox) -->
+              <g class="hiker-leg-r">
+                <line x1="15" y1="26" x2="22" y2="42"
+                      stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+              </g>
+            </g>
+          </svg>
+        </span>
+        HikeBuddy<span class="dot">.</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#about">About us</a></li>
+        <li><a href="#trails">Trails</a></li>
+        <li><a href="#gallery">Gallery</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+      <button class="search-btn" aria-label="Search">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+      </button>
+      <button class="menu-btn" aria-label="Menu" id="menuBtn">
+        <span></span><span></span><span></span>
+      </button>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero" id="home">
+      <div class="hero-content">
+        <p class="hero-eyebrow">GO FOR A HIKE!</p>
+        <h1 class="hero-title">Discover<br>Epic Trails</h1>
+        <p class="hero-subtitle">Find the best hiking trails, plan your adventure,<br>and connect with fellow hikers worldwide.</p>
+      </div>
+
+      <!-- CTA Card -->
+      <div class="cta-card glass">
+        <div class="cta-text">
+          <span class="cta-title">Explore Trails</span>
+          <span class="cta-sub">Browse thousands of hiking routes</span>
+        </div>
+        <a href="#trails" class="cta-arrow">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"/>
+            <polyline points="12 5 19 12 12 19"/>
+          </svg>
+        </a>
+      </div>
+
+      <!-- Trail Cards -->
+      <div class="trail-cards" id="trails">
+        <div class="trail-card">
+          <div class="trail-img" style="background: linear-gradient(160deg, #4a7a4a 0%, #2a4a2a 40%, #1a3a1a 100%);">
+            <div class="trail-img-overlay"></div>
+            <svg class="trail-illustration" viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg">
+              <rect width="200" height="220" fill="none"/>
+              <polygon points="0,220 80,60 160,220"  fill="#3a6a3a" opacity="0.9"/>
+              <polygon points="60,220 130,80 200,220" fill="#2a5a2a" opacity="0.8"/>
+              <rect x="0" y="180" width="200" height="40" fill="#1a3a1a" opacity="0.6"/>
+              <ellipse cx="100" cy="55" rx="60" ry="28" fill="#8ac0c0" opacity="0.5"/>
+            </svg>
+          </div>
+          <div class="trail-footer">
+            <span class="trail-name">Wanaka</span>
+            <div class="trail-info-badge">
+              <span class="trail-country">New Zealand</span>
+              <button class="trail-play" aria-label="View trail">
+                <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="trail-card">
+          <div class="trail-img" style="background: linear-gradient(160deg, #9aada0 0%, #6a8a7a 40%, #3a5a4a 100%);">
+            <div class="trail-img-overlay"></div>
+            <svg class="trail-illustration" viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg">
+              <rect width="200" height="220" fill="none"/>
+              <polygon points="0,220 70,50 140,220"   fill="#5a7a6a" opacity="0.9"/>
+              <polygon points="70,220 140,80 200,220"  fill="#4a6a5a" opacity="0.85"/>
+              <rect x="0" y="190" width="200" height="30" fill="#2a3a2a" opacity="0.7"/>
+              <ellipse cx="100" cy="40" rx="80" ry="30" fill="#c0d0d0" opacity="0.4"/>
+              <ellipse cx="60"  cy="60" rx="50" ry="22" fill="#b0c0c0" opacity="0.3"/>
+            </svg>
+          </div>
+          <div class="trail-footer">
+            <span class="trail-name">Bavaria</span>
+            <div class="trail-info-badge">
+              <span class="trail-country">Germany</span>
+              <button class="trail-play" aria-label="View trail">
+                <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="trail-card">
+          <div class="trail-img" style="background: linear-gradient(180deg, #0a0a1a 0%, #1a1a3a 40%, #0a1a2a 100%);">
+            <div class="trail-img-overlay"></div>
+            <svg class="trail-illustration" viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg">
+              <!-- Night sky -->
+              <rect width="200" height="140" fill="#0a0a1a"/>
+              <!-- Stars -->
+              <g fill="#ffffff" opacity="0.8">
+                <circle cx="30"  cy="20"  r="1.2"/><circle cx="60"  cy="10"  r="0.9"/>
+                <circle cx="100" cy="30"  r="1.0"/><circle cx="140" cy="15"  r="1.2"/>
+                <circle cx="170" cy="35"  r="0.8"/><circle cx="80"  cy="50"  r="0.7"/>
+                <circle cx="150" cy="55"  r="0.9"/><circle cx="20"  cy="60"  r="1.0"/>
+              </g>
+              <!-- Trees silhouette -->
+              <g fill="#1a2a1a">
+                <polygon points="10,140  22,90  34,140"/>
+                <polygon points="30,140  44,80  58,140"/>
+                <polygon points="55,140  72,70  89,140"/>
+                <polygon points="85,140 105,60 125,140"/>
+                <polygon points="120,140 138,85 156,140"/>
+                <polygon points="150,140 165,95 180,140"/>
+                <polygon points="175,140 188,100 201,140"/>
+              </g>
+              <!-- Ground -->
+              <rect x="0" y="140" width="200" height="80" fill="#1a2a1a"/>
+              <!-- Tents -->
+              <polygon points="50,165 75,130 100,165"  fill="#e8a020" opacity="0.9"/>
+              <polygon points="110,170 130,138 150,170" fill="#e86020" opacity="0.9"/>
+              <!-- Tent glow -->
+              <ellipse cx="75"  cy="168" rx="20" ry="6" fill="#ffaa00" opacity="0.3"/>
+              <ellipse cx="130" cy="173" rx="18" ry="5" fill="#ff8800" opacity="0.3"/>
+            </svg>
+          </div>
+          <div class="trail-footer">
+            <span class="trail-name">Manali</span>
+            <div class="trail-info-badge">
+              <span class="trail-country">India</span>
+              <button class="trail-play" aria-label="View trail">
+                <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div><!-- /page-wrapper -->
+
+  <!-- Search Overlay -->
+  <div class="search-overlay" id="searchOverlay">
+    <div class="search-box">
+      <input type="text" placeholder="Search trails, regions…" id="searchInput" />
+      <button class="search-close" id="searchClose" aria-label="Close search">✕</button>
+    </div>
+  </div>
+
+  <script src="main.js"></script>
+</body>
+</html>

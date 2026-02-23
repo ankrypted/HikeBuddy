@@ -1,0 +1,70 @@
+<hb-scene-background aria-hidden="true" />
+
+<div class="list-wrapper">
+  <hb-navbar />
+
+  <main class="trails-main">
+
+    <header class="trails-header">
+      <h1 class="trails-title">Browse Trails</h1>
+      <p class="trails-subtitle">Handpicked Himalayan adventures across India</p>
+    </header>
+
+    @if (loading()) {
+      <div class="state-message">Loading trails…</div>
+    } @else if (error()) {
+      <div class="state-message state-message--error">Failed to load trails.</div>
+    } @else {
+
+      <ul class="trails-list">
+        @for (trail of trails(); track trail.id) {
+          <li
+            class="trail-row glass"
+            role="button"
+            tabindex="0"
+            [attr.aria-label]="'View trail: ' + trail.name"
+            (click)="navigate(trail)"
+            (keydown.enter)="navigate(trail)"
+          >
+
+            <!-- Colour-band thumbnail based on difficulty -->
+            <div class="trail-thumb trail-thumb--{{ trail.difficulty.toLowerCase() }}">
+              <span class="thumb-label">{{ trail.difficulty }}</span>
+            </div>
+
+            <!-- Trail details -->
+            <div class="trail-body">
+              <div class="trail-chips">
+                <span class="chip chip--{{ trail.difficulty.toLowerCase() }}">{{ trail.difficulty }}</span>
+                <span class="chip">{{ trail.distanceKm }} km</span>
+                <span class="chip">↑ {{ trail.elevationGainM }} m</span>
+                <span class="chip">~ {{ formatDuration(trail.durationMinutes) }}</span>
+              </div>
+
+              <h2 class="trail-name">{{ trail.name }}</h2>
+              <p class="trail-region">{{ trail.region.name }}, {{ trail.region.country }}</p>
+
+              <div class="trail-rating">
+                <div class="stars">
+                  @for (s of stars(trail.averageRating); track $index) {
+                    <span class="star" [class.star--filled]="s === 'filled'">★</span>
+                  }
+                </div>
+                <span class="rating-value">{{ trail.averageRating }}</span>
+                <span class="rating-count">({{ trail.reviewCount }} reviews)</span>
+              </div>
+            </div>
+
+            <!-- Action arrow -->
+            <div class="trail-action">
+              <span class="arrow-icon">→</span>
+            </div>
+
+          </li>
+        }
+      </ul>
+
+    }
+
+  </main>
+</div>

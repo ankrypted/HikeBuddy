@@ -1,0 +1,16 @@
+@if (isOpen) {
+  <div class="search-overlay" (click)="onBackdropClick($event)">
+    <div class="search-box glass">
+      <mat-icon class="search-icon">search</mat-icon>
+      <input
+        #searchInput
+        type="text"
+        placeholder="Search trails, regions…"
+        (keydown.escape)="close()"
+      />
+      <button mat-icon-button class="search-close" (click)="close()" aria-label="Close search">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </div>
+}

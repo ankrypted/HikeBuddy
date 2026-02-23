@@ -1,0 +1,53 @@
+<!-- Fixed SVG mountain/lake scene (z-index: 0) -->
+<hb-scene-background aria-hidden="true" />
+
+<!-- Page wrapper (z-index: 1) -->
+<div class="page-wrapper">
+
+  <!-- Navbar with animated logo, nav links, search -->
+  <hb-navbar />
+
+  <!-- Hero section -->
+  <section class="hero" id="home">
+
+    <div class="hero-content">
+      <p class="hero-eyebrow">GO FOR A HIKE!</p>
+      <h1 class="hero-title">Discover<br>Epic Trails</h1>
+      <p class="hero-subtitle">
+        Find the best hiking trails, plan your adventure,<br>
+        and connect with fellow hikers across India.
+      </p>
+    </div>
+
+    <!-- Glass CTA card -->
+    <hb-cta-card
+      title="Explore Trails"
+      subtitle="Browse thousands of hiking routes"
+      linkTarget="/trails"
+    />
+
+    <!-- Featured trail cards — bottom-right cluster -->
+    <div class="trail-cards" id="trails">
+
+      @if (loading()) {
+        @for (n of [0, 1, 2]; track n) {
+          <div class="trail-card-skeleton"></div>
+        }
+      }
+
+      @for (trail of featuredTrails(); track trail.id; let i = $index) {
+        <hb-trail-card
+          [trail]="trail"
+          [raised]="i === middleIndex()"
+          (viewTrail)="onViewTrail($event)"
+        />
+      }
+
+      @if (error()) {
+        <p class="trail-cards-error">Failed to load trails.</p>
+      }
+
+    </div>
+
+  </section>
+</div>

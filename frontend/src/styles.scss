@@ -1,0 +1,26 @@
+// ─── Import order: variables first, then everything that uses them ───
+@use 'styles/variables'      as v;
+@use 'styles/theme';          // applies Angular Material M3 dark theme
+@use 'styles/animations';     // global @keyframes + SVG animation classes
+@use 'styles/glassmorphism';  // .glass utility class
+
+// ─── Global reset ─────────────────────────────────────────────────────
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin:     0;
+  padding:    0;
+}
+
+html {
+  scroll-behavior: smooth;
+  height: 100%;
+}
+
+body {
+  font-family:  v.$font-family-base;
+  background:   v.$bg-primary;
+  color:        v.$text-primary;
+  min-height:   100vh;
+  overflow-x:   hidden;
+  margin:       0;
+}

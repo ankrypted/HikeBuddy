@@ -1,0 +1,102 @@
+@use 'styles/variables' as v;
+
+.page-wrapper {
+  position:        relative;
+  z-index:         1;
+  min-height:      100vh;
+  display:         flex;
+  flex-direction:  column;
+}
+
+// ─── Hero ─────────────────────────────────────────────────────────────
+.hero {
+  flex:           1;
+  display:        flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding:        0 2.5rem 2.5rem;
+  position:       relative;
+  min-height:     calc(100vh - v.$nav-height);
+}
+
+.hero-content {
+  max-width:    520px;
+  margin-bottom: 2rem;
+}
+
+.hero-eyebrow {
+  font-size:      0.78rem;
+  font-weight:    700;
+  letter-spacing: 0.18em;
+  color:          v.$text-muted;
+  margin-bottom:  0.6rem;
+  text-transform: uppercase;
+}
+
+.hero-title {
+  font-size:      clamp(3rem, 7vw, 5.5rem);
+  font-weight:    800;
+  line-height:    1.0;
+  letter-spacing: -0.03em;
+  margin-bottom:  1rem;
+}
+
+.hero-subtitle {
+  font-size:  0.95rem;
+  color:      v.$text-muted;
+  line-height: 1.6;
+  max-width:  380px;
+}
+
+// ─── Trail cards layout ───────────────────────────────────────────────
+.trail-cards {
+  display:         flex;
+  gap:             1rem;
+  align-items:     flex-end;
+  justify-content: flex-end;
+  position:        absolute;
+  right:           2.5rem;
+  bottom:          2.5rem;
+}
+
+.trail-card-skeleton {
+  width:         175px;
+  height:        260px;
+  border-radius: v.$card-radius;
+  background:    rgba(255, 255, 255, 0.06);
+  border:        1px solid v.$glass-border;
+  animation:     skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 0.4; }
+  50%       { opacity: 0.7; }
+}
+
+.trail-cards-error {
+  color:     v.$text-muted;
+  font-size: 0.85rem;
+}
+
+// ─── Responsive ──────────────────────────────────────────────────────
+@media (max-width: v.$bp-md) {
+  .trail-cards {
+    position:        static;
+    justify-content: center;
+    margin-top:      1.5rem;
+    flex-wrap:       wrap;
+  }
+
+  .hero { padding-bottom: 2rem; }
+}
+
+@media (max-width: v.$bp-sm) {
+  .hero {
+    padding:     0 1.25rem 1.5rem;
+    align-items: flex-start;
+  }
+
+  .hero-title { font-size: 2.8rem; }
+
+  .trail-cards { gap: 0.75rem; }
+}

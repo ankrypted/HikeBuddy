@@ -1,0 +1,9 @@
+<div class="cta-card glass">
+  <div class="cta-text">
+    <span class="cta-title">{{ title }}</span>
+    <span class="cta-sub">{{ subtitle }}</span>
+  </div>
+  <a [routerLink]="linkTarget" class="cta-arrow" [attr.aria-label]="title">
+    <mat-icon>arrow_forward</mat-icon>
+  </a>
+</div>

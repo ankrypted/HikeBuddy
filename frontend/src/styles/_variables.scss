@@ -1,0 +1,22 @@
+// ─── Design Tokens ──────────────────────────────────────────────────
+$bg-primary:      #0d1b2a;
+$bg-surface:      #112233;
+$accent-green:    #7ecb3f;
+$accent-dark:     #5aaa20;
+$accent-lighter:  #b0f050;
+$text-primary:    #ffffff;
+$text-muted:      rgba(255, 255, 255, 0.65);
+
+$glass-bg:        rgba(255, 255, 255, 0.08);
+$glass-border:    rgba(255, 255, 255, 0.15);
+$glass-blur:      14px;
+
+$card-radius:     18px;
+$nav-height:      72px;
+
+// ─── Typography ──────────────────────────────────────────────────────
+$font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+// ─── Breakpoints ─────────────────────────────────────────────────────
+$bp-md: 900px;
+$bp-sm: 640px;

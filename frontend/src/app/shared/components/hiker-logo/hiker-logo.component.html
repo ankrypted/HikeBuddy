@@ -1,0 +1,47 @@
+<a routerLink="/" class="hb-logo" title="HikeBuddy — Discover Epic Trails">
+  <!-- Animated hiking figure -->
+  <span class="logo-hiker" aria-hidden="true">
+    <svg class="hiker-svg" viewBox="0 0 36 46" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Body group — whole figure bobs up/down -->
+      <g class="hiker-body">
+        <!-- Hat crown -->
+        <rect x="11" y="0.5" width="8" height="5.5" rx="2" fill="#b8e86a"/>
+        <!-- Hat brim -->
+        <rect x="8"  y="4"   width="15" height="2"  rx="1" fill="#d4f08a"/>
+        <!-- Head -->
+        <circle cx="15" cy="8" r="4.5" fill="white"/>
+        <!-- Backpack (green) -->
+        <rect x="10" y="14" width="5.5" height="8"   rx="1.5" fill="#7ecb3f"/>
+        <rect x="10.5" y="22" width="4.5" height="1.5" rx="0.75" fill="#5aaa20"/>
+        <!-- Torso -->
+        <line x1="15" y1="12.5" x2="15" y2="26"
+              stroke="white" stroke-width="2.8" stroke-linecap="round"/>
+        <!-- Left arm  (pivot: shoulder at right-top of its bbox) -->
+        <g class="hiker-arm-l">
+          <line x1="15" y1="16" x2="8" y2="23.5"
+                stroke="white" stroke-width="2" stroke-linecap="round"/>
+        </g>
+        <!-- Right arm + hiking staff (pivot: shoulder at left-top of combined bbox)
+             Staff starts at the hand (22,22) and extends to the ground (29,44).
+             Both arm and staff are in this group so the staff swings with the hand. -->
+        <g class="hiker-arm-r">
+          <line x1="15" y1="16" x2="22" y2="22"
+                stroke="white" stroke-width="2" stroke-linecap="round"/>
+          <line class="hiker-staff" x1="22" y1="22" x2="29" y2="44"
+                stroke="#7ecb3f" stroke-width="2.2" stroke-linecap="round"/>
+        </g>
+        <!-- Left leg  (pivot: hip at right-top of its bbox) -->
+        <g class="hiker-leg-l">
+          <line x1="15" y1="26" x2="8"  y2="42"
+                stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+        </g>
+        <!-- Right leg (pivot: hip at left-top of its bbox) -->
+        <g class="hiker-leg-r">
+          <line x1="15" y1="26" x2="22" y2="42"
+                stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+        </g>
+      </g>
+    </svg>
+  </span>
+  HikeBuddy<span class="dot dot-pulse">.</span>
+</a>

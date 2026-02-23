@@ -1,0 +1,272 @@
+@use 'styles/variables' as v;
+
+// ─── Page wrapper — dark overlay on top of fixed scene background ──────
+.detail-wrapper {
+  position:       relative;
+  z-index:        1;
+  min-height:     100vh;
+  display:        flex;
+  flex-direction: column;
+  background:     linear-gradient(180deg,
+    rgba(5, 13, 25, 0.68) 0%,
+    rgba(5, 13, 25, 0.90) 25%,
+    rgba(5, 13, 25, 0.96) 60%
+  );
+}
+
+// ─── Main content container ────────────────────────────────────────────
+.trail-detail {
+  max-width:  860px;
+  width:      100%;
+  margin:     0 auto;
+  padding:    2.5rem 2rem 4rem;
+  display:    flex;
+  flex-direction: column;
+  gap:        2rem;
+}
+
+// ─── State messages (loading / error) ─────────────────────────────────
+.state-message {
+  padding:    4rem 2rem;
+  text-align: center;
+  color:      v.$text-muted;
+  font-size:  1rem;
+
+  &--error { color: #e07070; }
+}
+
+// ─── Hero ──────────────────────────────────────────────────────────────
+.trail-hero {
+  padding-top: 1rem;
+}
+
+.trail-chips {
+  display:   flex;
+  flex-wrap: wrap;
+  gap:       0.5rem;
+  margin-bottom: 1rem;
+}
+
+.chip {
+  display:        inline-flex;
+  align-items:    center;
+  padding:        0.28rem 0.75rem;
+  border-radius:  2rem;
+  font-size:      0.75rem;
+  font-weight:    600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background:     rgba(255, 255, 255, 0.08);
+  border:         1px solid rgba(255, 255, 255, 0.15);
+  color:          v.$text-muted;
+
+  &--easy   { background: rgba(63, 185, 80,  0.18); border-color: rgba(63, 185, 80,  0.4); color: #7edb5a; }
+  &--moderate { background: rgba(255, 180, 0, 0.15); border-color: rgba(255, 180, 0, 0.4); color: #ffc940; }
+  &--hard   { background: rgba(255, 90,  50, 0.15); border-color: rgba(255, 90,  50, 0.4); color: #ff7a55; }
+  &--expert { background: rgba(200, 40,  40, 0.15); border-color: rgba(200, 40,  40, 0.4); color: #ff5555; }
+}
+
+.trail-name {
+  font-size:      clamp(2.2rem, 5vw, 3.4rem);
+  font-weight:    800;
+  line-height:    1.1;
+  letter-spacing: -0.02em;
+  margin-bottom:  0.4rem;
+}
+
+.trail-region {
+  font-size:    0.9rem;
+  color:        v.$text-muted;
+  margin-bottom: 0.9rem;
+}
+
+.trail-rating {
+  display:     flex;
+  align-items: center;
+  gap:         0.4rem;
+}
+
+.stars { display: flex; gap: 2px; }
+
+.star {
+  font-size: 1rem;
+  color:     rgba(255, 255, 255, 0.2);
+
+  &--filled { color: #ffc940; }
+}
+
+.rating-value {
+  font-size:   0.9rem;
+  font-weight: 700;
+  color:       #fff;
+}
+
+.rating-count {
+  font-size: 0.8rem;
+  color:     v.$text-muted;
+}
+
+// ─── Description ──────────────────────────────────────────────────────
+.trail-description {
+  padding:       2rem;
+  border-radius: 16px;
+
+  h2 {
+    font-size:     1.15rem;
+    font-weight:   700;
+    margin-bottom: 1rem;
+    color:         #fff;
+  }
+}
+
+.desc-text {
+  font-size:   0.95rem;
+  line-height: 1.75;
+  color:       rgba(255, 255, 255, 0.80);
+}
+
+.trail-tags {
+  display:   flex;
+  flex-wrap: wrap;
+  gap:       0.5rem;
+  margin-top: 1.4rem;
+}
+
+.tag {
+  padding:        0.22rem 0.7rem;
+  border-radius:  2rem;
+  font-size:      0.72rem;
+  font-weight:    600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color:          v.$accent-green;
+  background:     rgba(126, 203, 63, 0.12);
+  border:         1px solid rgba(126, 203, 63, 0.28);
+}
+
+// ─── More Details CTA ─────────────────────────────────────────────────
+.more-details-row {
+  display:         flex;
+  justify-content: center;
+}
+
+.btn-more-details {
+  display:         inline-flex;
+  align-items:     center;
+  gap:             0.5rem;
+  padding:         0.65rem 2rem;
+  border-radius:   2rem;
+  font-size:       0.9rem;
+  font-weight:     700;
+  letter-spacing:  0.04em;
+  color:           #0d1b2a;
+  background:      v.$accent-green;
+  border:          none;
+  cursor:          pointer;
+  transition:      background 0.2s, box-shadow 0.2s, transform 0.2s;
+  box-shadow:      0 0 14px rgba(126, 203, 63, 0.50), 0 0 32px rgba(126, 203, 63, 0.20);
+
+  &:hover:not(:disabled) {
+    background:  #8fd94a;
+    box-shadow:  0 0 20px rgba(126, 203, 63, 0.75), 0 0 44px rgba(126, 203, 63, 0.30);
+    transform:   translateY(-1px);
+  }
+
+  &:disabled {
+    opacity: 0.65;
+    cursor:  not-allowed;
+  }
+
+  .coming-soon {
+    font-size:      0.65rem;
+    font-weight:    500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    opacity:        0.7;
+  }
+}
+
+// ─── Reviews ──────────────────────────────────────────────────────────
+.reviews-section { display: flex; flex-direction: column; gap: 1rem; }
+
+.reviews-heading {
+  font-size:   1.15rem;
+  font-weight: 700;
+  color:       #fff;
+}
+
+.reviews-grid {
+  display:               grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap:                   1rem;
+}
+
+.review-card {
+  padding:       1.4rem;
+  border-radius: 14px;
+}
+
+.review-header {
+  display:     flex;
+  align-items: center;
+  gap:         0.8rem;
+  margin-bottom: 0.9rem;
+}
+
+.reviewer-avatar {
+  width:           40px;
+  height:          40px;
+  border-radius:   50%;
+  background:      rgba(126, 203, 63, 0.18);
+  border:          1px solid rgba(126, 203, 63, 0.35);
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  font-size:       0.75rem;
+  font-weight:     700;
+  color:           v.$accent-green;
+  flex-shrink:     0;
+}
+
+.reviewer-meta {
+  display:        flex;
+  flex-direction: column;
+  gap:            2px;
+  flex:           1;
+}
+
+.reviewer-name {
+  font-size:   0.88rem;
+  font-weight: 700;
+  color:       #fff;
+}
+
+.review-date {
+  font-size: 0.72rem;
+  color:     v.$text-muted;
+}
+
+.review-stars {
+  display: flex;
+  gap:     2px;
+  .star { font-size: 0.9rem; }
+}
+
+.review-text {
+  font-size:   0.875rem;
+  line-height: 1.65;
+  color:       rgba(255, 255, 255, 0.75);
+}
+
+// ─── Responsive ───────────────────────────────────────────────────────
+@media (max-width: v.$bp-md) {
+  .trail-detail { padding: 1.5rem 1.25rem 3rem; }
+
+  .reviews-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: v.$bp-sm) {
+  .trail-description { padding: 1.25rem; }
+
+  .review-card { padding: 1rem; }
+}

@@ -1,0 +1,51 @@
+<nav class="navbar">
+
+  <!-- Logo -->
+  <hb-hiker-logo />
+
+  <!-- Desktop nav links -->
+  <ul class="nav-links" [class.nav-links--open]="menuOpen()">
+    @for (link of navLinks; track link.label) {
+      <li>
+        <a
+          [routerLink]="link.routerLink"
+          [fragment]="link.fragment"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: link.routerLink === '/' }"
+          (click)="closeMenu()"
+        >{{ link.label }}</a>
+      </li>
+    }
+  </ul>
+
+  <!-- Search button -->
+  <button
+    mat-icon-button
+    class="search-btn"
+    aria-label="Search trails"
+    (click)="openSearch()"
+  >
+    <mat-icon>search</mat-icon>
+  </button>
+
+  <!-- Auth buttons — top-right -->
+  <div class="auth-buttons">
+    <a routerLink="/auth/login"    class="btn-login">Log In</a>
+    <a routerLink="/auth/register" class="btn-signup">Sign Up</a>
+  </div>
+
+  <!-- Hamburger (mobile) -->
+  <button
+    mat-icon-button
+    class="menu-btn"
+    aria-label="Toggle menu"
+    [attr.aria-expanded]="menuOpen()"
+    (click)="toggleMenu()"
+  >
+    <mat-icon>{{ menuOpen() ? 'close' : 'menu' }}</mat-icon>
+  </button>
+
+</nav>
+
+<!-- Search overlay — rendered outside nav flow -->
+<hb-search-overlay [isOpen]="searchOpen()" (closed)="closeSearch()" />

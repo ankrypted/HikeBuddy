@@ -1,0 +1,90 @@
+// ─── Keyframes ───────────────────────────────────────────────────────
+
+@keyframes flicker {
+  0%, 100% { transform: scaleY(1)    scaleX(1)    translateY(0);    opacity: 0.9;  }
+  25%       { transform: scaleY(1.05) scaleX(0.97) translateY(-2px); opacity: 1;    }
+  50%       { transform: scaleY(0.97) scaleX(1.03) translateY(1px);  opacity: 0.85; }
+  75%       { transform: scaleY(1.03) scaleX(0.98) translateY(-1px); opacity: 0.95; }
+}
+
+@keyframes staff-glow {
+  0%, 100% { filter: drop-shadow(0 0 2px rgba(126, 203, 63, 0.5));  }
+  50%       { filter: drop-shadow(0 0 6px rgba(126, 203, 63, 0.95)); }
+}
+
+@keyframes hiker-bob {
+  0%, 100% { transform: translateY(0);      }
+  50%       { transform: translateY(-1.8px); }
+}
+
+@keyframes swing-a {
+  from { transform: rotate(-24deg); }
+  to   { transform: rotate(24deg);  }
+}
+
+@keyframes swing-b {
+  from { transform: rotate(24deg);  }
+  to   { transform: rotate(-24deg); }
+}
+
+@keyframes dot-pulse {
+  0%, 100% { color: #7ecb3f; text-shadow: none; }
+  50%       { color: #b0f050; text-shadow: 0 0 10px rgba(126, 203, 63, 0.7); }
+}
+
+// ─── Utility classes applied to inline SVG elements ─────────────────
+// These MUST stay global — Angular view encapsulation would hash class
+// names inside component SCSS and break SVG selector matching.
+
+.fire       { transform-box: fill-box; transform-origin: center bottom; animation: flicker 1.6s ease-in-out infinite; }
+.fire-glow  { transform-box: fill-box; transform-origin: center bottom; animation: flicker 1.4s ease-in-out infinite reverse; }
+
+.hiker-staff { animation: staff-glow 2s ease-in-out infinite; }
+.hiker-body  { animation: hiker-bob 0.65s ease-in-out infinite; }
+
+.hiker-arm-l {
+  transform-box: fill-box;
+  transform-origin: right top;
+  animation: swing-a 0.65s ease-in-out infinite alternate;
+}
+.hiker-leg-r {
+  transform-box: fill-box;
+  transform-origin: left top;
+  animation: swing-a 0.65s ease-in-out infinite alternate;
+}
+.hiker-arm-r {
+  transform-box: fill-box;
+  transform-origin: left top;
+  animation: swing-b 0.65s ease-in-out infinite alternate;
+}
+.hiker-leg-l {
+  transform-box: fill-box;
+  transform-origin: right top;
+  animation: swing-b 0.65s ease-in-out infinite alternate;
+}
+
+// Speed up on logo hover
+.hb-logo:hover .hiker-body,
+.hb-logo:hover .hiker-arm-l,
+.hb-logo:hover .hiker-arm-r,
+.hb-logo:hover .hiker-leg-l,
+.hb-logo:hover .hiker-leg-r { animation-duration: 0.32s; }
+
+.dot-pulse { animation: dot-pulse 2.4s ease-in-out infinite; }
+
+// ─── Star twinkle (three staggered phases for naturalism) ────────────
+@keyframes twinkle {
+  0%, 100% { opacity: 0.25; }
+  50%       { opacity: 1;    }
+}
+
+.stars-a { animation: twinkle 3.2s ease-in-out infinite;        }
+.stars-b { animation: twinkle 2.5s ease-in-out infinite 1.1s;  }
+.stars-c { animation: twinkle 4.0s ease-in-out infinite 0.6s;  }
+
+// ─── Tent inner glow pulse ────────────────────────────────────────────
+@keyframes tent-glow {
+  0%, 100% { opacity: 0.10; }
+  50%       { opacity: 0.22; }
+}
+.tent-glow { animation: tent-glow 3s ease-in-out infinite; }

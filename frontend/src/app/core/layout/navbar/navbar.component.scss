@@ -1,0 +1,118 @@
+@use 'styles/variables' as v;
+
+.navbar {
+  display:     flex;
+  align-items: center;
+  gap:         2rem;
+  padding:     0 2.5rem;
+  height:      v.$nav-height;
+  position:    relative;
+  z-index:     10;
+}
+
+// Push links to center; logo has margin-right: auto via hb-hiker-logo
+.nav-links {
+  display:     flex;
+  list-style:  none;
+  gap:         2rem;
+
+  a {
+    color:           v.$text-muted;
+    text-decoration: none;
+    font-size:       0.95rem;
+    font-weight:     500;
+    transition:      color 0.2s;
+
+    &:hover,
+    &.active { color: #fff; }
+  }
+}
+
+// ─── Auth Buttons ─────────────────────────────────────────────────────
+.auth-buttons {
+  display:     flex;
+  align-items: center;
+  gap:         0.6rem;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.btn-login {
+  display:         inline-flex;
+  align-items:     center;
+  padding:         0.42rem 1.1rem;
+  border-radius:   2rem;
+  font-size:       0.85rem;
+  font-weight:     600;
+  letter-spacing:  0.02em;
+  text-decoration: none;
+  color:           #ffffff;
+  background:      rgba(10, 20, 35, 0.60);
+  border:          1px solid rgba(126, 203, 63, 0.55);
+  transition:      background 0.25s, border-color 0.25s, box-shadow 0.25s;
+  box-shadow:      0 0 10px rgba(126, 203, 63, 0.22), 0 0 22px rgba(126, 203, 63, 0.10);
+
+  &:hover {
+    background:   rgba(10, 20, 35, 0.80);
+    border-color: rgba(126, 203, 63, 0.80);
+    box-shadow:   0 0 16px rgba(126, 203, 63, 0.42), 0 0 36px rgba(126, 203, 63, 0.18);
+  }
+}
+
+.btn-signup {
+  display:         inline-flex;
+  align-items:     center;
+  padding:         0.42rem 1.1rem;
+  border-radius:   2rem;
+  font-size:       0.85rem;
+  font-weight:     700;
+  letter-spacing:  0.02em;
+  text-decoration: none;
+  color:           #0d1b2a;
+  background:      #7ecb3f;
+  border:          1px solid rgba(176, 240, 80, 0.5);
+  transition:      background 0.25s, box-shadow 0.25s, transform 0.2s;
+  box-shadow:      0 0 12px rgba(126, 203, 63, 0.55), 0 0 28px rgba(126, 203, 63, 0.22);
+
+  &:hover {
+    background:  #8fd94a;
+    box-shadow:  0 0 18px rgba(126, 203, 63, 0.80), 0 0 44px rgba(126, 203, 63, 0.30);
+    transform:   translateY(-1px);
+  }
+}
+
+.search-btn {
+  background:  rgba(255, 255, 255, 0.1) !important;
+  border:      1px solid v.$glass-border !important;
+  border-radius: 50% !important;
+  color:       #fff !important;
+}
+
+.menu-btn {
+  display: none;
+  color:   #fff !important;
+}
+
+// ─── Mobile ──────────────────────────────────────────────────────────
+@media (max-width: v.$bp-sm) {
+  .nav-links {
+    display:   none;
+    flex-direction: column;
+    position:  absolute;
+    top:       v.$nav-height;
+    left:      0;
+    right:     0;
+    background: rgba(10, 20, 30, 0.96);
+    padding:   1rem 1.5rem 1.5rem;
+    backdrop-filter: blur(12px);
+    z-index:   50;
+
+    &--open { display: flex; }
+  }
+
+  .auth-buttons { display: none; }
+
+  .menu-btn { display: flex; }
+
+  .navbar { padding: 0 1.25rem; }
+}

@@ -1,0 +1,152 @@
+<div
+  class="trail-card"
+  [class.trail-card--raised]="raised"
+  (click)="onCardClick()"
+  (keydown.enter)="onCardClick()"
+  tabindex="0"
+  role="article"
+  [attr.aria-label]="'View trail: ' + trail.name + ', ' + trail.region.name"
+>
+  <!-- Illustration / thumbnail -->
+  <div class="trail-img">
+    <div class="trail-img-overlay"></div>
+
+    @if (trail.isFeatured) {
+      <span class="trail-popular-badge">Popular</span>
+    }
+
+    @if (trail.thumbnailUrl) {
+      <img [src]="trail.thumbnailUrl" [alt]="trail.name" loading="lazy" class="trail-thumb" />
+    } @else {
+      <!-- Inline SVG placeholder per trail slug -->
+      <ng-container [ngSwitch]="trail.slug">
+        <ng-container *ngSwitchCase="'roopkund'">
+          <svg viewBox="0 0 200 220" fill="none" xmlns="http://www.w3.org/2000/svg" class="trail-illustration">
+            <!-- Night sky -->
+            <rect width="200" height="220" fill="#0a1628"/>
+            <!-- Stars -->
+            <g fill="#ffffff" opacity="0.75">
+              <circle cx="25"  cy="14" r="0.8"/><circle cx="68"  cy="8"  r="1.0"/>
+              <circle cx="118" cy="22" r="0.7"/><circle cx="162" cy="11" r="0.9"/>
+              <circle cx="48"  cy="35" r="0.6"/><circle cx="148" cy="30" r="0.7"/>
+            </g>
+            <!-- Back mountains (grey-blue) -->
+            <polygon points="-10,130 55,38 120,130"  fill="#2a4060"/>
+            <polygon points="80,130  160,22 240,130" fill="#324870"/>
+            <!-- Snow caps -->
+            <polygon points="22,62 55,38 88,62"   fill="#c8dced"/>
+            <polygon points="128,48 160,22 192,48" fill="#c0d8ec"/>
+            <!-- Mid-range rocky faces -->
+            <polygon points="0,145 70,80 140,145"  fill="#1e3248"/>
+            <polygon points="70,145 150,72 230,145" fill="#243a52"/>
+            <!-- Glacial lake -->
+            <ellipse cx="100" cy="162" rx="82" ry="26" fill="#1a6878" opacity="0.9"/>
+            <ellipse cx="100" cy="159" rx="64" ry="16" fill="#2090a8" opacity="0.45"/>
+            <!-- Shoreline rocks -->
+            <ellipse cx="28"  cy="168" rx="22" ry="8"  fill="#111e28"/>
+            <ellipse cx="172" cy="170" rx="18" ry="7"  fill="#111e28"/>
+            <!-- Foreground terrain -->
+            <rect x="0" y="178" width="200" height="42" fill="#0d1820"/>
+            <ellipse cx="60"  cy="178" rx="38" ry="12" fill="#131e2a"/>
+            <ellipse cx="150" cy="180" rx="30" ry="10" fill="#121c28"/>
+          </svg>
+        </ng-container>
+        <ng-container *ngSwitchCase="'valley-of-flowers'">
+          <svg viewBox="0 0 200 220" fill="none" xmlns="http://www.w3.org/2000/svg" class="trail-illustration">
+            <!-- Sky -->
+            <rect width="200" height="105" fill="#1a3a5a"/>
+            <!-- Distant mountains -->
+            <polygon points="-10,105 55,42 120,105"  fill="#3a5a4a"/>
+            <polygon points="80,105  165,52 250,105" fill="#2e4e3e"/>
+            <!-- Snow caps -->
+            <polygon points="26,68 55,42 84,68"    fill="#cce0d8"/>
+            <polygon points="136,72 165,52 194,72" fill="#c4dcd4"/>
+            <!-- Valley floor gradient -->
+            <rect x="0" y="105" width="200" height="115" fill="#2a5828"/>
+            <!-- Flowers — scattered colourful blobs -->
+            <g opacity="0.95">
+              <circle cx="18"  cy="128" r="4.5" fill="#e8559a"/>
+              <circle cx="40"  cy="140" r="3.5" fill="#f5c518"/>
+              <circle cx="62"  cy="125" r="4"   fill="#ff8c42"/>
+              <circle cx="88"  cy="138" r="3.5" fill="#e8559a"/>
+              <circle cx="112" cy="126" r="4.5" fill="#7ecb3f"/>
+              <circle cx="136" cy="142" r="3.5" fill="#f5c518"/>
+              <circle cx="158" cy="128" r="4"   fill="#e8559a"/>
+              <circle cx="28"  cy="158" r="3.5" fill="#ff8c42"/>
+              <circle cx="55"  cy="165" r="4"   fill="#f5c518"/>
+              <circle cx="80"  cy="155" r="3.5" fill="#7ecb3f"/>
+              <circle cx="108" cy="162" r="4.5" fill="#e8559a"/>
+              <circle cx="132" cy="153" r="3.5" fill="#ff8c42"/>
+              <circle cx="155" cy="160" r="4"   fill="#f5c518"/>
+              <circle cx="178" cy="145" r="3.5" fill="#e8559a"/>
+              <circle cx="168" cy="168" r="4"   fill="#7ecb3f"/>
+              <circle cx="45"  cy="178" r="3"   fill="#e8559a"/>
+              <circle cx="100" cy="180" r="3.5" fill="#ff8c42"/>
+              <circle cx="145" cy="177" r="3"   fill="#f5c518"/>
+            </g>
+            <!-- Stream winding through valley -->
+            <path d="M72,112 Q88,132 78,155 Q70,175 86,195 Q100,210 94,220"
+                  stroke="#4a90c0" stroke-width="3.5" fill="none" opacity="0.65"/>
+            <!-- Foreground grass band -->
+            <rect x="0" y="198" width="200" height="22" fill="#1c3a1c"/>
+          </svg>
+        </ng-container>
+        <ng-container *ngSwitchCase="'hampta-pass'">
+          <svg viewBox="0 0 200 220" fill="none" xmlns="http://www.w3.org/2000/svg" class="trail-illustration">
+            <!-- Sky -->
+            <rect width="200" height="220" fill="#0d1b2a"/>
+            <!-- Stars -->
+            <g fill="#ffffff" opacity="0.65">
+              <circle cx="20"  cy="12" r="0.8"/><circle cx="58"  cy="6"  r="0.9"/>
+              <circle cx="110" cy="18" r="0.7"/><circle cx="155" cy="9"  r="0.8"/>
+              <circle cx="185" cy="25" r="0.6"/>
+            </g>
+            <!-- Back mountains -->
+            <polygon points="-20,155 80,18 180,155"  fill="#3a4858"/>
+            <polygon points="20,155  110,28 200,155" fill="#323f50" opacity="0.85"/>
+            <!-- Snow caps and snowfields -->
+            <polygon points="28,68 80,18 132,68"   fill="#b8cce0"/>
+            <polygon points="50,88 80,18 110,88"   fill="#d0e0f0"/>
+            <!-- Mid-layer rocky ridge -->
+            <polygon points="0,165 68,85 136,165"  fill="#1e2e3e"/>
+            <polygon points="68,165 150,78 232,165" fill="#1a2a38"/>
+            <!-- Pass gap / valley floor -->
+            <ellipse cx="100" cy="165" rx="58" ry="18" fill="#243040"/>
+            <!-- Snow patches on rocky foreground -->
+            <ellipse cx="35"  cy="172" rx="22" ry="7"  fill="#a8bcd0" opacity="0.7"/>
+            <ellipse cx="168" cy="175" rx="18" ry="6"  fill="#a0b8cc" opacity="0.65"/>
+            <ellipse cx="105" cy="168" rx="14" ry="5"  fill="#b0c4d8" opacity="0.5"/>
+            <!-- Foreground rocky terrain -->
+            <rect x="0" y="180" width="200" height="40" fill="#111822"/>
+            <ellipse cx="50"  cy="181" rx="42" ry="13" fill="#161e28"/>
+            <ellipse cx="155" cy="184" rx="34" ry="11" fill="#141c26"/>
+            <!-- Hiker silhouette on the pass -->
+            <rect x="97"  y="156" width="3"  height="10" fill="#ffffff" opacity="0.6"/>
+            <ellipse cx="98.5" cy="155" rx="3" ry="3" fill="#ffffff" opacity="0.6"/>
+          </svg>
+        </ng-container>
+        <ng-container *ngSwitchDefault>
+          <div class="trail-img-placeholder"></div>
+        </ng-container>
+      </ng-container>
+    }
+  </div>
+
+  <!-- Footer -->
+  <div class="trail-footer">
+    <span class="trail-name">{{ trail.name }}</span>
+    <div class="trail-info-badge">
+      <span class="trail-country">{{ trail.region.name }}</span>
+      <button
+        class="trail-play"
+        [attr.aria-label]="'View trail ' + trail.name"
+        (click)="$event.stopPropagation(); onCardClick()"
+      >
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
+          <polygon points="10 8 16 12 10 16 10 8"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
