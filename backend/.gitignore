@@ -1,0 +1,19 @@
+target/
+*.class
+*.jar
+*.war
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+out/
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# Secrets — never commit these
+src/main/resources/application-local.properties
+src/main/resources/application-secret*.properties

@@ -1,0 +1,12 @@
+# Copy this file to application-local.properties (gitignored) and fill in your credentials.
+#
+# 1. Go to https://console.cloud.google.com/ > APIs & Services > Credentials
+# 2. Create an OAuth 2.0 Client ID (Web application)
+# 3. Add Authorized redirect URI: http://localhost:8080/login/oauth2/code/google
+# 4. Paste the values below
+
+spring.security.oauth2.client.registration.google.client-id=YOUR_GOOGLE_CLIENT_ID
+spring.security.oauth2.client.registration.google.client-secret=YOUR_GOOGLE_CLIENT_SECRET
+
+# Optional: override JWT secret in dev
+# app.jwt.secret=your-very-long-random-secret-here

@@ -6,9 +6,9 @@ import {
   LoginRequestDto, RegisterRequestDto,
   AuthResponseDto, UserSummaryDto, UserRole,
 } from '../../../shared/models/user.dto';
+import { decodeJwtPayload }                      from '../../utils/jwt-decoder';
 
-const TOKEN_KEY   = 'hb_access_token';
-const REFRESH_KEY = 'hb_refresh_token';
+const TOKEN_KEY = 'hb_access_token';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -34,17 +34,24 @@ export class AuthService {
     );
   }
 
+  /** Called after a successful Google OAuth redirect with the JWT from the URL. */
+  handleOAuthCallback(token: string): void {
+    const claims = decodeJwtPayload(token);
+    localStorage.setItem(TOKEN_KEY, token);
+    this.accessToken.set(token);
+    this.currentUser.set({ id: claims.sub, username: claims.username, avatarUrl: claims.avatarUrl });
+    this.roles.set(claims.roles as UserRole[]);
+  }
+
   logout(): void {
     localStorage.removeItem(TOKEN_KEY);
-    localStorage.removeItem(REFRESH_KEY);
     this.accessToken.set(null);
     this.currentUser.set(null);
     this.roles.set([]);
   }
 
   private handleAuth(res: AuthResponseDto): void {
-    localStorage.setItem(TOKEN_KEY,   res.accessToken);
-    localStorage.setItem(REFRESH_KEY, res.refreshToken);
+    localStorage.setItem(TOKEN_KEY, res.accessToken);
     this.accessToken.set(res.accessToken);
     this.currentUser.set(res.user);
     this.roles.set(res.roles);

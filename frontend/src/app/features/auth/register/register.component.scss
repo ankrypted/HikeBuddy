@@ -1,0 +1,257 @@
+@use 'styles/variables' as v;
+
+// ── Layout ────────────────────────────────────────────────────────────────────
+.auth-wrapper {
+  position: relative;
+  min-height: 100vh;
+  background: v.$bg-primary;
+  display: flex;
+  flex-direction: column;
+}
+
+.auth-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: calc(v.$nav-height + 2rem) 1rem 3rem;
+}
+
+// ── Card ─────────────────────────────────────────────────────────────────────
+.auth-card {
+  width: 100%;
+  max-width: 440px;
+  padding: 2.5rem 2rem;
+  border-radius: v.$card-radius;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+// ── Header ────────────────────────────────────────────────────────────────────
+.auth-header {
+  text-align: center;
+}
+
+.auth-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: v.$text-primary;
+  margin: 0 0 0.35rem;
+}
+
+.auth-subtitle {
+  font-size: 0.9rem;
+  color: v.$text-muted;
+  margin: 0;
+}
+
+// ── Google button ─────────────────────────────────────────────────────────────
+.btn-google {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: #fff;
+  color: #3c4043;
+  font-size: 0.95rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: box-shadow 0.2s, transform 0.15s;
+
+  &:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.google-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+// ── Divider ───────────────────────────────────────────────────────────────────
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.divider-line {
+  flex: 1;
+  height: 1px;
+  background: v.$glass-border;
+}
+
+.divider-text {
+  font-size: 0.78rem;
+  color: v.$text-muted;
+  white-space: nowrap;
+}
+
+// ── Form fields ───────────────────────────────────────────────────────────────
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.field-label {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: v.$text-muted;
+  letter-spacing: 0.03em;
+}
+
+.field-input {
+  width: 100%;
+  padding: 0.7rem 0.9rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid v.$glass-border;
+  border-radius: 10px;
+  color: v.$text-primary;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+  box-sizing: border-box;
+
+  &::placeholder {
+    color: rgba(255, 255, 255, 0.25);
+  }
+
+  &:focus {
+    border-color: v.$accent-green;
+    background: rgba(126, 203, 63, 0.06);
+  }
+
+  &--error {
+    border-color: #e05757;
+    background: rgba(224, 87, 87, 0.06);
+  }
+}
+
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-wrapper .field-input {
+  padding-right: 2.8rem;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 0.7rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 0.25rem;
+  line-height: 1;
+  color: v.$text-muted;
+  transition: color 0.2s;
+
+  &:hover { color: v.$text-primary; }
+}
+
+.field-error {
+  font-size: 0.78rem;
+  color: #e05757;
+}
+
+// ── Server error ──────────────────────────────────────────────────────────────
+.server-error {
+  padding: 0.65rem 0.9rem;
+  background: rgba(224, 87, 87, 0.12);
+  border: 1px solid rgba(224, 87, 87, 0.4);
+  border-radius: 8px;
+  color: #f08080;
+  font-size: 0.88rem;
+  text-align: center;
+}
+
+// ── Register button ───────────────────────────────────────────────────────────
+.btn-register {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.8rem 1rem;
+  background: v.$accent-green;
+  color: #0d1b2a;
+  font-size: 0.97rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  margin-top: 0.25rem;
+
+  &:hover:not(:disabled) {
+    background: v.$accent-lighter;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(126, 203, 63, 0.35);
+  }
+
+  &:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+  }
+}
+
+// ── Spinner ───────────────────────────────────────────────────────────────────
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(13, 27, 42, 0.4);
+  border-top-color: #0d1b2a;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+// ── Footer link ───────────────────────────────────────────────────────────────
+.auth-footer {
+  text-align: center;
+  font-size: 0.88rem;
+  color: v.$text-muted;
+  margin: 0;
+}
+
+.auth-link {
+  color: v.$accent-green;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+
+  &:hover { color: v.$accent-lighter; }
+}
+
+// ── Glassmorphism (reuse project utility) ─────────────────────────────────────
+.glass {
+  background: v.$glass-bg;
+  backdrop-filter: blur(v.$glass-blur);
+  -webkit-backdrop-filter: blur(v.$glass-blur);
+  border: 1px solid v.$glass-border;
+}

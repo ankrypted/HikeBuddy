@@ -13,4 +13,10 @@ export const AUTH_ROUTES: Routes = [
       import('./register/register.component').then(m => m.RegisterComponent),
     title: 'Create Account — HikeBuddy',
   },
+  {
+    path: 'callback',
+    loadComponent: () =>
+      import('./callback/auth-callback.component').then(m => m.AuthCallbackComponent),
+    title: 'Signing in… — HikeBuddy',
+  },
 ];
