@@ -30,8 +30,15 @@
 
   <!-- Auth buttons — top-right -->
   <div class="auth-buttons">
-    <a routerLink="/auth/login"    class="btn-login">Log In</a>
-    <a routerLink="/auth/register" class="btn-signup">Sign Up</a>
+    @if (isLoggedIn()) {
+      @if (!onDashboard()) {
+        <a routerLink="/dashboard" class="btn-signup">My Dashboard</a>
+      }
+      <button class="btn-signout" type="button" (click)="logout()">Sign out</button>
+    } @else {
+      <a routerLink="/auth/login"    class="btn-login">Log In</a>
+      <a routerLink="/auth/register" class="btn-signup">Sign Up</a>
+    }
   </div>
 
   <!-- Hamburger (mobile) -->

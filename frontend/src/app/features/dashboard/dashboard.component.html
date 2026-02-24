@@ -1,0 +1,89 @@
+<hb-navbar />
+
+<div class="dashboard">
+
+  <!-- Hero greeting -->
+  <header class="dashboard-header">
+    <div class="user-info">
+      @if (currentUser()?.avatarUrl) {
+        <img class="avatar" [src]="currentUser()!.avatarUrl" alt="Profile picture" />
+      } @else {
+        <div class="avatar avatar--placeholder">
+          {{ currentUser()?.username?.charAt(0)?.toUpperCase() ?? '?' }}
+        </div>
+      }
+      <div>
+        <h1 class="greeting">Welcome back, {{ currentUser()?.username ?? 'Hiker' }}!</h1>
+        <p class="greeting-sub">Ready for your next adventure?</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- Placeholder stat strip -->
+  <section class="stats-strip">
+    <div class="stat-card glass">
+      <span class="stat-value">—</span>
+      <span class="stat-label">Trails Completed</span>
+    </div>
+    <div class="stat-card glass">
+      <span class="stat-value">—</span>
+      <span class="stat-label">km Hiked</span>
+    </div>
+    <div class="stat-card glass">
+      <span class="stat-value">—</span>
+      <span class="stat-label">Saved Trails</span>
+    </div>
+    <div class="stat-card glass">
+      <span class="stat-value">—</span>
+      <span class="stat-label">Reviews</span>
+    </div>
+  </section>
+
+  <!-- Feature cards -->
+  <section class="feature-grid">
+
+    <div class="feature-card glass">
+      <div class="feature-icon">🥾</div>
+      <h2 class="feature-title">My Trails</h2>
+      <p class="feature-desc">Track trails you've completed and log new ones.</p>
+      <span class="coming-soon">Coming soon</span>
+    </div>
+
+    <div class="feature-card glass">
+      <div class="feature-icon">🔖</div>
+      <h2 class="feature-title">Saved Trails</h2>
+      <p class="feature-desc">Bookmark trails you want to tackle next.</p>
+      <a routerLink="/favorites" class="feature-link">View favourites →</a>
+    </div>
+
+    <div class="feature-card glass">
+      <div class="feature-icon">⭐</div>
+      <h2 class="feature-title">My Reviews</h2>
+      <p class="feature-desc">See and manage reviews you've left on trails.</p>
+      <span class="coming-soon">Coming soon</span>
+    </div>
+
+    <div class="feature-card glass">
+      <div class="feature-icon">🏆</div>
+      <h2 class="feature-title">Achievements</h2>
+      <p class="feature-desc">Earn badges as you explore more of India's trails.</p>
+      <span class="coming-soon">Coming soon</span>
+    </div>
+
+    <div class="feature-card glass">
+      <div class="feature-icon">🗺️</div>
+      <h2 class="feature-title">Explore Trails</h2>
+      <p class="feature-desc">Discover new hikes filtered by region, difficulty and more.</p>
+      <a routerLink="/trails" class="feature-link">Browse trails →</a>
+    </div>
+
+    <div class="feature-card glass">
+      <div class="feature-icon">👤</div>
+      <h2 class="feature-title">Profile Settings</h2>
+      <p class="feature-desc">Update your username, avatar and account details.</p>
+      <span class="coming-soon">Coming soon</span>
+    </div>
+
+  </section>
+
+</div>

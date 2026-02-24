@@ -33,6 +33,12 @@ export const routes: Routes = [
     title: 'Favourites — HikeBuddy',
   },
   {
+    path: 'dashboard',
+    loadComponent: () =>
+      import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent),
+    title: 'Dashboard — HikeBuddy',
+  },
+  {
     path: 'auth',
     loadChildren: () =>
       import('./features/auth/auth.routes').then(m => m.AUTH_ROUTES),
