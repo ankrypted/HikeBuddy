@@ -420,4 +420,22 @@ export class TrailService {
     // return this.http.get<ReviewDto[]>(`${this.base}/${slug}/reviews`);
     return of(MOCK_REVIEWS[slug] ?? []);
   }
+
+  submitReview(
+    slug: string,
+    dto: { rating: number; body: string; authorName: string; authorAvatarInitials: string },
+  ): Observable<ReviewDto> {
+    // Swap for real HTTP call when backend is ready:
+    // return this.http.post<ReviewDto>(`${this.base}/${slug}/reviews`, { rating: dto.rating, body: dto.body });
+    const month = new Date().toLocaleString('en-US', { month: 'long', year: 'numeric' });
+    const review: ReviewDto = {
+      id:                   `rv-local-${Date.now()}`,
+      authorName:           dto.authorName,
+      authorAvatarInitials: dto.authorAvatarInitials,
+      rating:               dto.rating,
+      visitedOn:            month,
+      comment:              dto.body,
+    };
+    return of(review);
+  }
 }

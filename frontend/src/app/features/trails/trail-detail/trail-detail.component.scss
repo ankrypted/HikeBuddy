@@ -296,6 +296,134 @@
   color:       rgba(255, 255, 255, 0.75);
 }
 
+// ─── Review form ──────────────────────────────────────────────────────
+.review-form {
+  padding:       1.75rem 2rem;
+  border-radius: 16px;
+  transition:    background 0.3s;
+
+  &--done {
+    background: rgba(126, 203, 63, 0.06);
+    border:     1px solid rgba(126, 203, 63, 0.2);
+  }
+}
+
+.form-heading {
+  font-size:     1rem;
+  font-weight:   700;
+  color:         #fff;
+  margin-bottom: 1.2rem;
+}
+
+.star-picker {
+  display:       flex;
+  align-items:   center;
+  gap:           0.15rem;
+  margin-bottom: 1.2rem;
+}
+
+.star-pick {
+  background:  none;
+  border:      none;
+  cursor:      pointer;
+  font-size:   2rem;
+  line-height: 1;
+  color:       rgba(255, 255, 255, 0.18);
+  padding:     0 0.1rem;
+  transition:  color 0.12s, transform 0.1s;
+
+  &:hover,
+  &--active { color: #ffc940; }
+
+  &:hover { transform: scale(1.18); }
+}
+
+.picker-label {
+  margin-left: 0.6rem;
+  font-size:   0.8rem;
+  font-weight: 600;
+  color:       #ffc940;
+}
+
+.review-textarea {
+  width:         100%;
+  min-height:    110px;
+  background:    rgba(255, 255, 255, 0.05);
+  border:        1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  color:         #fff;
+  font-size:     0.9rem;
+  line-height:   1.65;
+  padding:       0.8rem 1rem;
+  resize:        vertical;
+  font-family:   inherit;
+  box-sizing:    border-box;
+  margin-bottom: 1rem;
+  transition:    border-color 0.2s;
+
+  &::placeholder { color: rgba(255, 255, 255, 0.28); }
+
+  &:focus {
+    outline:      none;
+    border-color: rgba(126, 203, 63, 0.5);
+  }
+}
+
+.form-footer {
+  display:     flex;
+  align-items: center;
+  gap:         1rem;
+}
+
+.btn-submit-review {
+  padding:        0.55rem 1.6rem;
+  border-radius:  2rem;
+  font-size:      0.85rem;
+  font-weight:    700;
+  letter-spacing: 0.04em;
+  color:          #0d1b2a;
+  background:     v.$accent-green;
+  border:         none;
+  cursor:         pointer;
+  transition:     background 0.2s, opacity 0.2s, transform 0.15s;
+
+  &:hover:not(:disabled) {
+    background: #8fd94a;
+    transform:  translateY(-1px);
+  }
+
+  &:disabled {
+    opacity: 0.38;
+    cursor:  not-allowed;
+  }
+}
+
+.form-hint {
+  font-size: 0.75rem;
+  color:     v.$text-muted;
+}
+
+.review-success {
+  display:        flex;
+  flex-direction: column;
+  align-items:    center;
+  gap:            0.5rem;
+  padding:        0.75rem 0;
+  text-align:     center;
+
+  .success-icon {
+    font-size:   2.4rem;
+    line-height: 1;
+    color:       v.$accent-green;
+  }
+
+  p {
+    font-size: 0.9rem;
+    color:     rgba(255, 255, 255, 0.75);
+    margin:    0;
+  }
+}
+
 // ─── Responsive ───────────────────────────────────────────────────────
 @media (max-width: v.$bp-md) {
   .trail-detail { padding: 1.5rem 1.25rem 3rem; }
@@ -306,5 +434,9 @@
 @media (max-width: v.$bp-sm) {
   .trail-description { padding: 1.25rem; }
 
-  .review-card { padding: 1rem; }
+  .review-card   { padding: 1rem; }
+
+  .review-form   { padding: 1.25rem; }
+
+  .star-pick     { font-size: 1.7rem; }
 }

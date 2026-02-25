@@ -76,6 +76,66 @@
       <section class="reviews-section">
         <h2 class="reviews-heading">Hiker Reviews</h2>
 
+        <!-- ── Write a Review (logged-in users only) ─────────────── -->
+        @if (isLoggedIn()) {
+          <div class="review-form glass" [class.review-form--done]="submitted()">
+
+            @if (submitted()) {
+              <!-- Success state -->
+              <div class="review-success">
+                <span class="success-icon">✓</span>
+                <p>Your review has been posted — thanks for sharing!</p>
+              </div>
+
+            } @else {
+              <h3 class="form-heading">Share Your Experience</h3>
+
+              <!-- Star picker -->
+              <div class="star-picker" role="group" aria-label="Trail rating">
+                @for (n of starOptions; track n) {
+                  <button
+                    type="button"
+                    class="star-pick"
+                    [class.star-pick--active]="n <= (hoverRating() || reviewRating())"
+                    (click)="setRating(n)"
+                    (mouseenter)="setHover(n)"
+                    (mouseleave)="clearHover()"
+                    [attr.aria-label]="n + (n === 1 ? ' star' : ' stars')"
+                  >★</button>
+                }
+                @if (reviewRating()) {
+                  <span class="picker-label">{{ ratingLabel() }}</span>
+                }
+              </div>
+
+              <!-- Review text -->
+              <textarea
+                class="review-textarea"
+                rows="4"
+                placeholder="Tell fellow hikers about your experience on this trail…"
+                [value]="reviewBody()"
+                (input)="onBodyInput($event)"
+              ></textarea>
+
+              <!-- Submit row -->
+              <div class="form-footer">
+                <button
+                  type="button"
+                  class="btn-submit-review"
+                  [disabled]="reviewRating() === 0 || !reviewBody().trim() || submitting()"
+                  (click)="submitReview()"
+                >{{ submitting() ? 'Posting…' : 'Post Review' }}</button>
+
+                @if (reviewRating() === 0) {
+                  <span class="form-hint">Pick a star rating to continue</span>
+                }
+              </div>
+            }
+
+          </div>
+        }
+
+        <!-- Existing reviews grid -->
         <div class="reviews-grid">
           @for (review of reviews(); track review.id) {
             <article class="review-card glass">

@@ -32,17 +32,27 @@ export class TrailDetailComponent implements OnInit {
   readonly loading = signal(true);
   readonly error   = signal(false);
 
-  readonly isLoggedIn = this.authService.isLoggedIn;
-  readonly isSaved    = computed(() =>
+  readonly isLoggedIn  = this.authService.isLoggedIn;
+  readonly currentUser = this.authService.currentUser;
+  readonly isSaved     = computed(() =>
     this.trail() ? this.favService.isFavorited(this.trail()!.id) : false,
   );
 
-  toggleFavorite(): void {
-    const t = this.trail();
-    if (!t) return;
-    this.favService.toggleFavorite(t);
-  }
+  // ── Review form state ───────────────────────────────────────────────
+  readonly reviewRating = signal(0);
+  readonly hoverRating  = signal(0);
+  readonly reviewBody   = signal('');
+  readonly submitting   = signal(false);
+  readonly submitted    = signal(false);
 
+  readonly ratingLabel = computed(() => {
+    const labels = ['', 'Poor', 'Fair', 'Good', 'Great', 'Excellent'];
+    return labels[this.reviewRating()] ?? '';
+  });
+
+  readonly starOptions = [1, 2, 3, 4, 5];
+
+  // ── Lifecycle ───────────────────────────────────────────────────────
   ngOnInit(): void {
     this.trailService.getTrailBySlug(this.slug).subscribe({
       next:  t  => { this.trail.set(t ?? null); this.loading.set(false); },
@@ -54,6 +64,56 @@ export class TrailDetailComponent implements OnInit {
     });
   }
 
+  // ── Favorites ───────────────────────────────────────────────────────
+  toggleFavorite(): void {
+    const t = this.trail();
+    if (!t) return;
+    this.favService.toggleFavorite(t);
+  }
+
+  // ── Review form ─────────────────────────────────────────────────────
+  setRating(n: number): void { this.reviewRating.set(n); }
+  setHover(n: number): void  { this.hoverRating.set(n); }
+  clearHover(): void         { this.hoverRating.set(0); }
+
+  onBodyInput(event: Event): void {
+    this.reviewBody.set((event.target as HTMLTextAreaElement).value);
+  }
+
+  submitReview(): void {
+    const rating = this.reviewRating();
+    const body   = this.reviewBody().trim();
+    const user   = this.currentUser();
+    if (rating === 0 || !body || !user || this.submitting()) return;
+
+    const initials = user.username
+      .split(/\s+/)
+      .map((w: string) => w[0]?.toUpperCase() ?? '')
+      .slice(0, 2)
+      .join('') || user.username.slice(0, 2).toUpperCase();
+
+    this.submitting.set(true);
+    this.trailService
+      .submitReview(this.slug, {
+        rating,
+        body,
+        authorName:           user.username,
+        authorAvatarInitials: initials,
+      })
+      .subscribe({
+        next: review => {
+          this.reviews.update(rs => [review, ...rs]);
+          this.reviewRating.set(0);
+          this.reviewBody.set('');
+          this.submitted.set(true);
+          this.submitting.set(false);
+          setTimeout(() => this.submitted.set(false), 3500);
+        },
+        error: () => this.submitting.set(false),
+      });
+  }
+
+  // ── Helpers ─────────────────────────────────────────────────────────
   stars(rating: number): ('filled' | 'empty')[] {
     return Array.from({ length: 5 }, (_, i) => i < Math.round(rating) ? 'filled' : 'empty');
   }
