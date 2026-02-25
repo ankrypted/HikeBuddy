@@ -1,0 +1,87 @@
+<hb-hikers-bg aria-hidden="true" />
+
+<hb-navbar />
+
+<div class="shell-body">
+
+  <!-- Sidebar only on child pages (not the /dashboard overview) -->
+  @if (!onOverview()) {
+
+    <!-- Mobile backdrop — closes sidebar on tap-outside -->
+    @if (!collapsed()) {
+      <div class="sidebar-backdrop" (click)="toggle()"></div>
+    }
+
+    <!-- ─── Left sidebar ───────────────────────────────────────────────── -->
+    <aside class="sidebar" [class.sidebar--collapsed]="collapsed()">
+
+      <!-- Collapse / expand toggle (desktop) -->
+      <button
+        class="sidebar-toggle"
+        type="button"
+        (click)="toggle()"
+        [attr.aria-label]="collapsed() ? 'Expand menu' : 'Collapse menu'"
+      >
+        <mat-icon>{{ collapsed() ? 'chevron_right' : 'chevron_left' }}</mat-icon>
+      </button>
+
+      <!-- Navigation items -->
+      <nav class="sidebar-nav" aria-label="Dashboard navigation">
+
+        @for (item of navItems; track item.label) {
+          @if (item.route && !item.comingSoon) {
+            <a
+              class="sidebar-item"
+              [routerLink]="item.route"
+              routerLinkActive="sidebar-item--active"
+              [routerLinkActiveOptions]="{ exact: item.exact }"
+              [attr.title]="collapsed() ? item.label : null"
+            >
+              <mat-icon class="s-icon">{{ item.icon }}</mat-icon>
+              <span class="s-label">{{ item.label }}</span>
+            </a>
+          } @else {
+            <span
+              class="sidebar-item sidebar-item--disabled"
+              [attr.title]="collapsed() ? item.label + ' (coming soon)' : null"
+            >
+              <mat-icon class="s-icon">{{ item.icon }}</mat-icon>
+              <span class="s-label">
+                {{ item.label }}
+                <span class="soon-badge">Soon</span>
+              </span>
+            </span>
+          }
+        }
+
+        <div class="sidebar-sep"></div>
+
+        <a
+          class="sidebar-item"
+          routerLink="/dashboard/trails"
+          [attr.title]="collapsed() ? 'Explore Trails' : null"
+        >
+          <mat-icon class="s-icon">explore</mat-icon>
+          <span class="s-label">Explore Trails</span>
+        </a>
+
+      </nav>
+    </aside>
+
+  } <!-- end @if (!onOverview()) -->
+
+  <!-- ─── Main content ──────────────────────────────────────────────── -->
+  <main class="shell-content">
+
+    <!-- Hamburger button — mobile only, shown only on child pages -->
+    @if (!onOverview()) {
+      <button class="mobile-ham" type="button" (click)="toggle()" aria-label="Open navigation">
+        <mat-icon>menu</mat-icon>
+      </button>
+    }
+
+    <router-outlet />
+
+  </main>
+
+</div>

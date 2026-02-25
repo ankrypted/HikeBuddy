@@ -1,12 +1,14 @@
 import {
   Component, Input, OnInit,
-  ChangeDetectionStrategy, signal,
+  ChangeDetectionStrategy, signal, computed, inject,
 } from '@angular/core';
-import { inject } from '@angular/core';
-import { NavbarComponent }         from '../../../core/layout/navbar/navbar.component';
-import { SceneBackgroundComponent } from '../../../shared/components/scene-background/scene-background.component';
-import { TrailService }            from '../../../core/services/trail/trail.service';
+import { NavbarComponent }           from '../../../core/layout/navbar/navbar.component';
+import { SceneBackgroundComponent }  from '../../../shared/components/scene-background/scene-background.component';
+import { TrailService }              from '../../../core/services/trail/trail.service';
+import { AuthService }               from '../../../core/services/auth/auth.service';
+import { FavoritesService }          from '../../../core/services/favorites/favorites.service';
 import { TrailDetailDto, ReviewDto } from '../../../shared/models/trail.dto';
+import { INSIDE_SHELL }              from '../../../shared/tokens/shell.token';
 
 @Component({
   selector:         'hb-trail-detail',
@@ -20,11 +22,26 @@ export class TrailDetailComponent implements OnInit {
   @Input() slug = '';   // auto-bound by withComponentInputBinding()
 
   private readonly trailService = inject(TrailService);
+  private readonly authService  = inject(AuthService);
+  private readonly favService   = inject(FavoritesService);
+
+  readonly insideShell = inject(INSIDE_SHELL);
 
   readonly trail   = signal<TrailDetailDto | null>(null);
   readonly reviews = signal<ReviewDto[]>([]);
   readonly loading = signal(true);
   readonly error   = signal(false);
+
+  readonly isLoggedIn = this.authService.isLoggedIn;
+  readonly isSaved    = computed(() =>
+    this.trail() ? this.favService.isFavorited(this.trail()!.id) : false,
+  );
+
+  toggleFavorite(): void {
+    const t = this.trail();
+    if (!t) return;
+    this.favService.toggleFavorite(t);
+  }
 
   ngOnInit(): void {
     this.trailService.getTrailBySlug(this.slug).subscribe({

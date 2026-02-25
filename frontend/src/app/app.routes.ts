@@ -1,4 +1,5 @@
-import { Routes } from '@angular/router';
+import { Routes }      from '@angular/router';
+import { INSIDE_SHELL } from './shared/tokens/shell.token';
 
 export const routes: Routes = [
   {
@@ -25,18 +26,39 @@ export const routes: Routes = [
       import('./features/contact/contact.component').then(m => m.ContactComponent),
     title: 'Contact — HikeBuddy',
   },
+  // /favorites is now under the dashboard shell; redirect old URL so bookmarks still work
   {
     path: 'favorites',
-    loadComponent: () =>
-      import('./features/favorites/favorites.component').then(m => m.FavoritesComponent),
-    // canActivate: [authGuard],  — uncomment when JWT is ready
-    title: 'Favourites — HikeBuddy',
+    redirectTo: '/dashboard/favorites',
+    pathMatch: 'full',
   },
   {
     path: 'dashboard',
     loadComponent: () =>
-      import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent),
+      import('./features/dashboard/dashboard-shell.component').then(m => m.DashboardShellComponent),
     title: 'Dashboard — HikeBuddy',
+    // INSIDE_SHELL=true is visible to every component loaded under this route tree
+    providers: [{ provide: INSIDE_SHELL, useValue: true }],
+    children: [
+      {
+        path: '',
+        pathMatch: 'full',
+        loadComponent: () =>
+          import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent),
+      },
+      {
+        path: 'favorites',
+        loadComponent: () =>
+          import('./features/favorites/favorites.component').then(m => m.FavoritesComponent),
+        title: 'Favourites — HikeBuddy',
+      },
+      {
+        path: 'trails',
+        loadChildren: () =>
+          import('./features/trails/trails.routes').then(m => m.TRAILS_ROUTES),
+        title: 'Trails — HikeBuddy',
+      },
+    ],
   },
   {
     path: 'auth',

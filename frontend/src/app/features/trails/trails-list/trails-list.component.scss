@@ -14,6 +14,10 @@
   );
 }
 
+:host(.in-shell) .list-wrapper {
+  background: transparent;
+}
+
 // ─── Content container ──────────────────────────────────────────────────
 .trails-main {
   max-width: 860px;
@@ -169,10 +173,36 @@
   color:     v.$text-muted;
 }
 
+// ─── Save-row button ──────────────────────────────────────────────────────
+.save-row-btn {
+  background:      none;
+  border:          none;
+  color:           rgba(255, 255, 255, 0.35);
+  cursor:          pointer;
+  width:           36px;
+  height:          36px;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  border-radius:   50%;
+  padding:         0;
+  flex-shrink:     0;
+  transition:      color 0.2s, background 0.2s;
+
+  svg { width: 18px; height: 18px; display: block; }
+
+  &:hover          { color: #fff; background: rgba(255, 255, 255, 0.08); }
+  &--saved         { color: v.$accent-green; }
+  &--saved:hover   { color: #f08080; }
+}
+
 // ─── Arrow ────────────────────────────────────────────────────────────────
 .trail-action {
-  flex-shrink: 0;
-  padding:     0 1.5rem;
+  flex-shrink:  0;
+  padding:      0 1.5rem;
+  display:      flex;
+  align-items:  center;
+  gap:          0.25rem;
 }
 
 .arrow-icon {

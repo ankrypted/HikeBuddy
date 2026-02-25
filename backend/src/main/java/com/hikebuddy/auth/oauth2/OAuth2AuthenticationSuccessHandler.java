@@ -2,14 +2,12 @@ package com.hikebuddy.auth.oauth2;
 
 import com.hikebuddy.security.JwtService;
 import com.hikebuddy.user.User;
-import com.hikebuddy.user.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -21,8 +19,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-    private final JwtService     jwtService;
-    private final UserRepository userRepository;
+    private final JwtService jwtService;
 
     @Value("${app.frontend-url}")
     private String frontendUrl;
@@ -33,11 +30,10 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             HttpServletResponse response,
             Authentication authentication) throws IOException {
 
-        OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
-        String googleId = oAuth2User.getAttribute("sub");
-
-        User user = userRepository.findByGoogleId(googleId)
-                .orElseThrow(() -> new IllegalStateException("OAuth2 user not found after successful auth"));
+        // loadUser() wrapped the entity in CustomOAuth2User — no second DB lookup needed
+        CustomOAuth2User principal = (CustomOAuth2User) authentication.getPrincipal();
+        User user = principal.getUser();
+        log.info("OAuth2 success for userId={}, email={}", user.getId(), user.getEmail());
 
         String token = jwtService.generateToken(user);
 
@@ -45,7 +41,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                 .queryParam("token", token)
                 .build().toUriString();
 
-        log.debug("OAuth2 success — redirecting to {}", frontendUrl + "/auth/callback");
+        log.debug("Redirecting to {}", frontendUrl + "/auth/callback");
         getRedirectStrategy().sendRedirect(request, response, redirectUrl);
     }
 }

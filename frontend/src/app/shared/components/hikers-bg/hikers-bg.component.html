@@ -1,0 +1,148 @@
+<svg class="scene-svg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Dusk sky: deep blue → warm amber at horizon -->
+    <linearGradient id="hbSky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#0d1f38"/>
+      <stop offset="35%"  stop-color="#1c3a6e"/>
+      <stop offset="68%"  stop-color="#b85520"/>
+      <stop offset="100%" stop-color="#e07a28"/>
+    </linearGradient>
+    <!-- Sunset glow behind mountain -->
+    <radialGradient id="hbGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%"   stop-color="#ffd066" stop-opacity="0.75"/>
+      <stop offset="50%"  stop-color="#ff8020" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#ff5500" stop-opacity="0"/>
+    </radialGradient>
+    <!-- Distant mountains -->
+    <linearGradient id="hbFar" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#3a5578"/>
+      <stop offset="100%" stop-color="#253a55"/>
+    </linearGradient>
+    <!-- Mid-ground mountains -->
+    <linearGradient id="hbMid" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#244a30"/>
+      <stop offset="100%" stop-color="#152a1c"/>
+    </linearGradient>
+    <!-- Main hiking mountain -->
+    <linearGradient id="hbMain" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#7a6858"/>
+      <stop offset="50%"  stop-color="#524234"/>
+      <stop offset="100%" stop-color="#2a180a"/>
+    </linearGradient>
+    <!-- Snow cap -->
+    <linearGradient id="hbSnow" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#cce0f5"/>
+    </linearGradient>
+    <!-- Ground -->
+    <linearGradient id="hbGnd" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#1c3618"/>
+      <stop offset="100%" stop-color="#0a1808"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Sky -->
+  <rect width="1440" height="900" fill="url(#hbSky)"/>
+
+  <!-- Sunset glow centred on horizon -->
+  <ellipse cx="720" cy="600" rx="680" ry="220" fill="url(#hbGlow)"/>
+
+  <!-- Sun disc, lower-left (behind mountain, partial) -->
+  <circle cx="240" cy="558" r="62" fill="#ffc844" opacity="0.88"/>
+  <circle cx="240" cy="558" r="90" fill="#ff9933" opacity="0.22"/>
+
+  <!-- Stars (upper sky only) -->
+  <g fill="white">
+    <circle cx="105"  cy="42"  r="1.2" opacity="0.7"/><circle cx="275"  cy="26"  r="0.9" opacity="0.65"/>
+    <circle cx="448"  cy="54"  r="1.0" opacity="0.7"/><circle cx="628"  cy="30"  r="1.1" opacity="0.65"/>
+    <circle cx="758"  cy="58"  r="0.8" opacity="0.6"/><circle cx="910"  cy="34"  r="0.9" opacity="0.65"/>
+    <circle cx="1038" cy="48"  r="1.0" opacity="0.7"/><circle cx="1195" cy="22"  r="0.8" opacity="0.6"/>
+    <circle cx="1318" cy="50"  r="1.1" opacity="0.65"/><circle cx="192"  cy="88"  r="0.8" opacity="0.55"/>
+    <circle cx="365"  cy="76"  r="0.9" opacity="0.6"/><circle cx="538"  cy="90"  r="0.7" opacity="0.5"/>
+    <circle cx="700"  cy="78"  r="1.0" opacity="0.6"/><circle cx="862"  cy="66"  r="0.8" opacity="0.55"/>
+    <circle cx="1075" cy="86"  r="0.9" opacity="0.6"/><circle cx="1252" cy="70"  r="1.0" opacity="0.6"/>
+  </g>
+
+  <!-- ── Layer 1 — far distant mountains (pale blue silhouettes) ── -->
+  <polygon points="0,680 200,415 420,680"      fill="url(#hbFar)" opacity="0.48"/>
+  <polygon points="300,680 585,355 870,680"    fill="url(#hbFar)" opacity="0.44"/>
+  <polygon points="820,680 1095,338 1370,680"  fill="url(#hbFar)" opacity="0.40"/>
+  <polygon points="1110,680 1345,405 1440,610 1440,680" fill="url(#hbFar)" opacity="0.46"/>
+  <polygon points="0,700 115,500 272,700"      fill="url(#hbFar)" opacity="0.38"/>
+
+  <!-- ── Layer 2 — mid-ground (dark green) ── -->
+  <polygon points="0,755 235,518 515,755"      fill="url(#hbMid)" opacity="0.58"/>
+  <polygon points="390,755 695,438 1000,755"   fill="url(#hbMid)" opacity="0.54"/>
+  <polygon points="940,755 1195,478 1440,705 1440,755" fill="url(#hbMid)" opacity="0.56"/>
+
+  <!-- ══ MAIN HIKING MOUNTAIN — peak (800,80), base 155→1440 ═══════ -->
+  <polygon points="155,900 800,80 1440,900" fill="url(#hbMain)"/>
+  <!-- Right-face shadow -->
+  <polygon points="800,80 1440,900 1250,900" fill="#150800" opacity="0.28"/>
+  <!-- Left-face warm sunset blush -->
+  <polygon points="155,900 800,80 480,900"  fill="#ff8833" opacity="0.06"/>
+
+  <!-- Snow cap -->
+  <polygon points="726,218 800,80 874,218 838,250 800,230 762,250" fill="url(#hbSnow)"/>
+
+  <!-- Summit flag -->
+  <line x1="800" y1="80" x2="800" y2="20"  stroke="#8B6914" stroke-width="2.5"/>
+  <polygon points="800,20 838,37 800,54"   fill="#e53935" opacity="0.95"/>
+
+  <!-- ── TRAIL (winding up the left face) ──────────────────────── -->
+  <!-- Shadow / depth -->
+  <path d="M 252,880
+           C 298,848 332,816 358,788
+           C 386,758 405,728 428,698
+           C 452,667 468,636 490,606
+           C 514,575 528,546 550,516
+           C 574,485 590,456 612,426
+           C 636,395 649,366 666,336
+           C 685,304 701,272 720,242
+           C 740,212 763,178 782,147
+           L 800,80"
+        stroke="#7a5230" stroke-width="12" fill="none"
+        stroke-linecap="round" opacity="0.30"/>
+  <!-- Trail surface (sandy) -->
+  <path d="M 252,880
+           C 298,848 332,816 358,788
+           C 386,758 405,728 428,698
+           C 452,667 468,636 490,606
+           C 514,575 528,546 550,516
+           C 574,485 590,456 612,426
+           C 636,395 649,366 666,336
+           C 685,304 701,272 720,242
+           C 740,212 763,178 782,147
+           L 800,80"
+        stroke="#c8a060" stroke-width="6" fill="none"
+        stroke-linecap="round" opacity="0.82"/>
+
+  <!-- ── Pine trees at mountain base ───────────────────────────── -->
+  <g fill="#192e18">
+    <!-- Left cluster -->
+    <polygon points="50,900 70,832 90,900"/><polygon points="46,876 70,822 94,876"/>
+    <polygon points="102,900 120,846 138,900"/><polygon points="98,878 120,836 142,878"/>
+    <polygon points="153,900 170,850 187,900"/>
+    <rect x="66"  y="874" width="8" height="26" fill="#4a2a08" rx="1"/>
+    <rect x="116" y="870" width="8" height="30" fill="#4a2a08" rx="1"/>
+    <rect x="166" y="875" width="8" height="25" fill="#4a2a08" rx="1"/>
+    <!-- Mid-left -->
+    <polygon points="208,900 226,848 244,900"/><polygon points="204,876 226,838 248,876"/>
+    <rect x="222" y="872" width="8" height="28" fill="#3e2008" rx="1"/>
+  </g>
+  <g fill="#192e18">
+    <!-- Right cluster -->
+    <polygon points="1200,900 1220,832 1240,900"/><polygon points="1195,874 1220,822 1245,874"/>
+    <polygon points="1256,900 1276,840 1296,900"/><polygon points="1251,872 1276,830 1301,872"/>
+    <polygon points="1316,900 1335,850 1354,900"/>
+    <rect x="1216" y="866" width="8" height="34" fill="#4a2a08" rx="1"/>
+    <rect x="1272" y="868" width="8" height="32" fill="#4a2a08" rx="1"/>
+    <rect x="1331" y="873" width="8" height="27" fill="#4a2a08" rx="1"/>
+  </g>
+
+  <!-- Ground strip -->
+  <rect x="0" y="845" width="1440" height="55" fill="url(#hbGnd)" opacity="0.92"/>
+  <!-- Foreground rolling hill -->
+  <path d="M 0,872 Q 240,848 480,864 Q 720,882 960,856 Q 1200,830 1440,860 L 1440,900 L 0,900 Z"
+        fill="#162a14" opacity="0.88"/>
+</svg>

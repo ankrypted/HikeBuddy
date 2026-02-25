@@ -1,5 +1,3 @@
-<hb-navbar />
-
 <div class="dashboard">
 
   <!-- Hero greeting -->
@@ -30,7 +28,7 @@
       <span class="stat-label">km Hiked</span>
     </div>
     <div class="stat-card glass">
-      <span class="stat-value">—</span>
+      <span class="stat-value">{{ savedCount() }}</span>
       <span class="stat-label">Saved Trails</span>
     </div>
     <div class="stat-card glass">
@@ -53,7 +51,7 @@
       <div class="feature-icon">🔖</div>
       <h2 class="feature-title">Saved Trails</h2>
       <p class="feature-desc">Bookmark trails you want to tackle next.</p>
-      <a routerLink="/favorites" class="feature-link">View favourites →</a>
+      <a routerLink="/dashboard/favorites" class="feature-link">View favourites →</a>
     </div>
 
     <div class="feature-card glass">
@@ -74,7 +72,7 @@
       <div class="feature-icon">🗺️</div>
       <h2 class="feature-title">Explore Trails</h2>
       <p class="feature-desc">Discover new hikes filtered by region, difficulty and more.</p>
-      <a routerLink="/trails" class="feature-link">Browse trails →</a>
+      <a routerLink="/dashboard/trails" class="feature-link">Browse trails →</a>
     </div>
 
     <div class="feature-card glass">

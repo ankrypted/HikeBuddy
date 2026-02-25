@@ -1,6 +1,7 @@
 package com.hikebuddy.config;
 
 import com.hikebuddy.auth.oauth2.CustomOAuth2UserService;
+import com.hikebuddy.auth.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
 import com.hikebuddy.auth.oauth2.OAuth2AuthenticationSuccessHandler;
 import com.hikebuddy.security.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;
@@ -23,9 +24,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtAuthFilter                      jwtAuthFilter;
-    private final CustomOAuth2UserService            oAuth2UserService;
-    private final OAuth2AuthenticationSuccessHandler oAuth2SuccessHandler;
+    private final JwtAuthFilter                                  jwtAuthFilter;
+    private final CustomOAuth2UserService                        oAuth2UserService;
+    private final OAuth2AuthenticationSuccessHandler             oAuth2SuccessHandler;
+    private final HttpCookieOAuth2AuthorizationRequestRepository cookieAuthRequestRepository;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -43,6 +45,8 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2
+                        .authorizationEndpoint(auth -> auth
+                                .authorizationRequestRepository(cookieAuthRequestRepository))
                         .userInfoEndpoint(u -> u.userService(oAuth2UserService))
                         .successHandler(oAuth2SuccessHandler)
                 )

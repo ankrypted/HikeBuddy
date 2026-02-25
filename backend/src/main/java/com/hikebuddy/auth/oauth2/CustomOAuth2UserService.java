@@ -9,7 +9,7 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
-
+import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
@@ -21,6 +21,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest request) throws OAuth2AuthenticationException {
+        log.info("loadUser() called — fetching Google profile");
         OAuth2User oAuth2User = super.loadUser(request);
 
         String googleId  = oAuth2User.getAttribute("sub");
@@ -28,30 +29,54 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String name      = oAuth2User.getAttribute("name");
         String avatarUrl = oAuth2User.getAttribute("picture");
 
-        userRepository.findByGoogleId(googleId).ifPresentOrElse(
-                existing -> {
-                    // Update avatar if changed
-                    if (avatarUrl != null && !avatarUrl.equals(existing.getAvatarUrl())) {
-                        existing.setAvatarUrl(avatarUrl);
-                        userRepository.save(existing);
-                    }
-                },
-                () -> {
-                    // First-time Google login — create account
-                    String username = deriveUsername(name, email);
-                    User newUser = User.builder()
-                            .username(username)
-                            .email(email)
-                            .googleId(googleId)
-                            .avatarUrl(avatarUrl)
-                            .provider(User.AuthProvider.GOOGLE)
-                            .build();
-                    userRepository.save(newUser);
-                    log.info("New Google user created: {}", email);
-                }
-        );
+        log.info("Google profile received: sub={}, email={}", googleId, email);
 
-        return oAuth2User;
+        User user = findOrCreateUser(googleId, email, name, avatarUrl);
+        log.info("findOrCreateUser completed: userId={}", user.getId());
+
+        // Wrap user entity in the principal so the success handler needs no DB lookup
+        return new CustomOAuth2User(user, oAuth2User.getAttributes());
+    }
+
+    private User findOrCreateUser(String googleId, String email, String name, String avatarUrl) {
+        log.info("findOrCreateUser: googleId={}, email={}", googleId, email);
+
+        // Case 1: Returning Google user — update avatar if changed
+        Optional<User> byGoogleId = userRepository.findByGoogleId(googleId);
+        if (byGoogleId.isPresent()) {
+            log.info("Case 1: existing Google user found");
+            User existing = byGoogleId.get();
+            if (avatarUrl != null && !avatarUrl.equals(existing.getAvatarUrl())) {
+                existing.setAvatarUrl(avatarUrl);
+                userRepository.saveAndFlush(existing);
+            }
+            return existing;
+        }
+
+        // Case 2: Same email registered locally — link Google account to it
+        Optional<User> byEmail = userRepository.findByEmail(email);
+        if (byEmail.isPresent()) {
+            log.info("Case 2: linking Google to existing local user: {}", email);
+            User existingLocal = byEmail.get();
+            existingLocal.setGoogleId(googleId);
+            if (avatarUrl != null) existingLocal.setAvatarUrl(avatarUrl);
+            userRepository.saveAndFlush(existingLocal);
+            return existingLocal;
+        }
+
+        // Case 3: Brand-new user via Google
+        log.info("Case 3: creating new Google user: {}", email);
+        String username = deriveUsername(name, email);
+        User newUser = User.builder()
+                .username(username)
+                .email(email)
+                .googleId(googleId)
+                .avatarUrl(avatarUrl)
+                .provider(User.AuthProvider.GOOGLE)
+                .build();
+        userRepository.saveAndFlush(newUser);
+        log.info("New Google user saved with id={}", newUser.getId());
+        return newUser;
     }
 
     /** Derive a unique username from the Google display name or email prefix. */
@@ -60,7 +85,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 ? displayName.replaceAll("\\s+", "").toLowerCase()
                 : email.split("@")[0];
 
-        // Ensure uniqueness by appending a short random suffix if taken
         String candidate = base.length() > 48 ? base.substring(0, 48) : base;
         if (!userRepository.existsByUsername(candidate)) return candidate;
 

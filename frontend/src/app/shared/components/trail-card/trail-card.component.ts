@@ -1,8 +1,10 @@
 import {
-  Component, Input, Output, EventEmitter, ChangeDetectionStrategy,
+  Component, Input, Output, EventEmitter, ChangeDetectionStrategy, inject, computed,
 } from '@angular/core';
 import { NgSwitch, NgSwitchCase, NgSwitchDefault } from '@angular/common';
-import { TrailSummaryDto } from '../../models/trail.dto';
+import { TrailSummaryDto }  from '../../models/trail.dto';
+import { AuthService }      from '../../../core/services/auth/auth.service';
+import { FavoritesService } from '../../../core/services/favorites/favorites.service';
 
 @Component({
   selector: 'hb-trail-card',
@@ -18,7 +20,18 @@ export class TrailCardComponent {
 
   @Output() viewTrail = new EventEmitter<TrailSummaryDto>();
 
+  private readonly authService = inject(AuthService);
+  private readonly favService  = inject(FavoritesService);
+
+  readonly isLoggedIn = this.authService.isLoggedIn;
+  readonly isSaved    = computed(() => this.favService.isFavorited(this.trail.id));
+
   onCardClick(): void {
     this.viewTrail.emit(this.trail);
+  }
+
+  toggleFavorite(event: Event): void {
+    event.stopPropagation();
+    this.favService.toggleFavorite(this.trail);
   }
 }

@@ -35,7 +35,7 @@ export class NavbarComponent {
   );
 
   readonly isLoggedIn   = this.authService.isLoggedIn;
-  readonly onDashboard  = computed(() => this.currentUrl() === '/dashboard');
+  readonly onDashboard  = computed(() => this.currentUrl()?.startsWith('/dashboard') ?? false);
   readonly searchOpen   = signal(false);
   readonly menuOpen     = signal(false);
 

@@ -1,7 +1,7 @@
-<hb-scene-background aria-hidden="true" />
+@if (!insideShell) { <hb-scene-background aria-hidden="true" /> }
 
 <div class="list-wrapper">
-  <hb-navbar />
+  @if (!insideShell) { <hb-navbar /> }
 
   <main class="trails-main">
 
@@ -16,53 +16,80 @@
       <div class="state-message state-message--error">Failed to load trails.</div>
     } @else {
 
-      <ul class="trails-list">
-        @for (trail of trails(); track trail.id) {
-          <li
-            class="trail-row glass"
-            role="button"
-            tabindex="0"
-            [attr.aria-label]="'View trail: ' + trail.name"
-            (click)="navigate(trail)"
-            (keydown.enter)="navigate(trail)"
-          >
+      <hb-trail-filters
+        [regions]="regions()"
+        (filtersChange)="onFiltersChange($event)"
+      />
 
-            <!-- Colour-band thumbnail based on difficulty -->
-            <div class="trail-thumb trail-thumb--{{ trail.difficulty.toLowerCase() }}">
-              <span class="thumb-label">{{ trail.difficulty }}</span>
-            </div>
+      @if (filteredTrails().length === 0) {
+        <div class="state-message">No trails match your filters.</div>
+      } @else {
 
-            <!-- Trail details -->
-            <div class="trail-body">
-              <div class="trail-chips">
-                <span class="chip chip--{{ trail.difficulty.toLowerCase() }}">{{ trail.difficulty }}</span>
-                <span class="chip">{{ trail.distanceKm }} km</span>
-                <span class="chip">↑ {{ trail.elevationGainM }} m</span>
-                <span class="chip">~ {{ formatDuration(trail.durationMinutes) }}</span>
+        <ul class="trails-list">
+          @for (trail of filteredTrails(); track trail.id) {
+            <li
+              class="trail-row glass"
+              role="button"
+              tabindex="0"
+              [attr.aria-label]="'View trail: ' + trail.name"
+              (click)="navigate(trail)"
+              (keydown.enter)="navigate(trail)"
+            >
+
+              <!-- Colour-band thumbnail based on difficulty -->
+              <div class="trail-thumb trail-thumb--{{ trail.difficulty.toLowerCase() }}">
+                <span class="thumb-label">{{ trail.difficulty }}</span>
               </div>
 
-              <h2 class="trail-name">{{ trail.name }}</h2>
-              <p class="trail-region">{{ trail.region.name }}, {{ trail.region.country }}</p>
-
-              <div class="trail-rating">
-                <div class="stars">
-                  @for (s of stars(trail.averageRating); track $index) {
-                    <span class="star" [class.star--filled]="s === 'filled'">★</span>
-                  }
+              <!-- Trail details -->
+              <div class="trail-body">
+                <div class="trail-chips">
+                  <span class="chip chip--{{ trail.difficulty.toLowerCase() }}">{{ trail.difficulty }}</span>
+                  <span class="chip">{{ trail.distanceKm }} km</span>
+                  <span class="chip">↑ {{ trail.elevationGainM }} m</span>
+                  <span class="chip">~ {{ formatDuration(trail.durationMinutes) }}</span>
                 </div>
-                <span class="rating-value">{{ trail.averageRating }}</span>
-                <span class="rating-count">({{ trail.reviewCount }} reviews)</span>
+
+                <h2 class="trail-name">{{ trail.name }}</h2>
+                <p class="trail-region">{{ trail.region.name }}, {{ trail.region.country }}</p>
+
+                <div class="trail-rating">
+                  <div class="stars">
+                    @for (s of stars(trail.averageRating); track $index) {
+                      <span class="star" [class.star--filled]="s === 'filled'">★</span>
+                    }
+                  </div>
+                  <span class="rating-value">{{ trail.averageRating }}</span>
+                  <span class="rating-count">({{ trail.reviewCount }} reviews)</span>
+                </div>
               </div>
-            </div>
 
-            <!-- Action arrow -->
-            <div class="trail-action">
-              <span class="arrow-icon">→</span>
-            </div>
+              <!-- Save + navigate action -->
+              <div class="trail-action">
+                @if (isLoggedIn()) {
+                  <button
+                    class="save-row-btn"
+                    [class.save-row-btn--saved]="isSaved(trail.id)"
+                    type="button"
+                    [attr.aria-label]="isSaved(trail.id) ? 'Remove from saved' : 'Save trail'"
+                    (click)="toggleFavorite(trail, $event)"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"
+                            [attr.fill]="isSaved(trail.id) ? 'currentColor' : 'none'"
+                            stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </button>
+                }
+                <span class="arrow-icon">→</span>
+              </div>
 
-          </li>
-        }
-      </ul>
+            </li>
+          }
+        </ul>
+
+      }
 
     }
 

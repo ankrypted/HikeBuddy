@@ -1,11 +1,9 @@
 @use 'styles/variables' as v;
 
 .dashboard {
-  min-height: 100vh;
-  background: v.$bg-primary;
-  padding: calc(v.$nav-height + 2rem) 1.5rem 4rem;
-  max-width: 1100px;
-  margin: 0 auto;
+  padding:   2rem 1.5rem 4rem;
+  max-width: 860px;
+  margin:    0 auto;
 }
 
 // ── Header ────────────────────────────────────────────────────────────────────
@@ -162,10 +160,3 @@
   &:hover { color: v.$accent-lighter; }
 }
 
-// ── Glass utility ─────────────────────────────────────────────────────────────
-.glass {
-  background: v.$glass-bg;
-  backdrop-filter: blur(v.$glass-blur);
-  -webkit-backdrop-filter: blur(v.$glass-blur);
-  border: 1px solid v.$glass-border;
-}

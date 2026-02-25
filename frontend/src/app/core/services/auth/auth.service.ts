@@ -19,6 +19,22 @@ export class AuthService {
   readonly accessToken = signal<string | null>(localStorage.getItem(TOKEN_KEY));
   readonly currentUser = signal<UserSummaryDto | null>(null);
   readonly roles       = signal<UserRole[]>([]);
+
+  constructor() {
+    // Restore user state from the stored token on page refresh
+    const token = localStorage.getItem(TOKEN_KEY);
+    if (token) {
+      try {
+        const claims = decodeJwtPayload(token);
+        this.currentUser.set({ id: claims.sub, username: claims.username, avatarUrl: claims.avatarUrl });
+        this.roles.set(claims.roles as UserRole[]);
+      } catch {
+        // Token is malformed or expired — clear it
+        localStorage.removeItem(TOKEN_KEY);
+        this.accessToken.set(null);
+      }
+    }
+  }
   readonly isLoggedIn  = computed(() => this.accessToken() !== null);
   readonly isAdmin     = computed(() => this.roles().includes('ROLE_ADMIN'));
 
