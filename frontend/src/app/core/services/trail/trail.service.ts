@@ -1,6 +1,6 @@
 import { Injectable, inject }          from '@angular/core';
 import { HttpClient, HttpParams }      from '@angular/common/http';
-import { Observable, of }              from 'rxjs';
+import { Observable, of }  from 'rxjs';
 import { environment }                 from '../../../../environments/environment';
 import {
   TrailSummaryDto, TrailDetailDto, TrailFilterDto, ReviewDto,
@@ -317,75 +317,6 @@ const MOCK_TRAIL_DETAILS: Record<string, TrailDetailDto> = {
   },
 };
 
-// ─── Mock reviews ─────────────────────────────────────────────────────
-const MOCK_REVIEWS: Record<string, ReviewDto[]> = {
-  'roopkund': [
-    {
-      id: 'rv1', authorName: 'Arjun Mehra', authorAvatarInitials: 'AM', rating: 5,
-      visitedOn: 'September 2024',
-      comment: 'One of the most intense and unforgettable experiences of my life. The skeleton lake is absolutely surreal — standing at 5,000 metres with ancient bones around the shore and Trishul peak towering above is something I\'ll never forget. The Bedni Bugyal campsite on Day 3 was pure magic.',
-    },
-    {
-      id: 'rv2', authorName: 'Priya Sharma', authorAvatarInitials: 'PS', rating: 4,
-      visitedOn: 'June 2024',
-      comment: 'The trek is genuinely hard — don\'t underestimate it. The final push from Patar Nachauni to the lake is steep and exhausting at high altitude. But the payoff is absolutely worth every painful step. Tip: acclimatise well at Loharjung before starting.',
-    },
-    {
-      id: 'rv3', authorName: 'Vikram Nair', authorAvatarInitials: 'VN', rating: 5,
-      visitedOn: 'October 2023',
-      comment: 'Did this with a group of six and it was the best decision we ever made. The night skies at Bhagwabasa are absolutely insane — more stars than I\'ve ever seen. The mystery of the lake adds a completely different dimension to the experience. Will do it again!',
-    },
-    {
-      id: 'rv4', authorName: 'Sneha Reddy', authorAvatarInitials: 'SR', rating: 4,
-      visitedOn: 'September 2023',
-      comment: 'Stunning trek but the weather can be very unpredictable. We had a snowstorm on Day 5 which made things intense. Make sure you have proper layering and waterproof gear. The views from Junargali ridge are breathtaking on a clear day.',
-    },
-  ],
-  'valley-of-flowers': [
-    {
-      id: 'rv5', authorName: 'Rahul Joshi', authorAvatarInitials: 'RJ', rating: 5,
-      visitedOn: 'August 2024',
-      comment: 'I went during peak bloom in early August and it was like walking through a painting. The sheer variety of flowers is staggering — I counted at least 30 different species just on the main trail. Ghangaria is a comfortable base camp and the trek itself is perfect for families.',
-    },
-    {
-      id: 'rv6', authorName: 'Ananya Iyer', authorAvatarInitials: 'AI', rating: 5,
-      visitedOn: 'July 2024',
-      comment: 'Absolutely magical. The combination of Valley of Flowers and Hemkund Sahib in a 5-day itinerary is perfect. The valley fully deserves its UNESCO status — it\'s unlike anything else in the world. The stream running through the centre of the valley completes the picture.',
-    },
-    {
-      id: 'rv7', authorName: 'Deepak Chaudhary', authorAvatarInitials: 'DC', rating: 4,
-      visitedOn: 'August 2023',
-      comment: 'A genuinely beautiful place but go in the right month — July to mid-August is when flowers are at their peak. We went in late September and many blooms had faded. The trail from Ghangaria is well-maintained and great for photography!',
-    },
-    {
-      id: 'rv8', authorName: 'Meera Pillai', authorAvatarInitials: 'MP', rating: 5,
-      visitedOn: 'August 2023',
-      comment: 'I\'ve done many Himalayan treks and this one holds a special place. The variety of flora is remarkable — it feels like a different world. The Brahma Kamal flowers near the upper valley are especially striking. Camp at Ghangaria and do early morning walks for the best experience.',
-    },
-  ],
-  'hampta-pass': [
-    {
-      id: 'rv9', authorName: 'Karan Singh', authorAvatarInitials: 'KS', rating: 5,
-      visitedOn: 'July 2024',
-      comment: 'The landscape contrast when you cross the pass is absolutely mindblowing. One moment you\'re in green meadows, the next you\'re in a lunar desert. Balu ka Ghera campsite with the glacial river is simply stunning. My go-to recommendation for anyone wanting a memorable trek without extreme difficulty.',
-    },
-    {
-      id: 'rv10', authorName: 'Tanya Menon', authorAvatarInitials: 'TM', rating: 4,
-      visitedOn: 'August 2024',
-      comment: 'Did this as my first proper Himalayan trek and it was perfect for the experience level. The pass was covered in snow even in August which made for spectacular photos. The river crossing on Day 3 was the most exciting part. Excellent guides from the operator we chose.',
-    },
-    {
-      id: 'rv11', authorName: 'Siddharth Roy', authorAvatarInitials: 'SR', rating: 5,
-      visitedOn: 'September 2023',
-      comment: 'Hampta Pass is massively underrated compared to Roopkund or Kashmir treks. The Balu ka Ghera camp is one of the most beautiful campsites I\'ve ever seen — ringed by massive peaks with a glacial stream running through it. The barren Lahaul descent is an experience unlike any other.',
-    },
-    {
-      id: 'rv12', authorName: 'Neha Kulkarni', authorAvatarInitials: 'NK', rating: 4,
-      visitedOn: 'June 2024',
-      comment: 'The June crossing meant the pass had significant snow. Challenging but safe with proper gear and a good guide. The contrast between the two sides of the pass is genuinely breathtaking. Easy logistics from Manali make this a great long-weekend trek.',
-    },
-  ],
-};
 
 @Injectable({ providedIn: 'root' })
 export class TrailService {
@@ -416,26 +347,16 @@ export class TrailService {
   }
 
   getTrailReviews(slug: string): Observable<ReviewDto[]> {
-    // Swap for real HTTP call when backend is ready:
-    // return this.http.get<ReviewDto[]>(`${this.base}/${slug}/reviews`);
-    return of(MOCK_REVIEWS[slug] ?? []);
+    return this.http.get<ReviewDto[]>(`${this.base}/${slug}/reviews`);
   }
 
   submitReview(
     slug: string,
     dto: { rating: number; body: string; authorName: string; authorAvatarInitials: string },
   ): Observable<ReviewDto> {
-    // Swap for real HTTP call when backend is ready:
-    // return this.http.post<ReviewDto>(`${this.base}/${slug}/reviews`, { rating: dto.rating, body: dto.body });
-    const month = new Date().toLocaleString('en-US', { month: 'long', year: 'numeric' });
-    const review: ReviewDto = {
-      id:                   `rv-local-${Date.now()}`,
-      authorName:           dto.authorName,
-      authorAvatarInitials: dto.authorAvatarInitials,
-      rating:               dto.rating,
-      visitedOn:            month,
-      comment:              dto.body,
-    };
-    return of(review);
+    return this.http.post<ReviewDto>(
+      `${this.base}/${slug}/reviews`,
+      { rating: dto.rating, comment: dto.body },
+    );
   }
 }

@@ -1,0 +1,52 @@
+<div class="modal-backdrop" (click)="onSkip()">
+  <div class="modal-card glass" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
+
+    <div class="modal-header">
+      <span class="modal-icon">🏔</span>
+      <h2 class="modal-title">How was {{ trail.name }}?</h2>
+      <p class="modal-subtitle">Share a quick rating — you can always add more later.</p>
+    </div>
+
+    <!-- Star picker -->
+    <div class="star-picker" role="group" aria-label="Trail rating">
+      @for (n of starOptions; track n) {
+        <button
+          type="button"
+          class="star-pick"
+          [class.star-pick--active]="n <= (hoverRating() || reviewRating())"
+          (click)="setRating(n)"
+          (mouseenter)="setHover(n)"
+          (mouseleave)="clearHover()"
+          [attr.aria-label]="n + (n === 1 ? ' star' : ' stars')"
+        >★</button>
+      }
+      @if (reviewRating()) {
+        <span class="picker-label">{{ ratingLabel() }}</span>
+      }
+    </div>
+
+    <!-- Comment textarea -->
+    <textarea
+      class="review-textarea"
+      rows="3"
+      placeholder="Tell fellow hikers about your experience…"
+      [value]="reviewBody()"
+      (input)="onBodyInput($event)"
+    ></textarea>
+
+    <!-- Actions -->
+    <div class="modal-actions">
+      <button
+        type="button"
+        class="btn-submit"
+        [disabled]="!canSubmit()"
+        (click)="onSubmit()"
+      >{{ submitting() ? 'Posting…' : 'Submit Review' }}</button>
+
+      <button type="button" class="btn-skip" (click)="onSkip()">
+        Skip for now
+      </button>
+    </div>
+
+  </div>
+</div>

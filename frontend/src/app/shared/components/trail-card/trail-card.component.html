@@ -17,6 +17,23 @@
 
     @if (isLoggedIn()) {
       <button
+        class="complete-btn"
+        [class.complete-btn--done]="isCompleted()"
+        type="button"
+        [attr.aria-label]="isCompleted() ? 'Mark as not completed' : 'Mark as completed'"
+        (click)="toggleComplete($event)"
+      >
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="9"
+                  [attr.fill]="isCompleted() ? 'currentColor' : 'none'"
+                  stroke="currentColor" stroke-width="2"/>
+          <polyline points="8 12 11 15 16 9"
+                    stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round"
+                    [attr.opacity]="isCompleted() ? '1' : '0.5'"/>
+        </svg>
+      </button>
+      <button
         class="save-btn"
         [class.save-btn--saved]="isSaved()"
         type="button"

@@ -7,6 +7,7 @@ import { SceneBackgroundComponent }  from '../../../shared/components/scene-back
 import { TrailService }              from '../../../core/services/trail/trail.service';
 import { AuthService }               from '../../../core/services/auth/auth.service';
 import { FavoritesService }          from '../../../core/services/favorites/favorites.service';
+import { CompletedTrailsService }    from '../../../core/services/completed-trails/completed-trails.service';
 import { TrailDetailDto, ReviewDto } from '../../../shared/models/trail.dto';
 import { INSIDE_SHELL }              from '../../../shared/tokens/shell.token';
 
@@ -21,9 +22,10 @@ import { INSIDE_SHELL }              from '../../../shared/tokens/shell.token';
 export class TrailDetailComponent implements OnInit {
   @Input() slug = '';   // auto-bound by withComponentInputBinding()
 
-  private readonly trailService = inject(TrailService);
-  private readonly authService  = inject(AuthService);
-  private readonly favService   = inject(FavoritesService);
+  private readonly trailService      = inject(TrailService);
+  private readonly authService       = inject(AuthService);
+  private readonly favService        = inject(FavoritesService);
+  private readonly completedService  = inject(CompletedTrailsService);
 
   readonly insideShell = inject(INSIDE_SHELL);
 
@@ -32,10 +34,13 @@ export class TrailDetailComponent implements OnInit {
   readonly loading = signal(true);
   readonly error   = signal(false);
 
-  readonly isLoggedIn  = this.authService.isLoggedIn;
-  readonly currentUser = this.authService.currentUser;
-  readonly isSaved     = computed(() =>
+  readonly isLoggedIn   = this.authService.isLoggedIn;
+  readonly currentUser  = this.authService.currentUser;
+  readonly isSaved      = computed(() =>
     this.trail() ? this.favService.isFavorited(this.trail()!.id) : false,
+  );
+  readonly isCompleted  = computed(() =>
+    this.trail() ? this.completedService.isCompleted(this.trail()!.id) : false,
   );
 
   // ── Review form state ───────────────────────────────────────────────
@@ -69,6 +74,17 @@ export class TrailDetailComponent implements OnInit {
     const t = this.trail();
     if (!t) return;
     this.favService.toggleFavorite(t);
+  }
+
+  // ── Completed ───────────────────────────────────────────────────────
+  toggleComplete(): void {
+    const t = this.trail();
+    if (!t) return;
+    if (this.isCompleted()) {
+      this.completedService.unmarkComplete(t.id);
+    } else {
+      this.completedService.markComplete(t);
+    }
   }
 
   // ── Review form ─────────────────────────────────────────────────────
