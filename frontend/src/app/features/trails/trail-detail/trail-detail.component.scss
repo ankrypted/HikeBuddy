@@ -118,8 +118,9 @@
 .btn-save {
   display:         inline-flex;
   align-items:     center;
+  justify-content: center;
   gap:             0.5rem;
-  margin-top:      1rem;
+  min-width:       12.5rem;
   padding:         0.5rem 1.3rem;
   border-radius:   2rem;
   font-size:       0.85rem;
@@ -134,7 +135,7 @@
   svg { width: 16px; height: 16px; flex-shrink: 0; }
 
   &:hover {
-    color:        #fff;
+    color:        v.$accent-green;
     border-color: rgba(126, 203, 63, 0.55);
     background:   rgba(126, 203, 63, 0.08);
   }
@@ -156,7 +157,9 @@
 .btn-complete {
   display:         inline-flex;
   align-items:     center;
+  justify-content: center;
   gap:             0.5rem;
+  min-width:       12.5rem;
   padding:         0.5rem 1.3rem;
   border-radius:   2rem;
   font-size:       0.85rem;

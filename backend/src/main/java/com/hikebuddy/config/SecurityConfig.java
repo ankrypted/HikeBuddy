@@ -4,6 +4,7 @@ import com.hikebuddy.auth.oauth2.CustomOAuth2UserService;
 import com.hikebuddy.auth.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
 import com.hikebuddy.auth.oauth2.OAuth2AuthenticationSuccessHandler;
 import com.hikebuddy.security.JwtAuthFilter;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,6 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
@@ -29,12 +31,22 @@ public class SecurityConfig {
     private final CustomOAuth2UserService                        oAuth2UserService;
     private final OAuth2AuthenticationSuccessHandler             oAuth2SuccessHandler;
     private final HttpCookieOAuth2AuthorizationRequestRepository cookieAuthRequestRepository;
+    private final CorsConfigurationSource                        corsConfigurationSource;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(ex -> ex
+                        // Return 401 for unauthenticated API calls instead of redirecting
+                        // to OAuth2. Without this, oauth2Login() would send a 302 →
+                        // /oauth2/authorization/google which the browser rejects as an
+                        // illegal response to a CORS preflight.
+                        .authenticationEntryPoint((req, res, exc) ->
+                                res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized"))
+                )
                 .authorizeHttpRequests(auth -> auth
                         // Allow CORS preflight requests through before any auth check.
                         // AntPathRequestMatcher bypasses Spring Security 6's MVC-aware
