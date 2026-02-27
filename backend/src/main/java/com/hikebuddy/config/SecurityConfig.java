@@ -19,7 +19,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfigurationSource;
 
 @Configuration
@@ -48,16 +47,22 @@ public class SecurityConfig {
                                 res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized"))
                 )
                 .authorizeHttpRequests(auth -> auth
-                        // Allow CORS preflight requests through before any auth check.
-                        // AntPathRequestMatcher bypasses Spring Security 6's MVC-aware
-                        // matching, so OPTIONS is permitted even for unregistered paths.
-                        .requestMatchers(new AntPathRequestMatcher("/**", HttpMethod.OPTIONS.name())).permitAll()
+                        // Permit all CORS preflight requests before any auth check.
+                        // Using HttpMethod.OPTIONS with "/**" through the standard DSL
+                        // avoids the AntPathRequestMatcher / MvcRequestMatcher mixing
+                        // issue in Spring Security 6.4 that breaks permitAll() for
+                        // other routes when AntPathRequestMatcher is used on the first rule.
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         // Public auth endpoints
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         // OAuth2 endpoints must be fully open
                         .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
-                        // Public GET trails/regions
-                        .requestMatchers(HttpMethod.GET, "/api/v1/trails/**", "/api/v1/regions/**").permitAll()
+                        // Public GET trails/regions — split into individual calls to avoid
+                        // a Spring Security 6.4 MvcRequestMatcher multi-pattern edge case
+                        // where a GET-restricted rule on /api/v1/trails/** could inadvertently
+                        // affect POST authorization decisions on the same path hierarchy.
+                        .requestMatchers(HttpMethod.GET, "/api/v1/trails/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/regions/**").permitAll()
                         // Everything else requires auth
                         .anyRequest().authenticated()
                 )

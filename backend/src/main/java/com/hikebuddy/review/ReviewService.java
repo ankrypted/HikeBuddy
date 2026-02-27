@@ -6,7 +6,6 @@ import com.hikebuddy.user.User;
 import com.hikebuddy.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -37,8 +36,12 @@ public class ReviewService {
 
     @Transactional
     public ReviewResponse submitReview(String email, String trailId, CreateReviewRequest req) {
+        // Use ResponseStatusException instead of UsernameNotFoundException:
+        // UsernameNotFoundException extends AuthenticationException, and if it escapes
+        // through Spring MVC to ExceptionTranslationFilter it causes an unexpected 401.
         User user   = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                        "Authenticated user not found: " + email));
 
         if (repo.existsByUserIdAndTrailId(user.getId(), trailId)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "You have already reviewed this trail");
@@ -51,7 +54,10 @@ public class ReviewService {
                 .comment(req.comment())
                 .build();
 
-        review = repo.save(review);
+        // saveAndFlush forces the INSERT immediately so Hibernate populates the
+        // @CreationTimestamp field before toResponse() reads r.getCreatedAt().
+        // Plain save() defers the flush to transaction commit, leaving createdAt null.
+        review = repo.saveAndFlush(review);
         return toResponse(review, user);
     }
 

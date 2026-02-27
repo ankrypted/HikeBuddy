@@ -4,7 +4,6 @@ import com.hikebuddy.user.User;
 import com.hikebuddy.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -46,6 +45,7 @@ public class CompletedTrailService {
     private UUID resolveUserId(String email) {
         return userRepository.findByEmail(email)
                 .map(User::getId)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                        "Authenticated user not found: " + email));
     }
 }

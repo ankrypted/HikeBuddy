@@ -10,6 +10,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -52,12 +53,22 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             String email = jwtService.extractAllClaims(token).get("email", String.class);
             log.debug("[JWT] Authenticating email='{}' for {} {}",
                     email, request.getMethod(), request.getRequestURI());
-            UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-
-            var authToken = new UsernamePasswordAuthenticationToken(
-                    userDetails, null, userDetails.getAuthorities());
-            authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-            SecurityContextHolder.getContext().setAuthentication(authToken);
+            try {
+                UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+                var authToken = new UsernamePasswordAuthenticationToken(
+                        userDetails, null, userDetails.getAuthorities());
+                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authToken);
+                log.debug("[JWT] Authentication SET for email='{}' {} {}",
+                        email, request.getMethod(), request.getRequestURI());
+            } catch (UsernameNotFoundException e) {
+                // Token is valid but user no longer exists in the DB.
+                // Do NOT propagate — UsernameNotFoundException extends AuthenticationException,
+                // which ExceptionTranslationFilter would convert to 401. Instead, let the
+                // request continue unauthenticated; the AuthorizationFilter will reject it cleanly.
+                log.warn("[JWT] User not found for token email='{}' — {} {}",
+                        email, request.getMethod(), request.getRequestURI());
+            }
         }
 
         filterChain.doFilter(request, response);
