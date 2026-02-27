@@ -1,13 +1,16 @@
 import { Injectable, inject, signal, computed, effect } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { switchMap, map } from 'rxjs';
 import { AuthService }     from '../auth/auth.service';
+import { TrailService }    from '../trail/trail.service';
 import { TrailSummaryDto } from '../../../shared/models/trail.dto';
 import { environment }     from '../../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class FavoritesService {
-  private readonly authService = inject(AuthService);
-  private readonly http        = inject(HttpClient);
+  private readonly authService  = inject(AuthService);
+  private readonly http         = inject(HttpClient);
+  private readonly trailService = inject(TrailService);
   private loadedForId: string | null = null;
 
   // Source of truth: trail IDs from the backend (enables fast isFavorited checks)
@@ -31,19 +34,28 @@ export class FavoritesService {
         return;
       }
 
-      this.http.get<string[]>(`${environment.apiUrl}/users/me/saved-trails`).subscribe({
-        next: ids => {
+      this.http.get<string[]>(`${environment.apiUrl}/users/me/saved-trails`).pipe(
+        switchMap(ids =>
+          this.trailService.getAllTrails().pipe(
+            map(allTrails => ({ ids, allTrails })),
+          ),
+        ),
+      ).subscribe({
+        next: ({ ids, allTrails }) => {
           this._savedIds.set(new Set(ids));
-          // Rebuild full objects from the localStorage cache written on every toggle
-          const cached  = this.readStorage(userId);
+          // Prefer localStorage cache; fall back to the full trail catalog for
+          // IDs that are in the backend but were never written to this browser's cache
+          // (e.g. saved on a different device or after a cache clear).
+          const cached  = this.readStorage(userId!);
           const matched = ids
-            .map(id => cached.find(t => t.id === id))
+            .map(id => cached.find(t => t.id === id) ?? allTrails.find(t => t.id === id))
             .filter((t): t is TrailSummaryDto => t != null);
           this._favorites.set(matched);
+          this.writeStorage(); // keep cache up-to-date for next load
         },
         error: () => {
           // Offline / backend unreachable — fall back entirely to localStorage
-          const cached = this.readStorage(userId);
+          const cached = this.readStorage(userId!);
           this._savedIds.set(new Set(cached.map(t => t.id)));
           this._favorites.set(cached);
         },
