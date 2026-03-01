@@ -53,6 +53,12 @@ export const routes: Routes = [
         title: 'Favourites — HikeBuddy',
       },
       {
+        path: 'my-trails',
+        loadComponent: () =>
+          import('./features/my-trails/my-trails.component').then(m => m.MyTrailsComponent),
+        title: 'My Trails — HikeBuddy',
+      },
+      {
         path: 'trails',
         loadChildren: () =>
           import('./features/trails/trails.routes').then(m => m.TRAILS_ROUTES),

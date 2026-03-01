@@ -1,0 +1,91 @@
+<div class="mt-wrapper">
+  <main class="mt-main">
+
+    <header class="mt-header">
+      <h1 class="mt-title">My Trails</h1>
+      <p class="mt-subtitle">Trails you've completed — your personal hiking log</p>
+    </header>
+
+    @if (completedService.completedTrails().length === 0) {
+
+      <!-- Empty state -->
+      <div class="empty-state">
+        <svg class="empty-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M8 12l3 3 5-5" stroke="currentColor" stroke-width="1.5"
+                stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <p class="empty-title">No completed trails yet</p>
+        <p class="empty-sub">Mark a trail as complete from its detail page to log it here.</p>
+        <a class="btn-browse" routerLink="/dashboard/trails">Browse Trails →</a>
+      </div>
+
+    } @else {
+
+      <hb-trail-filters
+        [regions]="regions()"
+        (filtersChange)="onFiltersChange($event)"
+      />
+
+      @if (filteredTrails().length === 0) {
+
+        <div class="state-message">No completed trails match your filters.</div>
+
+      } @else {
+
+        <ul class="mt-list">
+          @for (trail of filteredTrails(); track trail.id) {
+            <li
+              class="mt-row glass"
+              role="button"
+              tabindex="0"
+              [attr.aria-label]="'View trail: ' + trail.name"
+              (click)="navigate(trail)"
+              (keydown.enter)="navigate(trail)"
+            >
+              <!-- Difficulty colour band -->
+              <div class="mt-thumb mt-thumb--{{ trail.difficulty.toLowerCase() }}">
+                <span class="thumb-label">{{ trail.difficulty }}</span>
+              </div>
+
+              <!-- Trail info -->
+              <div class="mt-body">
+                <div class="mt-chips">
+                  <span class="chip chip--{{ trail.difficulty.toLowerCase() }}">{{ trail.difficulty }}</span>
+                  <span class="chip">{{ trail.distanceKm }} km</span>
+                  <span class="chip">↑ {{ trail.elevationGainM }} m</span>
+                  <span class="chip">~ {{ formatDuration(trail.durationMinutes) }}</span>
+                </div>
+                <h2 class="mt-name">{{ trail.name }}</h2>
+                <p class="mt-region">{{ trail.region.name }}, {{ trail.region.country }}</p>
+              </div>
+
+              <!-- Unmark + navigate -->
+              <div class="mt-action">
+                <button
+                  class="unmark-btn"
+                  type="button"
+                  aria-label="Remove from completed"
+                  (click)="unmark(trail, $event)"
+                  title="Remove from completed"
+                >
+                  <!-- Filled checkmark circle -->
+                  <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M8 12l3 3 5-5" stroke="#0d1b2a" stroke-width="2"
+                          stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                  </svg>
+                </button>
+                <span class="arrow-icon">→</span>
+              </div>
+
+            </li>
+          }
+        </ul>
+
+      }
+
+    }
+
+  </main>
+</div>

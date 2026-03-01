@@ -20,7 +20,7 @@
   <!-- Placeholder stat strip -->
   <section class="stats-strip">
     <div class="stat-card glass">
-      <span class="stat-value">—</span>
+      <span class="stat-value">{{ completedCount() }}</span>
       <span class="stat-label">Trails Completed</span>
     </div>
     <div class="stat-card glass">
@@ -44,7 +44,7 @@
       <div class="feature-icon">🥾</div>
       <h2 class="feature-title">My Trails</h2>
       <p class="feature-desc">Track trails you've completed and log new ones.</p>
-      <span class="coming-soon">Coming soon</span>
+      <a routerLink="/dashboard/my-trails" class="feature-link">View completed →</a>
     </div>
 
     <div class="feature-card glass">

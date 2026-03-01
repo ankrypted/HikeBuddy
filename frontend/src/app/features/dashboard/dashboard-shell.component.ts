@@ -45,7 +45,7 @@ export class DashboardShellComponent {
 
   readonly navItems: NavItem[] = [
     { icon: 'grid_view',       label: 'Overview',     route: '/dashboard',           exact: true  },
-    { icon: 'hiking',          label: 'My Trails',    route: null,                   exact: false, comingSoon: true },
+    { icon: 'hiking',          label: 'My Trails',    route: '/dashboard/my-trails', exact: false },
     { icon: 'bookmark',        label: 'Saved Trails', route: '/dashboard/favorites', exact: false },
     { icon: 'star_outline',    label: 'My Reviews',   route: null,                   exact: false, comingSoon: true },
     { icon: 'emoji_events',    label: 'Achievements', route: null,                   exact: false, comingSoon: true },
