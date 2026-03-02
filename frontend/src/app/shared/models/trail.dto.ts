@@ -47,3 +47,8 @@ export interface ReviewDto {
   comment:              string;
   visitedOn:            string;   // e.g. "August 2024"
 }
+
+export interface UserReviewDto extends ReviewDto {
+  trailName: string;
+  trailSlug: string;
+}

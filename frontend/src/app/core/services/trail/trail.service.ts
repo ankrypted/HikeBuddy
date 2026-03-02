@@ -3,7 +3,7 @@ import { HttpClient, HttpParams }      from '@angular/common/http';
 import { Observable, of }  from 'rxjs';
 import { environment }                 from '../../../../environments/environment';
 import {
-  TrailSummaryDto, TrailDetailDto, TrailFilterDto, ReviewDto,
+  TrailSummaryDto, TrailDetailDto, TrailFilterDto, ReviewDto, UserReviewDto,
 } from '../../../shared/models/trail.dto';
 import { PageResponseDto }             from '../../../shared/models/pagination.dto';
 
@@ -132,6 +132,27 @@ const MOCK_ALL_TRAILS: TrailSummaryDto[] = [
 ];
 
 const MOCK_FEATURED_TRAILS = MOCK_ALL_TRAILS.filter(t => t.isFeatured);
+
+const MOCK_MY_REVIEWS: UserReviewDto[] = [
+  {
+    id: 'ur1', trailName: 'Roopkund Trek', trailSlug: 'roopkund',
+    authorName: '', authorAvatarInitials: '',
+    rating: 5, visitedOn: 'October 2024',
+    comment: 'Absolutely breathtaking — the mystery lake at the end is unforgettable. Challenging but worth every step.',
+  },
+  {
+    id: 'ur2', trailName: 'Valley of Flowers', trailSlug: 'valley-of-flowers',
+    authorName: '', authorAvatarInitials: '',
+    rating: 4, visitedOn: 'July 2024',
+    comment: 'A riot of colour in monsoon season. The gradient of wildflowers across the valley is something else entirely.',
+  },
+  {
+    id: 'ur3', trailName: 'Kedarkantha', trailSlug: 'kedarkantha',
+    authorName: '', authorAvatarInitials: '',
+    rating: 5, visitedOn: 'January 2025',
+    comment: 'Perfect winter trek. Summit sunrise over a sea of clouds with Swargarohini in the distance — 10/10.',
+  },
+];
 
 // ─── Mock detail data ─────────────────────────────────────────────────
 const MOCK_TRAIL_DETAILS: Record<string, TrailDetailDto> = {
@@ -344,6 +365,12 @@ export class TrailService {
     // Swap for real HTTP call when backend is ready:
     // return this.http.get<TrailDetailDto>(`${this.base}/${slug}`);
     return of(MOCK_TRAIL_DETAILS[slug]);
+  }
+
+  getMyReviews(): Observable<UserReviewDto[]> {
+    // Swap for real HTTP call when backend is ready:
+    // return this.http.get<UserReviewDto[]>(`${environment.apiUrl}/users/me/reviews`);
+    return of(MOCK_MY_REVIEWS);
   }
 
   getTrailReviews(slug: string): Observable<ReviewDto[]> {

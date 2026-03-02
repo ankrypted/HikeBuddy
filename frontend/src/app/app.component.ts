@@ -3,14 +3,16 @@ import { HttpErrorResponse }       from '@angular/common/http';
 import { RouterOutlet }            from '@angular/router';
 import { CompletedTrailsService }  from './core/services/completed-trails/completed-trails.service';
 import { TrailService }            from './core/services/trail/trail.service';
+import { ToastService }            from './core/services/toast/toast.service';
 import { ReviewModalComponent, ReviewSubmission } from './shared/components/review-modal/review-modal.component';
+import { ToastComponent }          from './shared/components/toast/toast.component';
 import { TrailSummaryDto }         from './shared/models/trail.dto';
 
 @Component({
   selector:        'app-root',
   standalone:      true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports:         [RouterOutlet, ReviewModalComponent],
+  imports:         [RouterOutlet, ReviewModalComponent, ToastComponent],
   template: `
     <router-outlet />
     @if (completedTrailsService.pendingReviewTrail(); as trail) {
@@ -21,12 +23,14 @@ import { TrailSummaryDto }         from './shared/models/trail.dto';
         (skipped)="onSkip()"
       />
     }
+    <hb-toast />
   `,
   styles: [`:host { display: block; }`],
 })
 export class AppComponent {
   readonly completedTrailsService = inject(CompletedTrailsService);
   private readonly trailService   = inject(TrailService);
+  private readonly toastService   = inject(ToastService);
 
   private readonly _reviewError = signal<string | null>(null);
   readonly reviewError = this._reviewError.asReadonly();
@@ -39,13 +43,13 @@ export class AppComponent {
       authorName:           '',
       authorAvatarInitials: '',
     }).subscribe({
-      next:  () => this.completedTrailsService.clearPendingReview(),
+      next: () => this.completedTrailsService.clearPendingReview(),
       error: (err: HttpErrorResponse) => {
-        this._reviewError.set(
-          err.status === 409
-            ? "You've already reviewed this trail."
-            : 'Something went wrong. Please try again.'
-        );
+        const msg = err.status === 409
+          ? "You've already reviewed this trail."
+          : 'Something went wrong. Please try again.';
+        this._reviewError.set(msg);
+        this.toastService.show(msg, 'error');
       },
     });
   }

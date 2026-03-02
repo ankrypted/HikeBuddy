@@ -1,0 +1,68 @@
+<div class="reviews-wrapper">
+  <main class="reviews-main">
+
+    <header class="reviews-header">
+      <h1 class="reviews-title">My Reviews</h1>
+      <p class="reviews-subtitle">Reviews you've shared with the community</p>
+    </header>
+
+    @if (loading()) {
+
+      <div class="state-message">Loading your reviews…</div>
+
+    } @else if (reviews().length === 0) {
+
+      <div class="empty-state">
+        <svg class="empty-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
+                stroke="currentColor" stroke-width="1.5"
+                stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <p class="empty-title">No reviews yet</p>
+        <p class="empty-sub">Complete a trail and share your experience to help fellow hikers.</p>
+        <a class="btn-browse" routerLink="/dashboard/trails">Browse Trails →</a>
+      </div>
+
+    } @else {
+
+      <ul class="review-list">
+        @for (review of reviews(); track review.id) {
+          <li class="review-row glass">
+
+            <!-- Rating band -->
+            <div class="rating-band" [class]="'rating-band--' + review.rating">
+              <span class="band-value">{{ review.rating }}</span>
+              <span class="band-star">★</span>
+            </div>
+
+            <!-- Review body -->
+            <div class="review-body">
+              <div class="review-meta">
+                <div class="review-stars" [attr.aria-label]="review.rating + ' out of 5 stars'">
+                  @for (s of stars(review.rating); track $index) {
+                    <span class="star" [class.star--filled]="s === 'filled'">★</span>
+                  }
+                </div>
+                <span class="review-date">Visited {{ review.visitedOn }}</span>
+              </div>
+              <a class="trail-name" [routerLink]="['/dashboard/trails', review.trailSlug]">
+                {{ review.trailName }}
+              </a>
+              <p class="review-comment">{{ review.comment }}</p>
+            </div>
+
+            <!-- Navigate -->
+            <div class="review-action">
+              <a class="arrow-icon"
+                 [routerLink]="['/dashboard/trails', review.trailSlug]"
+                 aria-label="View trail">→</a>
+            </div>
+
+          </li>
+        }
+      </ul>
+
+    }
+
+  </main>
+</div>
