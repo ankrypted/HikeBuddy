@@ -34,6 +34,10 @@
       (input)="onBodyInput($event)"
     ></textarea>
 
+    @if (error()) {
+      <p class="review-error">{{ error() }}</p>
+    }
+
     <!-- Actions -->
     <div class="modal-actions">
       <button

@@ -1,6 +1,6 @@
 import {
   Component, Input, Output, EventEmitter,
-  ChangeDetectionStrategy, signal, computed,
+  ChangeDetectionStrategy, signal, computed, input, effect,
 } from '@angular/core';
 import { TrailSummaryDto } from '../../models/trail.dto';
 
@@ -19,6 +19,9 @@ export interface ReviewSubmission {
 export class ReviewModalComponent {
   @Input({ required: true }) trail!: TrailSummaryDto;
 
+  /** Error message from parent (e.g. "already reviewed"). Resets submitting state. */
+  readonly error = input<string | null>(null);
+
   @Output() submitted = new EventEmitter<ReviewSubmission>();
   @Output() skipped   = new EventEmitter<void>();
 
@@ -26,6 +29,11 @@ export class ReviewModalComponent {
   readonly hoverRating  = signal(0);
   readonly reviewBody   = signal('');
   readonly submitting   = signal(false);
+
+  constructor() {
+    // When the parent sets an error, unlock the submit button so the user can retry.
+    effect(() => { if (this.error()) this.submitting.set(false); });
+  }
 
   readonly ratingLabel = computed(() => {
     const labels = ['', 'Poor', 'Fair', 'Good', 'Great', 'Excellent'];

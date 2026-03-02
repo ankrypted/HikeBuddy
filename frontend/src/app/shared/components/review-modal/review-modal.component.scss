@@ -116,6 +116,14 @@
   }
 }
 
+// ── Error message ─────────────────────────────────────────────────────────
+.review-error {
+  margin:     0.5rem 0 0;
+  font-size:  0.82rem;
+  color:      #ff7a7a;
+  text-align: center;
+}
+
 // ── Actions ───────────────────────────────────────────────────────────────
 .modal-actions {
   display:        flex;
