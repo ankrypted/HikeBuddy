@@ -31,6 +31,7 @@ export class ProfileComponent implements OnInit {
   readonly avatarUrl        = signal('');
   readonly avatarPreviewUrl = signal('');
   readonly avatarSaving     = signal(false);
+  readonly avatarUploading  = signal(false);
 
   // ── Password (LOCAL only) ────────────────────────────────────────────────
   readonly currentPassword = signal('');
@@ -71,6 +72,24 @@ export class ProfileComponent implements OnInit {
       error: () => {
         this.toastService.show('Could not save bio. Please try again.', 'error');
         this.bioSaving.set(false);
+      },
+    });
+  }
+
+  onFileSelected(event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    this.avatarPreviewUrl.set(URL.createObjectURL(file));
+    this.avatarUploading.set(true);
+    this.profileService.uploadAvatar(file).subscribe({
+      next: url => {
+        this.avatarUrl.set(url);
+        this.toastService.show('Avatar updated.', 'success');
+        this.avatarUploading.set(false);
+      },
+      error: () => {
+        this.toastService.show('Upload failed. Please try again.', 'error');
+        this.avatarUploading.set(false);
       },
     });
   }

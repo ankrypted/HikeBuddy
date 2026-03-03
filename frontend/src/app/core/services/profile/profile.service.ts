@@ -1,6 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient }                 from '@angular/common/http';
-import { catchError, Observable, tap, throwError } from 'rxjs';
+import { catchError, map, Observable, tap, throwError } from 'rxjs';
 import { AuthService }               from '../auth/auth.service';
 import { UserProfileDto, UpdateProfileRequestDto, UpdatePasswordRequestDto } from '../../../shared/models/user.dto';
 import { environment }               from '../../../../environments/environment';
@@ -57,6 +57,19 @@ export class ProfileService {
         this._saving.set(false);
         return throwError(() => err);
       }),
+    );
+  }
+
+  uploadAvatar(file: File): Observable<string> {
+    const form = new FormData();
+    form.append('file', file);
+    return this.http.post<{ avatarUrl: string }>(`${this.base}/avatar`, form).pipe(
+      tap(res => {
+        this._profile.update(p => p ? { ...p, avatarUrl: res.avatarUrl } : p);
+        this.authService.patchCurrentUser({ avatarUrl: res.avatarUrl });
+      }),
+      map(res => res.avatarUrl),
+      catchError(err => throwError(() => err)),
     );
   }
 

@@ -65,16 +65,12 @@
       </section>
 
       <!-- ── Avatar (LOCAL only) ────────────────────────────────────────── -->
-      <!-- TODO: Extend this section to support local file upload in addition to URL:
-           - Add a hidden <input type="file" accept="image/*"> triggered by a "Upload photo" button
-           - On file selection, generate a local object URL for preview (URL.createObjectURL)
-           - Upload the file to the backend (POST /api/v1/users/me/avatar, multipart/form-data)
-             which saves it to S3/storage and returns the public URL to persist in avatarUrl
-           - The URL input can remain as an alternative option for remote images -->
       @if (!authService.isOAuth()) {
         <section class="profile-card glass">
           <h2 class="card-title">Profile Picture</h2>
-          <p class="card-sub">Paste a URL to update your avatar.</p>
+          <p class="card-sub">Upload a photo or paste an image URL.</p>
+
+          <!-- Preview -->
           <div class="avatar-edit-row">
             @if (avatarPreviewUrl()) {
               <img class="avatar-preview" [src]="avatarPreviewUrl()" alt="Avatar preview" />
@@ -83,20 +79,36 @@
                 {{ profile()!.username.charAt(0).toUpperCase() }}
               </div>
             }
-            <input
-              class="text-input"
-              type="url"
-              placeholder="https://example.com/avatar.jpg"
-              [value]="avatarUrl()"
-              (input)="onAvatarUrlInput($any($event.target).value)"
-            />
+            <div class="avatar-inputs">
+              <!-- File upload -->
+              <div class="upload-row">
+                <input #fileInput type="file" accept="image/*" class="file-input-hidden"
+                       (change)="onFileSelected($event)" />
+                <button class="btn-upload" type="button"
+                        [disabled]="avatarUploading()"
+                        (click)="fileInput.click()">
+                  {{ avatarUploading() ? 'Uploading…' : 'Upload photo' }}
+                </button>
+                <span class="upload-hint">JPG, PNG, WebP — max 5 MB</span>
+              </div>
+              <div class="divider-or">or paste a URL</div>
+              <!-- URL input -->
+              <input
+                class="text-input"
+                type="url"
+                placeholder="https://example.com/avatar.jpg"
+                [value]="avatarUrl()"
+                (input)="onAvatarUrlInput($any($event.target).value)"
+              />
+            </div>
           </div>
+
           <button
             class="btn-save"
             type="button"
             [disabled]="avatarSaving()"
             (click)="saveAvatar()"
-          >{{ avatarSaving() ? 'Saving…' : 'Save Avatar' }}</button>
+          >{{ avatarSaving() ? 'Saving…' : 'Save URL' }}</button>
         </section>
       }
 

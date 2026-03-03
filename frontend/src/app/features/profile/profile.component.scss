@@ -174,8 +174,51 @@
 
 .avatar-edit-row {
   display:     flex;
-  align-items: center;
+  align-items: flex-start;
   gap:         1rem;
+}
+
+.avatar-inputs {
+  display:        flex;
+  flex-direction: column;
+  gap:            .5rem;
+  flex:           1;
+  min-width:      0;
+}
+
+.file-input-hidden { display: none; }
+
+.upload-row {
+  display:     flex;
+  align-items: center;
+  gap:         .75rem;
+  flex-wrap:   wrap;
+}
+
+.btn-upload {
+  padding:       .45rem 1rem;
+  border-radius: 6px;
+  border:        1px solid v.$accent-green;
+  background:    transparent;
+  color:         v.$accent-green;
+  font-size:     .875rem;
+  font-weight:   600;
+  cursor:        pointer;
+  white-space:   nowrap;
+  transition:    background .2s, color .2s;
+
+  &:hover:not(:disabled) { background: v.$accent-green; color: #000; }
+  &:disabled             { opacity: .5; cursor: not-allowed; }
+}
+
+.upload-hint {
+  font-size: .75rem;
+  color:     v.$text-muted;
+}
+
+.divider-or {
+  font-size: .75rem;
+  color:     v.$text-muted;
 }
 
 .avatar-preview {
