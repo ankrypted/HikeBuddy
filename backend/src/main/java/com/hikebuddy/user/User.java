@@ -39,6 +39,9 @@ public class User {
     @Column(name = "avatar_url")
     private String avatarUrl;
 
+    @Column(name = "bio", length = 500)
+    private String bio;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 10)
     private AuthProvider provider;

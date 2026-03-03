@@ -19,6 +19,7 @@ export class AuthService {
   readonly accessToken = signal<string | null>(localStorage.getItem(TOKEN_KEY));
   readonly currentUser = signal<UserSummaryDto | null>(null);
   readonly roles       = signal<UserRole[]>([]);
+  readonly provider    = signal<'LOCAL' | 'GOOGLE' | null>(null);
 
   constructor() {
     // Restore user state from the stored token on page refresh
@@ -28,6 +29,7 @@ export class AuthService {
         const claims = decodeJwtPayload(token);
         this.currentUser.set({ id: claims.sub, username: claims.username, avatarUrl: claims.avatarUrl });
         this.roles.set(claims.roles as UserRole[]);
+        this.provider.set(claims.provider ?? null);
       } catch {
         // Token is malformed or expired — clear it
         localStorage.removeItem(TOKEN_KEY);
@@ -35,8 +37,10 @@ export class AuthService {
       }
     }
   }
-  readonly isLoggedIn  = computed(() => this.accessToken() !== null);
-  readonly isAdmin     = computed(() => this.roles().includes('ROLE_ADMIN'));
+
+  readonly isLoggedIn = computed(() => this.accessToken() !== null);
+  readonly isAdmin    = computed(() => this.roles().includes('ROLE_ADMIN'));
+  readonly isOAuth    = computed(() => this.provider() === 'GOOGLE');
 
   login(dto: LoginRequestDto) {
     return this.http.post<AuthResponseDto>(`${this.base}/login`, dto).pipe(
@@ -57,6 +61,12 @@ export class AuthService {
     this.accessToken.set(token);
     this.currentUser.set({ id: claims.sub, username: claims.username, avatarUrl: claims.avatarUrl });
     this.roles.set(claims.roles as UserRole[]);
+    this.provider.set(claims.provider ?? null);
+  }
+
+  /** Patch the in-memory user summary after a profile update (avatar, username). */
+  patchCurrentUser(patch: Partial<Pick<UserSummaryDto, 'username' | 'avatarUrl'>>): void {
+    this.currentUser.update(u => u ? { ...u, ...patch } : null);
   }
 
   logout(): void {
@@ -64,6 +74,7 @@ export class AuthService {
     this.accessToken.set(null);
     this.currentUser.set(null);
     this.roles.set([]);
+    this.provider.set(null);
   }
 
   private handleAuth(res: AuthResponseDto): void {
@@ -71,5 +82,10 @@ export class AuthService {
     this.accessToken.set(res.accessToken);
     this.currentUser.set(res.user);
     this.roles.set(res.roles);
+    // Decode provider from the JWT rather than the response body (UserSummaryDto has no provider field)
+    try {
+      const claims = decodeJwtPayload(res.accessToken);
+      this.provider.set(claims.provider ?? null);
+    } catch { /* ignore malformed token — shouldn't happen */ }
   }
 }

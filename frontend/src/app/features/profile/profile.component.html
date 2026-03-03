@@ -1,0 +1,158 @@
+<div class="profile-wrapper">
+  <main class="profile-main">
+
+    <header class="profile-header-row">
+      <h1 class="page-title">Profile Settings</h1>
+      <p class="page-sub">Manage your account information and preferences.</p>
+    </header>
+
+    @if (loading()) {
+      <div class="state-message">Loading profile…</div>
+    } @else if (!profile()) {
+      <div class="state-message">Could not load profile. Please try again later.</div>
+    } @else {
+
+      <!-- ── Identity card ──────────────────────────────────────────────── -->
+      <!-- TODO: Add a "Username / Handle" edit field here so users can change their
+           display name. Requires: text-input bound to a local `username` signal,
+           a "Save Username" button calling profileService.updateProfile({ username }),
+           a uniqueness check on the backend (UserService.updateProfile), and syncing
+           the updated username back to AuthService.currentUser via patchCurrentUser(). -->
+      <section class="profile-card glass identity-card">
+        <div class="avatar-display">
+          @if (profile()!.avatarUrl) {
+            <img class="avatar-img" [src]="profile()!.avatarUrl" alt="Profile picture" />
+          } @else {
+            <div class="avatar-placeholder">
+              {{ profile()!.username.charAt(0).toUpperCase() }}
+            </div>
+          }
+        </div>
+        <div class="identity-info">
+          <h2 class="identity-name">{{ profile()!.username }}</h2>
+          @if (profile()!.email) {
+            <p class="identity-email">{{ profile()!.email }}</p>
+          }
+          @if (profile()!.joinedAt) {
+            <p class="identity-joined">
+              Member since {{ profile()!.joinedAt | date:'MMMM yyyy' }}
+            </p>
+          }
+          @if (authService.isOAuth()) {
+            <span class="badge-oauth">Connected via Google</span>
+          }
+        </div>
+      </section>
+
+      <!-- ── Bio ───────────────────────────────────────────────────────── -->
+      <section class="profile-card glass">
+        <h2 class="card-title">About Me</h2>
+        <p class="card-sub">Tell the community about your hiking journey.</p>
+        <textarea
+          class="bio-input"
+          placeholder="Write a short bio…"
+          maxlength="500"
+          [value]="bio()"
+          (input)="bio.set($any($event.target).value)"
+        ></textarea>
+        <div class="char-count">{{ bio().length }} / 500</div>
+        <button
+          class="btn-save"
+          type="button"
+          [disabled]="bioSaving()"
+          (click)="saveBio()"
+        >{{ bioSaving() ? 'Saving…' : 'Save Bio' }}</button>
+      </section>
+
+      <!-- ── Avatar (LOCAL only) ────────────────────────────────────────── -->
+      <!-- TODO: Extend this section to support local file upload in addition to URL:
+           - Add a hidden <input type="file" accept="image/*"> triggered by a "Upload photo" button
+           - On file selection, generate a local object URL for preview (URL.createObjectURL)
+           - Upload the file to the backend (POST /api/v1/users/me/avatar, multipart/form-data)
+             which saves it to S3/storage and returns the public URL to persist in avatarUrl
+           - The URL input can remain as an alternative option for remote images -->
+      @if (!authService.isOAuth()) {
+        <section class="profile-card glass">
+          <h2 class="card-title">Profile Picture</h2>
+          <p class="card-sub">Paste a URL to update your avatar.</p>
+          <div class="avatar-edit-row">
+            @if (avatarPreviewUrl()) {
+              <img class="avatar-preview" [src]="avatarPreviewUrl()" alt="Avatar preview" />
+            } @else {
+              <div class="avatar-placeholder avatar-placeholder--sm">
+                {{ profile()!.username.charAt(0).toUpperCase() }}
+              </div>
+            }
+            <input
+              class="text-input"
+              type="url"
+              placeholder="https://example.com/avatar.jpg"
+              [value]="avatarUrl()"
+              (input)="onAvatarUrlInput($any($event.target).value)"
+            />
+          </div>
+          <button
+            class="btn-save"
+            type="button"
+            [disabled]="avatarSaving()"
+            (click)="saveAvatar()"
+          >{{ avatarSaving() ? 'Saving…' : 'Save Avatar' }}</button>
+        </section>
+      }
+
+      <!-- ── Password (LOCAL only) ──────────────────────────────────────── -->
+      @if (!authService.isOAuth()) {
+        <section class="profile-card glass">
+          <h2 class="card-title">Change Password</h2>
+          <p class="card-sub">Choose a new password for your account.</p>
+
+          @if (passwordError()) {
+            <div class="form-error">{{ passwordError() }}</div>
+          }
+
+          <div class="form-group">
+            <label class="form-label" for="currentPw">Current Password</label>
+            <input
+              id="currentPw"
+              class="text-input"
+              type="password"
+              autocomplete="current-password"
+              [value]="currentPassword()"
+              (input)="currentPassword.set($any($event.target).value)"
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="newPw">New Password</label>
+            <input
+              id="newPw"
+              class="text-input"
+              type="password"
+              autocomplete="new-password"
+              [value]="newPassword()"
+              (input)="newPassword.set($any($event.target).value)"
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="confirmPw">Confirm New Password</label>
+            <input
+              id="confirmPw"
+              class="text-input"
+              type="password"
+              autocomplete="new-password"
+              [value]="confirmPassword()"
+              (input)="confirmPassword.set($any($event.target).value)"
+            />
+          </div>
+          <button
+            class="btn-save"
+            type="button"
+            [disabled]="passwordSaving()"
+            (click)="changePassword()"
+          >{{ passwordSaving() ? 'Updating…' : 'Change Password' }}</button>
+        </section>
+      }
+
+    }
+
+  </main>
+</div>

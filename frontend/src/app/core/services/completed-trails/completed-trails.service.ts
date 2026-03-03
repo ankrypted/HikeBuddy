@@ -1,13 +1,16 @@
 import { Injectable, inject, signal, computed, effect } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { switchMap, map } from 'rxjs';
 import { AuthService }       from '../auth/auth.service';
+import { TrailService }      from '../trail/trail.service';
 import { TrailSummaryDto }   from '../../../shared/models/trail.dto';
 import { environment }       from '../../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class CompletedTrailsService {
-  private readonly authService = inject(AuthService);
-  private readonly http        = inject(HttpClient);
+  private readonly authService  = inject(AuthService);
+  private readonly http         = inject(HttpClient);
+  private readonly trailService = inject(TrailService);
   private loadedForId: string | null = null;
 
   private readonly _completedIds    = signal<ReadonlySet<string>>(new Set());
@@ -31,14 +34,21 @@ export class CompletedTrailsService {
         return;
       }
 
-      this.http.get<string[]>(`${environment.apiUrl}/users/me/completed-trails`).subscribe({
-        next: ids => {
+      this.http.get<string[]>(`${environment.apiUrl}/users/me/completed-trails`).pipe(
+        switchMap(ids => {
           this._completedIds.set(new Set(ids));
-          const cached  = this.readStorage(userId);
-          const matched = ids
-            .map(id => cached.find(t => t.id === id))
-            .filter((t): t is TrailSummaryDto => t != null);
+          const cached = this.readStorage(userId);
+          return this.trailService.getAllTrails().pipe(
+            map(allTrails => ids
+              .map(id => cached.find(t => t.id === id) ?? allTrails.find(t => t.id === id))
+              .filter((t): t is TrailSummaryDto => t != null),
+            ),
+          );
+        }),
+      ).subscribe({
+        next: matched => {
           this._completedTrails.set(matched);
+          if (matched.length) this.writeStorage();
         },
         error: () => {
           const cached = this.readStorage(userId);

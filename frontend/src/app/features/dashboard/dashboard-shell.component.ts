@@ -48,7 +48,7 @@ export class DashboardShellComponent {
     { icon: 'hiking',          label: 'My Trails',    route: '/dashboard/my-trails', exact: false },
     { icon: 'bookmark',        label: 'Saved Trails', route: '/dashboard/favorites', exact: false },
     { icon: 'star_outline',    label: 'My Reviews',   route: '/dashboard/my-reviews', exact: false },
-    { icon: 'emoji_events',    label: 'Achievements', route: null,                   exact: false, comingSoon: true },
-    { icon: 'manage_accounts', label: 'Profile',      route: null,                   exact: false, comingSoon: true },
+    { icon: 'emoji_events',    label: 'Achievements', route: '/dashboard/achievements', exact: false },
+    { icon: 'manage_accounts', label: 'Profile',      route: '/dashboard/profile',   exact: false },
   ];
 }

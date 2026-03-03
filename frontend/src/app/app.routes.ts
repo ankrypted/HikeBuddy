@@ -65,10 +65,22 @@ export const routes: Routes = [
         title: 'My Reviews — HikeBuddy',
       },
       {
+        path: 'achievements',
+        loadComponent: () =>
+          import('./features/achievements/achievements.component').then(m => m.AchievementsComponent),
+        title: 'Achievements — HikeBuddy',
+      },
+      {
         path: 'trails',
         loadChildren: () =>
           import('./features/trails/trails.routes').then(m => m.TRAILS_ROUTES),
         title: 'Trails — HikeBuddy',
+      },
+      {
+        path: 'profile',
+        loadComponent: () =>
+          import('./features/profile/profile.component').then(m => m.ProfileComponent),
+        title: 'Profile — HikeBuddy',
       },
     ],
   },

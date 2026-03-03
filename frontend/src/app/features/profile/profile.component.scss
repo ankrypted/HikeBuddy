@@ -1,0 +1,265 @@
+@use 'styles/variables' as v;
+
+.profile-wrapper {
+  min-height: calc(100vh - v.$nav-height);
+  display:    flex;
+  justify-content: center;
+  padding:    2.5rem 1.5rem 4rem;
+}
+
+.profile-main {
+  width:     100%;
+  max-width: 680px;
+  display:   flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+// ── Page header ────────────────────────────────────────────────────────────
+
+.profile-header-row {
+  margin-bottom: .25rem;
+}
+
+.page-title {
+  font-size:   1.75rem;
+  font-weight: 700;
+  color:       v.$text-primary;
+  margin:      0 0 .25rem;
+}
+
+.page-sub {
+  color:  v.$text-muted;
+  margin: 0;
+}
+
+// ── Loading / error state ──────────────────────────────────────────────────
+
+.state-message {
+  color:     v.$text-muted;
+  font-size: .95rem;
+  padding:   2rem 0;
+  text-align: center;
+}
+
+// ── Card base ──────────────────────────────────────────────────────────────
+
+.profile-card {
+  border-radius: 14px;
+  padding:       1.75rem 2rem;
+  display:       flex;
+  flex-direction: column;
+  gap:           1rem;
+}
+
+.card-title {
+  font-size:   1.1rem;
+  font-weight: 600;
+  color:       v.$text-primary;
+  margin:      0;
+}
+
+.card-sub {
+  color:     v.$text-muted;
+  font-size: .88rem;
+  margin:    -.5rem 0 0;
+}
+
+// ── Identity card ──────────────────────────────────────────────────────────
+
+.identity-card {
+  flex-direction: row;
+  align-items:    center;
+  gap:            1.5rem;
+}
+
+.avatar-display {
+  flex-shrink: 0;
+}
+
+.avatar-img {
+  width:         72px;
+  height:        72px;
+  border-radius: 50%;
+  object-fit:    cover;
+  border:        2px solid v.$glass-border;
+}
+
+.avatar-placeholder {
+  width:           72px;
+  height:          72px;
+  border-radius:   50%;
+  background:      rgba(v.$accent-green, .18);
+  border:          2px solid rgba(v.$accent-green, .4);
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  font-size:       1.75rem;
+  font-weight:     700;
+  color:           v.$accent-green;
+
+  &--sm {
+    width:     48px;
+    height:    48px;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+}
+
+.identity-info {
+  display:        flex;
+  flex-direction: column;
+  gap:            .25rem;
+}
+
+.identity-name {
+  font-size:   1.2rem;
+  font-weight: 600;
+  color:       v.$text-primary;
+  margin:      0;
+}
+
+.identity-email,
+.identity-joined {
+  font-size: .85rem;
+  color:     v.$text-muted;
+  margin:    0;
+}
+
+.badge-oauth {
+  display:      inline-flex;
+  align-items:  center;
+  gap:          .3rem;
+  font-size:    .78rem;
+  font-weight:  600;
+  color:        #4285f4;
+  background:   rgba(66, 133, 244, .12);
+  border:       1px solid rgba(66, 133, 244, .25);
+  border-radius: 20px;
+  padding:      .2rem .65rem;
+  margin-top:   .25rem;
+  width:        fit-content;
+}
+
+// ── Bio textarea ───────────────────────────────────────────────────────────
+
+.bio-input {
+  width:         100%;
+  min-height:    110px;
+  background:    rgba(255, 255, 255, .04);
+  border:        1px solid v.$glass-border;
+  border-radius: 8px;
+  color:         v.$text-primary;
+  font-size:     .92rem;
+  padding:       .75rem 1rem;
+  resize:        vertical;
+  box-sizing:    border-box;
+  outline:       none;
+  font-family:   inherit;
+  transition:    border-color .2s;
+
+  &::placeholder { color: v.$text-muted; }
+
+  &:focus { border-color: rgba(v.$accent-green, .6); }
+}
+
+.char-count {
+  font-size:  .78rem;
+  color:      v.$text-muted;
+  text-align: right;
+  margin-top: -.5rem;
+}
+
+// ── Avatar edit row ────────────────────────────────────────────────────────
+
+.avatar-edit-row {
+  display:     flex;
+  align-items: center;
+  gap:         1rem;
+}
+
+.avatar-preview {
+  width:         48px;
+  height:        48px;
+  border-radius: 50%;
+  object-fit:    cover;
+  border:        2px solid v.$glass-border;
+  flex-shrink:   0;
+}
+
+// ── Generic text input ─────────────────────────────────────────────────────
+
+.text-input {
+  flex:          1;
+  background:    rgba(255, 255, 255, .04);
+  border:        1px solid v.$glass-border;
+  border-radius: 8px;
+  color:         v.$text-primary;
+  font-size:     .92rem;
+  padding:       .65rem 1rem;
+  outline:       none;
+  min-width:     0;
+  transition:    border-color .2s;
+
+  &::placeholder { color: v.$text-muted; }
+
+  &:focus { border-color: rgba(v.$accent-green, .6); }
+}
+
+// ── Password form ──────────────────────────────────────────────────────────
+
+.form-group {
+  display:        flex;
+  flex-direction: column;
+  gap:            .4rem;
+}
+
+.form-label {
+  font-size:   .82rem;
+  font-weight: 500;
+  color:       v.$text-muted;
+}
+
+.form-error {
+  font-size:     .85rem;
+  color:         #ff6b6b;
+  background:    rgba(255, 107, 107, .08);
+  border:        1px solid rgba(255, 107, 107, .25);
+  border-radius: 8px;
+  padding:       .6rem .9rem;
+}
+
+// ── Save button ────────────────────────────────────────────────────────────
+
+.btn-save {
+  align-self:    flex-start;
+  background:    v.$accent-green;
+  color:         #0d1b2a;
+  font-size:     .88rem;
+  font-weight:   700;
+  border:        none;
+  border-radius: 8px;
+  padding:       .6rem 1.4rem;
+  cursor:        pointer;
+  transition:    opacity .2s, transform .15s;
+
+  &:hover:not(:disabled) { opacity: .88; transform: translateY(-1px); }
+  &:disabled             { opacity: .45; cursor: not-allowed; }
+}
+
+// ── Responsive ─────────────────────────────────────────────────────────────
+
+@media (max-width: v.$bp-sm) {
+  .profile-wrapper { padding: 1.5rem 1rem 3rem; }
+
+  .profile-card { padding: 1.25rem 1.1rem; }
+
+  .identity-card {
+    flex-direction: column;
+    align-items:    flex-start;
+    gap:            1rem;
+  }
+
+  .avatar-edit-row { flex-direction: column; align-items: flex-start; }
+  .text-input      { width: 100%; }
+}

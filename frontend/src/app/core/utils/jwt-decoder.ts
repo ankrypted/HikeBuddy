@@ -3,6 +3,7 @@ export interface JwtPayload {
   username:  string;
   email:     string;
   avatarUrl: string | null;
+  provider:  'LOCAL' | 'GOOGLE';
   roles:     string[];
   iat:       number;
   exp:       number;

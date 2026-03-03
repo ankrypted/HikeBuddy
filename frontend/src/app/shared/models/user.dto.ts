@@ -9,10 +9,13 @@ export interface UserSummaryDto {
 export interface UserProfileDto extends UserSummaryDto {
   email: string;
   bio: string | null;
-  trailsHiked: number;
-  favoriteCount: number;
-  reviewCount: number;
+  provider: 'LOCAL' | 'GOOGLE';
   joinedAt: string;    // ISO-8601
+}
+
+export interface UpdatePasswordRequestDto {
+  currentPassword: string;
+  newPassword: string;
 }
 
 export interface LoginRequestDto {
