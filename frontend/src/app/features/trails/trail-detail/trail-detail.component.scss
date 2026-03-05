@@ -60,7 +60,14 @@
   border:         1px solid rgba(255, 255, 255, 0.15);
   color:          v.$text-muted;
 
-  &--location { background: rgba(80, 160, 255, 0.12); border-color: rgba(80, 160, 255, 0.35); color: #7ab8ff; }
+  &--location {
+    display:      inline-flex;
+    align-items:  center;
+    gap:          4px;
+    background:   rgba(80, 160, 255, 0.12);
+    border-color: rgba(80, 160, 255, 0.35);
+    color:        #7ab8ff;
+  }
 
   &--easy   { background: rgba(63, 185, 80,  0.18); border-color: rgba(63, 185, 80,  0.4); color: #7edb5a; }
   &--moderate { background: rgba(255, 180, 0, 0.15); border-color: rgba(255, 180, 0, 0.4); color: #ffc940; }
