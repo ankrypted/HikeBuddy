@@ -1,6 +1,6 @@
 import { Injectable, inject }          from '@angular/core';
 import { HttpClient, HttpParams }      from '@angular/common/http';
-import { Observable, of }  from 'rxjs';
+import { Observable, of, map }         from 'rxjs';
 import { environment }                 from '../../../../environments/environment';
 import {
   TrailSummaryDto, TrailDetailDto, TrailFilterDto, ReviewDto, UserReviewDto,
@@ -371,6 +371,27 @@ export class TrailService {
     // Swap for real HTTP call when backend is ready:
     // return this.http.get<UserReviewDto[]>(`${environment.apiUrl}/users/me/reviews`);
     return of(MOCK_MY_REVIEWS);
+  }
+
+  getSimilarTrails(current: TrailDetailDto, limit = 3): Observable<TrailSummaryDto[]> {
+    // Swap for real HTTP call when backend is ready:
+    // return this.http.get<TrailSummaryDto[]>(`${this.base}/${current.id}/similar`);
+    return this.getAllTrails().pipe(
+      map(trails =>
+        trails
+          .filter(t => t.id !== current.id)
+          .map(t => {
+            let score = 0;
+            if (t.region.id === current.region.id)    score += 3;
+            if (t.difficulty === current.difficulty)   score += 2;
+            if (Math.abs(t.distanceKm - current.distanceKm) <= 30) score += 1;
+            return { t, score };
+          })
+          .sort((a, b) => b.score - a.score || b.t.averageRating - a.t.averageRating)
+          .slice(0, limit)
+          .map(({ t }) => t),
+      ),
+    );
   }
 
   getTrailReviews(slug: string): Observable<ReviewDto[]> {

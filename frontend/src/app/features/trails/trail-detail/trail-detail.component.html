@@ -20,6 +20,9 @@
           <span class="chip">{{ trail()!.distanceKm }} km</span>
           <span class="chip">↑ {{ trail()!.elevationGainM }} m</span>
           <span class="chip">~ {{ formatDuration(trail()!.durationMinutes) }}</span>
+          @if (distanceFromUser() !== null) {
+            <span class="chip chip--location">&#128205; {{ distanceFromUser() }} km from you</span>
+          }
         </div>
 
         <h1 class="trail-name">{{ trail()!.name }}</h1>
@@ -176,6 +179,41 @@
           }
         </div>
       </section>
+
+      <!-- ── Similar Trails ────────────────────────────────────────── -->
+      @if (recommendations().length) {
+        <section class="similar-section">
+          <h2 class="similar-heading">Similar Trails</h2>
+          <div class="similar-grid">
+            @for (rec of recommendations(); track rec.id) {
+              <article
+                class="similar-card glass"
+                role="button"
+                tabindex="0"
+                (click)="navigateToTrail(rec)"
+                (keyup.enter)="navigateToTrail(rec)"
+              >
+                <div class="similar-chips">
+                  <span class="chip chip--{{ rec.difficulty.toLowerCase() }}">{{ rec.difficulty }}</span>
+                  <span class="chip">{{ rec.distanceKm }} km</span>
+                  <span class="chip">↑ {{ rec.elevationGainM }} m</span>
+                </div>
+                <h3 class="similar-name">{{ rec.name }}</h3>
+                <p class="similar-region">{{ rec.region.name }}, {{ rec.region.country }}</p>
+                <div class="similar-footer">
+                  <div class="stars">
+                    @for (s of stars(rec.averageRating); track $index) {
+                      <span class="star" [class.star--filled]="s === 'filled'">★</span>
+                    }
+                  </div>
+                  <span class="rating-value">{{ rec.averageRating }}</span>
+                  <span class="rating-count">({{ rec.reviewCount }})</span>
+                </div>
+              </article>
+            }
+          </div>
+        </section>
+      }
 
     </main>
 

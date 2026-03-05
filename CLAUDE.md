@@ -64,6 +64,35 @@ ng serve                              # dev server → localhost:4200
 ng build --configuration production  # production build
 ```
 
+---
+
+## Starting the Full Stack (Dev)
+
+### 1. Docker services (PostgreSQL + pgAdmin)
+```bash
+cd HikeBuddy
+docker compose up -d
+```
+- PostgreSQL → `localhost:5433`
+- pgAdmin → `localhost:5050`
+
+### 2. Backend (Spring Boot)
+```bash
+cd HikeBuddy/backend
+mvn spring-boot:run -Dspring-boot.run.profiles=local
+```
+- Runs on `localhost:8080`
+- **Must use `local` profile** — loads `application-local.properties` which contains AWS S3 and Google OAuth credentials (gitignored)
+- **Do NOT use `mvnw.cmd`** — it fails on this machine
+- System Maven (`mvn`) uses Java 17; the pom targets Java 17 — if `target/` has stale Java 21 classes, run `mvn clean spring-boot:run -Dspring-boot.run.profiles=local`
+
+### 3. Frontend (Angular)
+```bash
+cd HikeBuddy/frontend
+ng serve
+```
+- Runs on `localhost:4200`
+
 ### Current State
 - Landing page fully implemented with animated SVG scene, hiker logo, trail cards, search overlay
 - Route stubs: /trails, /auth/login, /auth/register, /gallery, /contact, /favorites

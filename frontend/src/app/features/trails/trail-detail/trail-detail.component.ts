@@ -2,14 +2,16 @@ import {
   Component, Input, OnInit,
   ChangeDetectionStrategy, signal, computed, inject,
 } from '@angular/core';
+import { Router }                    from '@angular/router';
 import { NavbarComponent }           from '../../../core/layout/navbar/navbar.component';
 import { SceneBackgroundComponent }  from '../../../shared/components/scene-background/scene-background.component';
 import { TrailService }              from '../../../core/services/trail/trail.service';
 import { AuthService }               from '../../../core/services/auth/auth.service';
 import { FavoritesService }          from '../../../core/services/favorites/favorites.service';
 import { CompletedTrailsService }    from '../../../core/services/completed-trails/completed-trails.service';
-import { TrailDetailDto, ReviewDto } from '../../../shared/models/trail.dto';
+import { TrailDetailDto, TrailSummaryDto, ReviewDto } from '../../../shared/models/trail.dto';
 import { INSIDE_SHELL }              from '../../../shared/tokens/shell.token';
+import { GeolocationService }        from '../../../core/services/geolocation/geolocation.service';
 
 @Component({
   selector:         'hb-trail-detail',
@@ -26,13 +28,24 @@ export class TrailDetailComponent implements OnInit {
   private readonly authService       = inject(AuthService);
   private readonly favService        = inject(FavoritesService);
   private readonly completedService  = inject(CompletedTrailsService);
+  private readonly router            = inject(Router);
+  private readonly geoService        = inject(GeolocationService);
 
   readonly insideShell = inject(INSIDE_SHELL);
 
-  readonly trail   = signal<TrailDetailDto | null>(null);
-  readonly reviews = signal<ReviewDto[]>([]);
-  readonly loading = signal(true);
-  readonly error   = signal(false);
+  readonly trail           = signal<TrailDetailDto | null>(null);
+  readonly reviews         = signal<ReviewDto[]>([]);
+  readonly recommendations = signal<TrailSummaryDto[]>([]);
+  readonly loading         = signal(true);
+  readonly error           = signal(false);
+  readonly userCoords      = signal<{ lat: number; lon: number } | null>(null);
+
+  readonly distanceFromUser = computed(() => {
+    const t = this.trail();
+    const u = this.userCoords();
+    if (!t || !u) return null;
+    return Math.round(this.geoService.haversineKm(u.lat, u.lon, t.startLatitude, t.startLongitude));
+  });
 
   readonly isLoggedIn   = this.authService.isLoggedIn;
   readonly currentUser  = this.authService.currentUser;
@@ -58,14 +71,32 @@ export class TrailDetailComponent implements OnInit {
   readonly starOptions = [1, 2, 3, 4, 5];
 
   // ── Lifecycle ───────────────────────────────────────────────────────
+  navigateToTrail(trail: TrailSummaryDto): void {
+    const base = this.insideShell ? '/dashboard/trails' : '/trails';
+    this.router.navigate([base, trail.slug]);
+  }
+
   ngOnInit(): void {
     this.trailService.getTrailBySlug(this.slug).subscribe({
-      next:  t  => { this.trail.set(t ?? null); this.loading.set(false); },
-      error: () => { this.error.set(true);       this.loading.set(false); },
+      next: t => {
+        this.trail.set(t ?? null);
+        this.loading.set(false);
+        if (t) {
+          this.trailService.getSimilarTrails(t).subscribe({
+            next: recs => this.recommendations.set(recs),
+          });
+        }
+      },
+      error: () => { this.error.set(true); this.loading.set(false); },
     });
 
     this.trailService.getTrailReviews(this.slug).subscribe({
       next: r => this.reviews.set(r),
+    });
+
+    this.geoService.getUserPosition().subscribe({
+      next: coords => this.userCoords.set(coords),
+      // silently ignore: user denied permission, unsupported, timeout
     });
   }
 
