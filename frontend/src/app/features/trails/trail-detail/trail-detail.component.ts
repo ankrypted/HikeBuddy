@@ -47,6 +47,34 @@ export class TrailDetailComponent implements OnInit {
     return Math.round(this.geoService.haversineKm(u.lat, u.lon, t.startLatitude, t.startLongitude));
   });
 
+  readonly travelAdvice = computed(() => {
+    const t = this.trail();
+    if (!t) return [];
+    const d    = this.distanceFromUser();
+    const city = t.nearestCity;
+
+    if (d !== null && d <= 150) {
+      return [
+        `You are only ${d} km away — drive or take a local bus directly to ${city}.`,
+        `The trek starts from ${city}.`,
+      ];
+    }
+    if (d !== null && d <= 700) {
+      return [
+        `Take a train or bus to ${t.nearestRailStation}.`,
+        `From ${t.nearestRailStation}, hire a cab or shared jeep to ${city}.`,
+        `The trek starts from ${city}.`,
+      ];
+    }
+    // Far away or no location data → recommend flight
+    const distNote = d !== null ? ` — most cost-effective from your location (${d} km away)` : '';
+    return [
+      `Fly to ${t.nearestAirport}${distNote}.`,
+      `From the airport, hire a cab or take a bus to ${city}.`,
+      `The trek starts from ${city}.`,
+    ];
+  });
+
   readonly isLoggedIn   = this.authService.isLoggedIn;
   readonly currentUser  = this.authService.currentUser;
   readonly isSaved      = computed(() =>
@@ -161,6 +189,10 @@ export class TrailDetailComponent implements OnInit {
   }
 
   // ── Helpers ─────────────────────────────────────────────────────────
+  formatInr(n: number): string {
+    return '₹' + n.toLocaleString('en-IN');
+  }
+
   stars(rating: number): ('filled' | 'empty')[] {
     return Array.from({ length: 5 }, (_, i) => i < Math.round(rating) ? 'filled' : 'empty');
   }

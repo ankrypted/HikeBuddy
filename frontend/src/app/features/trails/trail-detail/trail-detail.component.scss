@@ -239,6 +239,168 @@
   border:         1px solid rgba(126, 203, 63, 0.28);
 }
 
+// ─── Shared info heading ───────────────────────────────────────────────
+.info-heading {
+  display:       flex;
+  align-items:   center;
+  gap:           0.5rem;
+  font-size:     1rem;
+  font-weight:   700;
+  color:         #fff;
+  margin-bottom: 1rem;
+
+  svg {
+    width:      16px;
+    height:     16px;
+    flex-shrink: 0;
+    color:      v.$accent-green;
+  }
+}
+
+// ─── Essentials + Prerequisites (two-column card) ──────────────────────
+.info-section {
+  padding: 1.75rem 2rem;
+  border-radius: 16px;
+}
+
+.info-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.info-block { display: flex; flex-direction: column; }
+
+.info-list {
+  list-style: none;
+  padding:    0;
+  margin:     0;
+  display:    flex;
+  flex-direction: column;
+  gap:        0.5rem;
+
+  li {
+    display:     flex;
+    align-items: flex-start;
+    gap:         0.5rem;
+    font-size:   0.875rem;
+    line-height: 1.55;
+    color:       rgba(255, 255, 255, 0.80);
+
+    &::before {
+      content:     '·';
+      color:       v.$accent-green;
+      font-size:   1.1rem;
+      line-height: 1.3;
+      flex-shrink: 0;
+    }
+  }
+}
+
+// ─── Cost + Age row ────────────────────────────────────────────────────
+.info-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap:     1rem;
+}
+
+.info-card {
+  padding:       1.75rem 2rem;
+  border-radius: 16px;
+  display:       flex;
+  flex-direction: column;
+}
+
+.cost-range {
+  font-size:   1.6rem;
+  font-weight: 800;
+  color:       v.$accent-green;
+  margin:      0 0 0.4rem;
+  line-height: 1.2;
+}
+
+.cost-note {
+  font-size:   0.8rem;
+  line-height: 1.55;
+  color:       rgba(255, 255, 255, 0.55);
+  margin:      0;
+}
+
+.age-range {
+  font-size:   1rem;
+  font-weight: 700;
+  color:       #ffc940;
+  margin:      0 0 0.75rem;
+}
+
+// ─── How to Reach ──────────────────────────────────────────────────────
+.reach-sub {
+  font-size:      0.72rem;
+  font-weight:    500;
+  color:          v.$accent-green;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-left:    0.25rem;
+}
+
+.reach-steps {
+  list-style: none;
+  padding:    0;
+  margin:     0 0 1.25rem;
+  display:    flex;
+  flex-direction: column;
+  gap:        0.65rem;
+  counter-reset: steps;
+
+  li {
+    counter-increment: steps;
+    display:     flex;
+    align-items: flex-start;
+    gap:         0.75rem;
+    font-size:   0.9rem;
+    line-height: 1.55;
+    color:       rgba(255, 255, 255, 0.85);
+
+    &::before {
+      content:         counter(steps);
+      min-width:       22px;
+      height:          22px;
+      border-radius:   50%;
+      background:      rgba(126, 203, 63, 0.15);
+      border:          1px solid rgba(126, 203, 63, 0.35);
+      color:           v.$accent-green;
+      font-size:       0.72rem;
+      font-weight:     700;
+      display:         flex;
+      align-items:     center;
+      justify-content: center;
+      flex-shrink:     0;
+      margin-top:      0.15rem;
+    }
+  }
+}
+
+.reach-hubs {
+  display:     flex;
+  flex-wrap:   wrap;
+  gap:         0.35rem 0.5rem;
+  font-size:   0.78rem;
+  color:       rgba(255, 255, 255, 0.50);
+  margin:      0;
+
+  strong { color: rgba(255, 255, 255, 0.80); font-weight: 600; }
+}
+
+.hub-sep { color: rgba(255, 255, 255, 0.25); }
+
+// ─── Responsive tweaks ─────────────────────────────────────────────────
+@media (max-width: v.$bp-md) {
+  .info-cols { grid-template-columns: 1fr; gap: 1.5rem; }
+  .info-row  { grid-template-columns: 1fr; }
+  .info-section { padding: 1.25rem; }
+  .info-card    { padding: 1.25rem; }
+}
+
 // ─── More Details CTA ─────────────────────────────────────────────────
 .more-details-row {
   display:         flex;

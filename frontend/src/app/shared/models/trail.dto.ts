@@ -28,6 +28,15 @@ export interface TrailDetailDto extends TrailSummaryDto {
   tags: string[];
   createdAt: string;
   updatedAt: string;
+
+  // ── Enriched info ────────────────────────────────────────────────────
+  essentials:         string[];
+  prerequisites:      string[];
+  costInr:            { min: number; max: number; note: string };
+  nearestCity:        string;
+  nearestAirport:     string;
+  nearestRailStation: string;
+  ageGuidelines:      { minAge?: number; maxAge?: number; notes: string[] };
 }
 
 export interface TrailFilterDto extends Partial<PageRequestDto> {

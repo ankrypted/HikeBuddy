@@ -96,6 +96,93 @@
         }
       </section>
 
+      <!-- ── Trek Essentials & Prerequisites ──────────────────────── -->
+      <section class="info-section glass">
+        <div class="info-cols">
+
+          <div class="info-block">
+            <h2 class="info-heading">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 11l3 3L22 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Trek Essentials
+            </h2>
+            <ul class="info-list">
+              @for (item of trail()!.essentials; track item) {
+                <li>{{ item }}</li>
+              }
+            </ul>
+          </div>
+
+          <div class="info-block">
+            <h2 class="info-heading">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><line x1="12" y1="8" x2="12" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="16" x2="12.01" y2="16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              Prerequisites
+            </h2>
+            <ul class="info-list">
+              @for (item of trail()!.prerequisites; track item) {
+                <li>{{ item }}</li>
+              }
+            </ul>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ── Cost + Age Guidelines ──────────────────────────────── -->
+      <div class="info-row">
+
+        <section class="info-card glass">
+          <h2 class="info-heading">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="5" width="20" height="14" rx="2" stroke="currentColor" stroke-width="2"/><line x1="2" y1="10" x2="22" y2="10" stroke="currentColor" stroke-width="2"/></svg>
+            Estimated Cost
+          </h2>
+          <p class="cost-range">{{ formatInr(trail()!.costInr.min) }} – {{ formatInr(trail()!.costInr.max) }}</p>
+          <p class="cost-note">{{ trail()!.costInr.note }}</p>
+        </section>
+
+        <section class="info-card glass">
+          <h2 class="info-heading">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="2"/><path d="M23 21v-2a4 4 0 0 0-3-3.87" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Age Guidelines
+          </h2>
+          @if (trail()!.ageGuidelines.minAge || trail()!.ageGuidelines.maxAge) {
+            <p class="age-range">
+              @if (trail()!.ageGuidelines.minAge) { Min {{ trail()!.ageGuidelines.minAge }} yrs }
+              @if (trail()!.ageGuidelines.minAge && trail()!.ageGuidelines.maxAge) { &nbsp;·&nbsp; }
+              @if (trail()!.ageGuidelines.maxAge) { Max {{ trail()!.ageGuidelines.maxAge }} yrs }
+            </p>
+          }
+          <ul class="info-list">
+            @for (note of trail()!.ageGuidelines.notes; track note) {
+              <li>{{ note }}</li>
+            }
+          </ul>
+        </section>
+
+      </div>
+
+      <!-- ── How to Reach ────────────────────────────────────────── -->
+      <section class="info-section glass">
+        <h2 class="info-heading">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 12h18M3 12l4-4m-4 4 4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          How to Reach
+          @if (distanceFromUser() !== null) {
+            <span class="reach-sub">personalised for your location</span>
+          }
+        </h2>
+        <ol class="reach-steps">
+          @for (step of travelAdvice(); track $index) {
+            <li>{{ step }}</li>
+          }
+        </ol>
+        <p class="reach-hubs">
+          <span>Nearest airport: <strong>{{ trail()!.nearestAirport }}</strong></span>
+          <span class="hub-sep">·</span>
+          <span>Rail: <strong>{{ trail()!.nearestRailStation }}</strong></span>
+          <span class="hub-sep">·</span>
+          <span>Base town: <strong>{{ trail()!.nearestCity }}</strong></span>
+        </p>
+      </section>
+
       <!-- ── More Details CTA ──────────────────────────────────────── -->
       <div class="more-details-row">
         <button class="btn-more-details" disabled>More Details <span class="coming-soon">coming soon</span></button>
