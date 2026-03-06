@@ -4,10 +4,10 @@ import com.hikebuddy.user.User;
 import com.hikebuddy.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
-import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
+import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
+import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
-import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Service;
 import java.util.Optional;
 import java.util.UUID;
@@ -15,27 +15,26 @@ import java.util.UUID;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class CustomOAuth2UserService extends DefaultOAuth2UserService {
+public class CustomOAuth2UserService extends OidcUserService {
 
     private final UserRepository userRepository;
 
     @Override
-    public OAuth2User loadUser(OAuth2UserRequest request) throws OAuth2AuthenticationException {
+    public OidcUser loadUser(OidcUserRequest request) throws OAuth2AuthenticationException {
         log.info("loadUser() called — fetching Google profile");
-        OAuth2User oAuth2User = super.loadUser(request);
+        OidcUser oidcUser = super.loadUser(request);
 
-        String googleId  = oAuth2User.getAttribute("sub");
-        String email     = oAuth2User.getAttribute("email");
-        String name      = oAuth2User.getAttribute("name");
-        String avatarUrl = oAuth2User.getAttribute("picture");
+        String googleId  = oidcUser.getAttribute("sub");
+        String email     = oidcUser.getAttribute("email");
+        String name      = oidcUser.getAttribute("name");
+        String avatarUrl = oidcUser.getAttribute("picture");
 
         log.info("Google profile received: sub={}, email={}", googleId, email);
 
         User user = findOrCreateUser(googleId, email, name, avatarUrl);
         log.info("findOrCreateUser completed: userId={}", user.getId());
 
-        // Wrap user entity in the principal so the success handler needs no DB lookup
-        return new CustomOAuth2User(user, oAuth2User.getAttributes());
+        return new CustomOAuth2User(user, oidcUser);
     }
 
     private User findOrCreateUser(String googleId, String email, String name, String avatarUrl) {
@@ -82,7 +81,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     /** Derive a unique username from the Google display name or email prefix. */
     private String deriveUsername(String displayName, String email) {
         String base = (displayName != null && !displayName.isBlank())
-                ? displayName.replaceAll("\\s+", "").toLowerCase()
+                ? displayName.replaceAll("\s+", "").toLowerCase()
                 : email.split("@")[0];
 
         String candidate = base.length() > 48 ? base.substring(0, 48) : base;

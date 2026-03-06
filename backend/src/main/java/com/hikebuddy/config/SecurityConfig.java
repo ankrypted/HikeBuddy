@@ -73,7 +73,7 @@ public class SecurityConfig {
                 .oauth2Login(oauth2 -> oauth2
                         .authorizationEndpoint(auth -> auth
                                 .authorizationRequestRepository(cookieAuthRequestRepository))
-                        .userInfoEndpoint(u -> u.userService(oAuth2UserService))
+                        .userInfoEndpoint(u -> u.oidcUserService(oAuth2UserService))
                         .successHandler(oAuth2SuccessHandler)
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
