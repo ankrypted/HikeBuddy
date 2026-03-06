@@ -11,4 +11,7 @@ public interface UserSavedTrailRepository extends JpaRepository<UserSavedTrail, 
 
     @Query("SELECT s.id.trailId FROM UserSavedTrail s WHERE s.id.userId = :userId ORDER BY s.savedAt DESC")
     List<String> findTrailIdsByUserId(@Param("userId") UUID userId);
+
+    @Query("SELECT COUNT(s) FROM UserSavedTrail s WHERE s.id.userId = :userId")
+    long countByUserId(@Param("userId") UUID userId);
 }

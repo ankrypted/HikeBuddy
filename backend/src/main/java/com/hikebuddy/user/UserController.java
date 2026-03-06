@@ -1,5 +1,6 @@
 package com.hikebuddy.user;
 
+import com.hikebuddy.user.dto.PublicUserDto;
 import com.hikebuddy.user.dto.UpdatePasswordRequestDto;
 import com.hikebuddy.user.dto.UpdateProfileRequestDto;
 import com.hikebuddy.user.dto.UserProfileDto;
@@ -12,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -47,5 +49,15 @@ public class UserController {
             @AuthenticationPrincipal UserDetails principal,
             @Valid @RequestBody UpdatePasswordRequestDto dto) {
         userService.updatePassword(principal.getUsername(), dto);
+    }
+
+    @GetMapping("/public")
+    public List<PublicUserDto> getPublicUsers() {
+        return userService.getPublicUsers();
+    }
+
+    @GetMapping("/{username}/public")
+    public PublicUserDto getPublicUserProfile(@PathVariable String username) {
+        return userService.getPublicUserProfile(username);
     }
 }

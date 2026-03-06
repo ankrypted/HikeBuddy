@@ -67,6 +67,8 @@ public class SecurityConfig {
                         // affect POST authorization decisions on the same path hierarchy.
                         .requestMatchers(HttpMethod.GET, "/api/v1/trails/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/regions/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/users/public").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/users/*/public").permitAll()
                         // Everything else requires auth
                         .anyRequest().authenticated()
                 )

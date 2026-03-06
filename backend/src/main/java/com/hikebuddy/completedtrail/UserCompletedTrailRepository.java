@@ -11,4 +11,7 @@ public interface UserCompletedTrailRepository extends JpaRepository<UserComplete
 
     @Query("SELECT c.id.trailId FROM UserCompletedTrail c WHERE c.id.userId = :userId ORDER BY c.completedAt DESC")
     List<String> findTrailIdsByUserId(@Param("userId") UUID userId);
+
+    @Query("SELECT COUNT(c) FROM UserCompletedTrail c WHERE c.id.userId = :userId")
+    long countByUserId(@Param("userId") UUID userId);
 }
