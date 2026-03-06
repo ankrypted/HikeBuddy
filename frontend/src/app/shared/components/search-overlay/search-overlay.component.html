@@ -1,16 +1,79 @@
 @if (isOpen) {
   <div class="search-overlay" (click)="onBackdropClick($event)">
-    <div class="search-box glass">
-      <mat-icon class="search-icon">search</mat-icon>
-      <input
-        #searchInput
-        type="text"
-        placeholder="Search trails, regions…"
-        (keydown.escape)="close()"
-      />
-      <button mat-icon-button class="search-close" (click)="close()" aria-label="Close search">
-        <mat-icon>close</mat-icon>
-      </button>
+    <div class="search-container">
+
+      <!-- Input bar -->
+      <div class="search-box glass">
+        <mat-icon class="search-icon">search</mat-icon>
+        <input
+          #searchInput
+          type="text"
+          placeholder="Search trails, hikers…"
+          (input)="onInput($event)"
+          (keydown.escape)="close()"
+        />
+        @if (query()) {
+          <button mat-icon-button class="search-clear" (click)="query.set(''); searchInput.value = ''" aria-label="Clear">
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+        <button mat-icon-button class="search-close" (click)="close()" aria-label="Close search">
+          <mat-icon>keyboard_return</mat-icon>
+        </button>
+      </div>
+
+      <!-- Results panel -->
+      @if (hasResults()) {
+        <div class="search-results glass">
+
+          @if (trailResults().length) {
+            <div class="result-group">
+              <p class="result-group-label">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M3 17l4-8 4 5 3-3 4 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Trails
+              </p>
+              @for (trail of trailResults(); track trail.id) {
+                <button class="result-item" (click)="navigateToTrail(trail.slug)">
+                  <span class="result-trail-icon">
+                    <svg viewBox="0 0 24 24" fill="none"><path d="M3 17l4-8 4 5 3-3 4 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </span>
+                  <span class="result-text">
+                    <span class="result-name">{{ trail.name }}</span>
+                    <span class="result-sub">{{ trail.region.name }}</span>
+                  </span>
+                  <span class="result-chip chip--{{ trail.difficulty.toLowerCase() }}">{{ trail.difficulty }}</span>
+                </button>
+              }
+            </div>
+          }
+
+          @if (userResults().length) {
+            <div class="result-group" [class.result-group--sep]="trailResults().length">
+              <p class="result-group-label">
+                <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                Hikers
+              </p>
+              @for (user of userResults(); track user.id) {
+                <button class="result-item" (click)="navigateToUser(user.username)">
+                  <span class="result-avatar">{{ initials(user.username) }}</span>
+                  <span class="result-text">
+                    <span class="result-name">{{ user.username }}</span>
+                    <span class="result-sub">{{ user.completedTrailsCount }} trails · {{ user.reviewsCount }} reviews</span>
+                  </span>
+                </button>
+              }
+            </div>
+          }
+
+        </div>
+
+      } @else if (query().trim()) {
+        <div class="search-empty glass">
+          <mat-icon>search_off</mat-icon>
+          <p>No results for "<strong>{{ query() }}</strong>"</p>
+        </div>
+      }
+
     </div>
   </div>
 }

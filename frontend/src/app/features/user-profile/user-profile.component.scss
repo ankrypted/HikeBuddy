@@ -129,6 +129,72 @@
   }
 }
 
+// ─── Action buttons (subscribe / message / share) ──────────────────────
+.up-actions {
+  display:     flex;
+  align-items: center;
+  gap:         0.5rem;
+  flex-wrap:   wrap;
+}
+
+.btn-subscribe {
+  display:         inline-flex;
+  align-items:     center;
+  gap:             0.4rem;
+  padding:         0.35rem 1rem;
+  border-radius:   8px;
+  font-size:       0.78rem;
+  font-weight:     700;
+  cursor:          pointer;
+  border:          1px solid rgba(126, 203, 63, 0.4);
+  background:      rgba(126, 203, 63, 0.10);
+  color:           v.$accent-green;
+  transition:      background 0.18s, border-color 0.18s, color 0.18s;
+  font-family:     inherit;
+
+  svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+  &:hover {
+    background:   rgba(126, 203, 63, 0.20);
+    border-color: rgba(126, 203, 63, 0.60);
+  }
+
+  &--active {
+    background:   rgba(126, 203, 63, 0.22);
+    border-color: rgba(126, 203, 63, 0.65);
+    color:        v.$accent-green;
+  }
+}
+
+.btn-action {
+  display:         inline-flex;
+  align-items:     center;
+  gap:             0.4rem;
+  padding:         0.35rem 0.9rem;
+  border-radius:   8px;
+  font-size:       0.78rem;
+  font-weight:     600;
+  cursor:          pointer;
+  border:          1px solid rgba(255, 255, 255, 0.15);
+  background:      rgba(255, 255, 255, 0.06);
+  color:           rgba(255, 255, 255, 0.75);
+  transition:      background 0.18s, border-color 0.18s, color 0.18s;
+  font-family:     inherit;
+  text-decoration: none;
+
+  svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+  &:hover {
+    background:   rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.28);
+    color:        #fff;
+  }
+
+  &--icon {
+    padding: 0.35rem 0.6rem;
+  }
+}
+
 .up-joined {
   display:     flex;
   align-items: center;

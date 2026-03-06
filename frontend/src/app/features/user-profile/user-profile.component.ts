@@ -8,6 +8,7 @@ import { SceneBackgroundComponent } from '../../shared/components/scene-backgrou
 import { UserService }             from '../../core/services/user/user.service';
 import { AuthService }             from '../../core/services/auth/auth.service';
 import { PublicUserDto }           from '../../shared/models/public-user.dto';
+import { DOCUMENT }               from '@angular/common';
 
 @Component({
   selector:         'hb-user-profile',
@@ -22,10 +23,13 @@ export class UserProfileComponent implements OnInit {
 
   private readonly userService = inject(UserService);
   private readonly authService = inject(AuthService);
+  private readonly document    = inject(DOCUMENT);
 
-  readonly profile  = signal<PublicUserDto | null>(null);
-  readonly loading  = signal(true);
-  readonly notFound = signal(false);
+  readonly profile    = signal<PublicUserDto | null>(null);
+  readonly loading    = signal(true);
+  readonly notFound   = signal(false);
+  readonly subscribed = signal(false);
+  readonly copied     = signal(false);
 
   readonly currentUser  = this.authService.currentUser;
   readonly isOwnProfile = computed(() =>
@@ -37,6 +41,22 @@ export class UserProfileComponent implements OnInit {
       next:  p  => { this.profile.set(p); this.loading.set(false); },
       error: () => { this.notFound.set(true); this.loading.set(false); },
     });
+  }
+
+  toggleSubscribe(): void {
+    this.subscribed.update(v => !v);
+  }
+
+  shareProfile(): void {
+    const url = this.document.location.href;
+    if (navigator.share) {
+      navigator.share({ title: `${this.profile()?.username} on HikeBuddy`, url });
+    } else {
+      navigator.clipboard.writeText(url).then(() => {
+        this.copied.set(true);
+        setTimeout(() => this.copied.set(false), 2000);
+      });
+    }
   }
 
   // ── Helpers ─────────────────────────────────────────────────────────

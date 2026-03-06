@@ -124,4 +124,8 @@ export class UserService {
         }),
       );
   }
+
+  getPublicProfiles(): Observable<PublicUserDto[]> {
+    return of(Object.values(MOCK_PROFILES));
+  }
 }
