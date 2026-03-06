@@ -1,0 +1,63 @@
+<div class="achievements-wrapper">
+  <main class="achievements-main">
+
+    <header class="achievements-header">
+      <h1 class="achievements-title">Achievements</h1>
+      <p class="achievements-subtitle">
+        {{ earnedCount() }} / {{ badges().length }} badges earned
+      </p>
+    </header>
+
+    @for (cat of categories(); track cat.key) {
+      <section class="category-section">
+
+        <h2 class="category-heading">
+          <span class="cat-icon">{{ cat.icon }}</span>
+          {{ cat.label }}
+          <span class="cat-tally">
+            {{ earnedInCategory(cat.badges) }} / {{ cat.badges.length }}
+          </span>
+        </h2>
+
+        <div class="badge-grid">
+          @for (badge of cat.badges; track badge.id) {
+
+            <div class="badge-card glass"
+                 [class.badge-card--earned]="badge.earned"
+                 [attr.aria-label]="badge.name + (badge.earned ? ' — Earned' : ' — ' + formatProgress(badge))">
+
+              <div class="badge-icon-wrap">
+                <span class="badge-emoji" role="img">{{ badge.icon }}</span>
+                @if (!badge.earned) {
+                  <span class="lock-pip" aria-hidden="true">🔒</span>
+                }
+              </div>
+
+              <h3 class="badge-name">{{ badge.name }}</h3>
+              <p class="badge-desc">{{ badge.description }}</p>
+
+              <div class="badge-footer">
+                <div class="progress-track" role="progressbar"
+                     [attr.aria-valuenow]="progressPercent(badge)"
+                     aria-valuemin="0" aria-valuemax="100">
+                  <div class="progress-fill" [style.width.%]="progressPercent(badge)"></div>
+                </div>
+                <span class="progress-label">
+                  @if (badge.earned) {
+                    ✓&nbsp;Earned
+                  } @else {
+                    {{ formatProgress(badge) }}
+                  }
+                </span>
+              </div>
+
+            </div>
+
+          }
+        </div>
+
+      </section>
+    }
+
+  </main>
+</div>

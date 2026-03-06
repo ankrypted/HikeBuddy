@@ -1,0 +1,179 @@
+@use 'styles/variables' as v;
+
+// ─── Page wrapper ─────────────────────────────────────────────────────────
+.achievements-wrapper {
+  min-height: calc(100vh - v.$nav-height);
+}
+
+// ─── Content container ────────────────────────────────────────────────────
+.achievements-main {
+  max-width:       1000px;
+  width:           100%;
+  margin:          0 auto;
+  padding:         2.5rem 2rem 4rem;
+  display:         flex;
+  flex-direction:  column;
+  gap:             3rem;
+}
+
+// ─── Header ───────────────────────────────────────────────────────────────
+.achievements-header { padding-top: 1rem; }
+
+.achievements-title {
+  font-size:      clamp(2.2rem, 5vw, 3.4rem);
+  font-weight:    800;
+  line-height:    1.1;
+  letter-spacing: -0.02em;
+  margin-bottom:  0.4rem;
+}
+
+.achievements-subtitle {
+  font-size: 0.95rem;
+  color:     v.$text-muted;
+}
+
+// ─── Category section ─────────────────────────────────────────────────────
+.category-section {
+  display:        flex;
+  flex-direction: column;
+  gap:            1.25rem;
+}
+
+.category-heading {
+  display:     flex;
+  align-items: center;
+  gap:         0.6rem;
+  font-size:   1.05rem;
+  font-weight: 700;
+  color:       rgba(255, 255, 255, 0.75);
+  margin:      0;
+}
+
+.cat-icon { font-size: 1.2rem; }
+
+.cat-tally {
+  margin-left:  auto;
+  font-size:    0.82rem;
+  font-weight:  600;
+  color:        v.$text-muted;
+  background:   rgba(255, 255, 255, 0.07);
+  padding:      0.2rem 0.65rem;
+  border-radius: 2rem;
+  border:       1px solid rgba(255, 255, 255, 0.10);
+}
+
+// ─── Badge grid ───────────────────────────────────────────────────────────
+.badge-grid {
+  display:               grid;
+  grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+  gap:                   1rem;
+}
+
+// ─── Badge card ───────────────────────────────────────────────────────────
+.badge-card {
+  display:        flex;
+  flex-direction: column;
+  align-items:    center;
+  gap:            0.6rem;
+  padding:        1.5rem 1.25rem 1.25rem;
+  border-radius:  16px;
+  text-align:     center;
+  transition:     transform 0.2s, border-color 0.2s, box-shadow 0.2s, opacity 0.2s;
+
+  &--earned {
+    border-color: rgba(126, 203, 63, 0.35);
+    box-shadow:   0 0 22px rgba(126, 203, 63, 0.12);
+  }
+
+  &:not(.badge-card--earned) {
+    opacity: 0.48;
+    filter:  grayscale(0.55);
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+
+    &.badge-card--earned  { box-shadow: 0 0 30px rgba(126, 203, 63, 0.22); }
+    &:not(.badge-card--earned) { opacity: 0.65; }
+  }
+}
+
+// ─── Badge emoji + lock pip ───────────────────────────────────────────────
+.badge-icon-wrap {
+  position:    relative;
+  line-height: 1;
+}
+
+.badge-emoji {
+  font-size:   2.8rem;
+  line-height: 1;
+  display:     block;
+}
+
+.lock-pip {
+  position:  absolute;
+  bottom:    -6px;
+  right:     -12px;
+  font-size: 0.9rem;
+}
+
+// ─── Badge text ───────────────────────────────────────────────────────────
+.badge-name {
+  font-size:   0.97rem;
+  font-weight: 800;
+  margin:      0;
+  line-height: 1.2;
+}
+
+.badge-desc {
+  font-size:   0.75rem;
+  color:       v.$text-muted;
+  margin:      0;
+  line-height: 1.4;
+  flex:        1;
+}
+
+// ─── Progress bar ─────────────────────────────────────────────────────────
+.badge-footer {
+  width:          100%;
+  display:        flex;
+  flex-direction: column;
+  gap:            0.35rem;
+  margin-top:     0.25rem;
+}
+
+.progress-track {
+  height:        5px;
+  background:    rgba(255, 255, 255, 0.10);
+  border-radius: 3px;
+  overflow:      hidden;
+}
+
+.progress-fill {
+  height:        100%;
+  background:    v.$accent-green;
+  border-radius: 3px;
+  transition:    width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  min-width:     2px;
+}
+
+.progress-label {
+  font-size:   0.7rem;
+  font-weight: 600;
+  text-align:  center;
+
+  .badge-card--earned & { color: v.$accent-green; }
+  .badge-card:not(.badge-card--earned) & { color: v.$text-muted; }
+}
+
+// ─── Responsive ───────────────────────────────────────────────────────────
+@media (max-width: v.$bp-md) {
+  .achievements-main { padding: 1.5rem 1.25rem 3rem; }
+  .badge-grid { grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)); }
+  .badge-emoji { font-size: 2.2rem; }
+}
+
+@media (max-width: v.$bp-sm) {
+  .badge-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+  .badge-card { padding: 1.25rem 0.9rem 1rem; }
+}

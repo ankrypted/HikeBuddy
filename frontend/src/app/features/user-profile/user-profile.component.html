@@ -1,0 +1,157 @@
+<div class="up-page">
+  <hb-navbar />
+  <hb-scene-background />
+
+  <!-- Loading skeleton -->
+  @if (loading()) {
+    <main class="up-main">
+      <div class="up-skeleton glass">
+        <div class="skeleton-avatar"></div>
+        <div class="skeleton-lines">
+          <div class="skeleton-line skeleton-line--wide"></div>
+          <div class="skeleton-line skeleton-line--narrow"></div>
+          <div class="skeleton-line skeleton-line--mid"></div>
+        </div>
+      </div>
+    </main>
+  }
+
+  <!-- 404 state -->
+  @else if (notFound()) {
+    <main class="up-main up-main--center">
+      <div class="up-not-found glass">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="2"/>
+          <line x1="17" y1="11" x2="23" y2="17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <line x1="23" y1="11" x2="17" y2="17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <h1>Hiker not found</h1>
+        <p>No user with the username <strong>@{{ username }}</strong> exists on HikeBuddy.</p>
+        <a routerLink="/trails" class="btn-browse">Browse Trails</a>
+      </div>
+    </main>
+  }
+
+  <!-- Profile content -->
+  @else if (profile()) {
+    <main class="up-main">
+
+      <!-- ── Profile header ──────────────────────────────────────────── -->
+      <section class="up-header glass">
+
+        <!-- Avatar -->
+        <div class="up-avatar-wrap">
+          @if (profile()!.avatarUrl) {
+            <img class="up-avatar-img" [src]="profile()!.avatarUrl" [alt]="profile()!.username">
+          } @else {
+            <div class="up-avatar-initials">{{ initials(profile()!.username) }}</div>
+          }
+        </div>
+
+        <!-- Info -->
+        <div class="up-info">
+          <div class="up-name-row">
+            <h1 class="up-username">{{ profile()!.username }}</h1>
+            @if (isOwnProfile()) {
+              <a routerLink="/dashboard/profile" class="btn-edit">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Edit profile
+              </a>
+            }
+          </div>
+
+          <p class="up-joined">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="up-joined-icon"><rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/><line x1="16" y1="2" x2="16" y2="6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="8" y1="2" x2="8" y2="6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="3" y1="10" x2="21" y2="10" stroke="currentColor" stroke-width="2"/></svg>
+            Hiking since {{ formatJoinDate(profile()!.joinedAt) }}
+          </p>
+
+          @if (profile()!.bio) {
+            <p class="up-bio">{{ profile()!.bio }}</p>
+          }
+
+          <!-- Stats -->
+          <div class="up-stats">
+            <div class="up-stat">
+              <span class="up-stat-value">{{ profile()!.completedTrailsCount }}</span>
+              <span class="up-stat-label">Trails completed</span>
+            </div>
+            <div class="up-stat-sep"></div>
+            <div class="up-stat">
+              <span class="up-stat-value">{{ profile()!.reviewsCount }}</span>
+              <span class="up-stat-label">Reviews</span>
+            </div>
+            <div class="up-stat-sep"></div>
+            <div class="up-stat">
+              <span class="up-stat-value">{{ profile()!.savedTrailsCount }}</span>
+              <span class="up-stat-label">Saved trails</span>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ── Completed Trails ────────────────────────────────────────── -->
+      @if (profile()!.completedTrails.length) {
+        <section class="up-section">
+          <h2 class="up-section-heading">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 11l3 3L22 4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Trails Completed
+            <span class="up-section-count">{{ profile()!.completedTrailsCount }}</span>
+          </h2>
+          <div class="up-trails-grid">
+            @for (trail of profile()!.completedTrails; track trail.id) {
+              <a [routerLink]="['/trails', trail.slug]" class="up-trail-card glass">
+                <div class="up-trail-top">
+                  <span class="chip chip--{{ trail.difficulty.toLowerCase() }}">{{ trail.difficulty }}</span>
+                  <div class="up-trail-rating">
+                    <span class="up-star">★</span>
+                    {{ trail.averageRating }}
+                  </div>
+                </div>
+                <p class="up-trail-name">{{ trail.name }}</p>
+                <p class="up-trail-region">{{ trail.regionName }}</p>
+              </a>
+            }
+          </div>
+        </section>
+      }
+
+      <!-- ── Recent Reviews ──────────────────────────────────────────── -->
+      @if (profile()!.recentReviews.length) {
+        <section class="up-section">
+          <h2 class="up-section-heading">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Reviews Written
+            <span class="up-section-count">{{ profile()!.reviewsCount }}</span>
+          </h2>
+          <div class="up-reviews-list">
+            @for (review of profile()!.recentReviews; track review.id) {
+              <article class="up-review glass">
+                <div class="up-review-header">
+                  <a [routerLink]="['/trails', review.trailSlug]" class="up-review-trail">{{ review.trailName }}</a>
+                  <div class="up-review-stars">
+                    @for (s of stars(review.rating); track $index) {
+                      <span class="up-star" [class.up-star--filled]="s === 'filled'">★</span>
+                    }
+                  </div>
+                </div>
+                <p class="up-review-body">"{{ review.comment }}"</p>
+                <p class="up-review-meta">{{ review.visitedOn }}</p>
+              </article>
+            }
+          </div>
+        </section>
+      }
+
+      <!-- Empty activity state -->
+      @if (!profile()!.completedTrails.length && !profile()!.recentReviews.length) {
+        <div class="up-empty glass">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0z" stroke="currentColor" stroke-width="2"/><path d="M12 8v4l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <p>{{ profile()!.username }} hasn't completed any trails yet — but the adventure is coming.</p>
+        </div>
+      }
+
+    </main>
+  }
+</div>

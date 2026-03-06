@@ -85,6 +85,12 @@ export const routes: Routes = [
     ],
   },
   {
+    path: 'users/:username',
+    loadComponent: () =>
+      import('./features/user-profile/user-profile.component').then(m => m.UserProfileComponent),
+    title: 'Hiker Profile — HikeBuddy',
+  },
+  {
     path: 'auth',
     loadChildren: () =>
       import('./features/auth/auth.routes').then(m => m.AUTH_ROUTES),
