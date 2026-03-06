@@ -2,7 +2,71 @@
   <hb-navbar />
   <hb-scene-background />
 
-  <main class="feed-main">
+  <!-- ── Achievements strip ──────────────────────────────────────── -->
+  <div class="achievements-wrap">
+    <div class="achievements-strip">
+      @for (badge of achievements(); track badge.id) {
+        <div class="achievement-badge" [class.achievement-badge--unlocked]="badge.unlocked">
+          <div class="ab-icon-wrap">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path [attr.d]="badge.svgPath" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            @if (!badge.unlocked) {
+              <div class="ab-lock">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="3" y="11" width="18" height="11" rx="2" stroke="currentColor" stroke-width="2"/>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </div>
+            }
+          </div>
+          <span class="ab-label">{{ badge.label }}</span>
+          <span class="ab-desc">{{ badge.description }}</span>
+          <div class="ab-progress-track">
+            <div class="ab-progress-fill"
+                 [style.width.%]="badge.target > 0 ? (badge.current / badge.target) * 100 : 0">
+            </div>
+          </div>
+          <span class="ab-progress-text">{{ badge.current }} / {{ badge.target }}</span>
+        </div>
+      }
+    </div>
+  </div>
+
+  <hb-chat-widget />
+
+  <div class="feed-body">
+
+    <!-- ── Left sidebar: stats ──────────────────────────────────── -->
+    <aside class="feed-sidebar">
+      <div class="sidebar-card glass">
+        <h3 class="sidebar-heading">Your Stats</h3>
+        <div class="stat-item">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M2 20h20M12 4L4 20h16L12 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>Completed</span>
+          <strong>{{ completedCount() }}</strong>
+        </div>
+        <div class="stat-item">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>Saved</span>
+          <strong>{{ savedCount() }}</strong>
+        </div>
+        <div class="stat-item">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>Following</span>
+          <strong>{{ followingCount() }}</strong>
+        </div>
+      </div>
+    </aside>
+
+    <main class="feed-main">
 
     <header class="feed-header">
       <h1 class="feed-title">
@@ -77,5 +141,50 @@
       </div>
     }
 
-  </main>
+    </main>
+
+    <!-- ── Right sidebar: suggested hikers + trails ────────────── -->
+    <aside class="feed-sidebar">
+      @if (suggestedHikers().length) {
+        <div class="sidebar-card glass">
+          <h3 class="sidebar-heading">Suggested Hikers</h3>
+          @for (hiker of suggestedHikers(); track hiker.id) {
+            <a [routerLink]="['/users', hiker.username]" class="hiker-item">
+              <div class="hiker-avatar">{{ initials(hiker.username) }}</div>
+              <div class="hiker-info">
+                <span class="hiker-name">{{ hiker.username }}</span>
+                <span class="hiker-meta">{{ hiker.completedTrailsCount }} trails completed</span>
+              </div>
+            </a>
+          }
+        </div>
+      }
+
+      @if (suggestedTrails().length) {
+        <div class="sidebar-card glass">
+          <h3 class="sidebar-heading">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M2 20h20M6 20L12 4l6 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Suggested Trails
+          </h3>
+          @for (trail of suggestedTrails(); track trail.id) {
+            <a [routerLink]="['/trails', trail.slug]" class="trail-item">
+              <span class="trail-item-name">{{ trail.name }}</span>
+              <div class="trail-item-meta">
+                <span class="chip chip--{{ trail.difficulty.toLowerCase() }}">{{ trail.difficulty }}</span>
+                <span class="trail-item-rating">
+                  <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                  </svg>
+                  {{ trail.averageRating.toFixed(1) }}
+                </span>
+              </div>
+            </a>
+          }
+        </div>
+      }
+    </aside>
+
+  </div>
 </div>
