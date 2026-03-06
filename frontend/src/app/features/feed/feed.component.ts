@@ -1,11 +1,15 @@
 import {
-  Component, OnInit, signal, inject, ChangeDetectionStrategy,
+  Component, OnInit, signal, inject, ChangeDetectionStrategy, computed,
 } from '@angular/core';
-import { RouterLink }              from '@angular/router';
-import { NavbarComponent }         from '../../core/layout/navbar/navbar.component';
-import { SceneBackgroundComponent } from '../../shared/components/scene-background/scene-background.component';
-import { UserService }             from '../../core/services/user/user.service';
-import { ActivityEvent }           from '../../shared/models/public-user.dto';
+import { RouterLink }                from '@angular/router';
+import { NavbarComponent }           from '../../core/layout/navbar/navbar.component';
+import { SceneBackgroundComponent }  from '../../shared/components/scene-background/scene-background.component';
+import { UserService }               from '../../core/services/user/user.service';
+import { TrailService }              from '../../core/services/trail/trail.service';
+import { FavoritesService }          from '../../core/services/favorites/favorites.service';
+import { CompletedTrailsService }    from '../../core/services/completed-trails/completed-trails.service';
+import { ActivityEvent, PublicUserDto } from '../../shared/models/public-user.dto';
+import { TrailSummaryDto }           from '../../shared/models/trail.dto';
 
 export interface FeedEvent extends ActivityEvent {
   username:  string;
@@ -21,10 +25,19 @@ export interface FeedEvent extends ActivityEvent {
   styleUrl:        './feed.component.scss',
 })
 export class FeedComponent implements OnInit {
-  private readonly userService = inject(UserService);
+  private readonly userService      = inject(UserService);
+  private readonly trailService     = inject(TrailService);
+  private readonly favoritesService = inject(FavoritesService);
+  private readonly completedService = inject(CompletedTrailsService);
 
-  readonly feedItems = signal<FeedEvent[]>([]);
-  readonly loading   = signal(true);
+  readonly feedItems       = signal<FeedEvent[]>([]);
+  readonly loading         = signal(true);
+  readonly suggestedTrails = signal<TrailSummaryDto[]>([]);
+  readonly suggestedHikers = signal<PublicUserDto[]>([]);
+
+  readonly completedCount  = this.completedService.count;
+  readonly savedCount      = this.favoritesService.count;
+  readonly followingCount  = computed(() => this.suggestedHikers().length);
 
   ngOnInit(): void {
     this.userService.getPublicProfiles().subscribe(profiles => {
@@ -38,6 +51,15 @@ export class FeedComponent implements OnInit {
       items.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
       this.feedItems.set(items);
       this.loading.set(false);
+      this.suggestedHikers.set(profiles.slice(0, 3));
+    });
+
+    this.trailService.getAllTrails().subscribe(trails => {
+      const top = trails
+        .filter(t => t.isFeatured)
+        .sort((a, b) => b.averageRating - a.averageRating)
+        .slice(0, 4);
+      this.suggestedTrails.set(top);
     });
   }
 

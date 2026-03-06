@@ -4,6 +4,8 @@ import {
 import { RouterLink, RouterLinkActive, Router, NavigationEnd } from '@angular/router';
 import { MatButtonModule }                   from '@angular/material/button';
 import { MatIconModule }                     from '@angular/material/icon';
+import { MatMenuModule }                     from '@angular/material/menu';
+import { MatDividerModule }                  from '@angular/material/divider';
 import { toSignal }                          from '@angular/core/rxjs-interop';
 import { filter, map, startWith }            from 'rxjs';
 import { HikerLogoComponent }                from '../../../shared/components/hiker-logo/hiker-logo.component';
@@ -16,7 +18,7 @@ import { AuthService }                       from '../../services/auth/auth.serv
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     RouterLink, RouterLinkActive,
-    MatButtonModule, MatIconModule,
+    MatButtonModule, MatIconModule, MatMenuModule, MatDividerModule,
     HikerLogoComponent, SearchOverlayComponent,
   ],
   templateUrl: './navbar.component.html',
@@ -63,8 +65,8 @@ export class NavbarComponent {
   }
 
   readonly navLinks = [
-    { label: 'About us', routerLink: '/',        fragment: 'about'   },
-    { label: 'Gallery',  routerLink: '/gallery', fragment: undefined },
-    { label: 'Contact',  routerLink: '/contact', fragment: undefined },
+    { label: 'Home',    routerLink: '/',        fragment: undefined },
+    { label: 'Gallery', routerLink: '/gallery', fragment: undefined },
+    { label: 'Contact', routerLink: '/contact', fragment: undefined },
   ] as const;
 }

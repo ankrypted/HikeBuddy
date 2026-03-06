@@ -31,17 +31,36 @@
   <!-- Auth buttons — top-right -->
   <div class="auth-buttons">
     @if (isLoggedIn()) {
-      @if (!onFeed()) {
+      @if (!onFeed() && !onDashboard()) {
         <a routerLink="/feed" class="btn-login">Feed</a>
       }
-      <a routerLink="/dashboard" class="nav-avatar" aria-label="My profile">
+
+      <!-- Avatar trigger -->
+      <button class="nav-avatar" [matMenuTriggerFor]="userMenu" aria-label="My profile">
         @if (currentUser()?.avatarUrl) {
           <img class="nav-avatar-img" [src]="currentUser()!.avatarUrl" [alt]="currentUser()!.username">
         } @else {
           <span class="nav-avatar-initials">{{ initials(currentUser()?.username) }}</span>
         }
-      </a>
-      <button class="btn-signout" type="button" (click)="logout()">Sign out</button>
+      </button>
+
+      <!-- User dropdown -->
+      <mat-menu #userMenu="matMenu" class="nav-user-menu">
+        <a mat-menu-item routerLink="/dashboard">
+          <mat-icon>dashboard</mat-icon>
+          My Dashboard
+        </a>
+        <a mat-menu-item routerLink="/dashboard/profile">
+          <mat-icon>settings</mat-icon>
+          Settings
+        </a>
+        <mat-divider />
+        <button mat-menu-item (click)="logout()">
+          <mat-icon class="icon-danger">logout</mat-icon>
+          <span class="text-danger">Sign out</span>
+        </button>
+      </mat-menu>
+
     } @else {
       <a routerLink="/auth/login"    class="btn-login">Log In</a>
       <a routerLink="/auth/register" class="btn-signup">Sign Up</a>

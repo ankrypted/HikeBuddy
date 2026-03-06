@@ -81,40 +81,21 @@
   }
 }
 
-.btn-signout {
-  display:         inline-flex;
-  align-items:     center;
-  padding:         0.42rem 1.1rem;
-  border-radius:   2rem;
-  font-size:       0.85rem;
-  font-weight:     600;
-  letter-spacing:  0.02em;
-  cursor:          pointer;
-  color:           v.$text-muted;
-  background:      transparent;
-  border:          1px solid v.$glass-border;
-  transition:      border-color 0.25s, color 0.25s;
-
-  &:hover {
-    border-color: rgba(224, 87, 87, 0.7);
-    color:        #f08080;
-  }
-}
-
-// ─── Avatar icon (logged-in state) ───────────────────────────────────
+// ─── Avatar button (logged-in state) ─────────────────────────────────
 .nav-avatar {
-  display:         flex;
-  align-items:     center;
-  justify-content: center;
-  width:           36px;
-  height:          36px;
-  border-radius:   50%;
-  background:      rgba(126, 203, 63, 0.12);
-  border:          1px solid rgba(126, 203, 63, 0.35);
-  text-decoration: none;
-  overflow:        hidden;
-  flex-shrink:     0;
-  transition:      border-color 0.2s, box-shadow 0.2s;
+  display:          flex;
+  align-items:      center;
+  justify-content:  center;
+  width:            36px;
+  height:           36px;
+  border-radius:    50%;
+  background:       rgba(126, 203, 63, 0.12);
+  border:           1px solid rgba(126, 203, 63, 0.35);
+  overflow:         hidden;
+  flex-shrink:      0;
+  cursor:           pointer;
+  padding:          0;
+  transition:       border-color 0.2s, box-shadow 0.2s;
 
   &:hover {
     border-color: rgba(126, 203, 63, 0.65);
@@ -136,11 +117,37 @@
   user-select:    none;
 }
 
+// ─── User dropdown menu (overlay panel) ──────────────────────────────
+// mat-menu renders outside the component; use ::ng-deep to reach the panel
+::ng-deep .nav-user-menu {
+  .mat-mdc-menu-panel {
+    background:    rgba(10, 20, 30, 0.97);
+    border:        1px solid rgba(126, 203, 63, 0.2);
+    border-radius: 0.75rem;
+    backdrop-filter: blur(16px);
+    min-width:     180px;
+  }
+
+  .mat-mdc-menu-item {
+    color:       rgba(255, 255, 255, 0.85);
+    font-size:   0.875rem;
+
+    .mat-icon { color: rgba(255, 255, 255, 0.5); }
+
+    &:hover {
+      background: rgba(126, 203, 63, 0.08);
+    }
+  }
+
+  .icon-danger { color: rgba(224, 87, 87, 0.7) !important; }
+  .text-danger { color: #f08080; }
+}
+
 .search-btn {
-  background:  rgba(255, 255, 255, 0.1) !important;
-  border:      1px solid v.$glass-border !important;
+  background:    rgba(255, 255, 255, 0.1) !important;
+  border:        1px solid v.$glass-border !important;
   border-radius: 50% !important;
-  color:       #fff !important;
+  color:         #fff !important;
 }
 
 .menu-btn {
