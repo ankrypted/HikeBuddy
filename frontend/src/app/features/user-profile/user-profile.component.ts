@@ -7,7 +7,7 @@ import { NavbarComponent }         from '../../core/layout/navbar/navbar.compone
 import { SceneBackgroundComponent } from '../../shared/components/scene-background/scene-background.component';
 import { UserService }             from '../../core/services/user/user.service';
 import { AuthService }             from '../../core/services/auth/auth.service';
-import { PublicUserDto }           from '../../shared/models/public-user.dto';
+import { PublicUserDto, ActivityEvent } from '../../shared/models/public-user.dto';
 import { DOCUMENT }               from '@angular/common';
 
 @Component({
@@ -71,5 +71,25 @@ export class UserProfileComponent implements OnInit {
 
   stars(rating: number): ('filled' | 'empty')[] {
     return Array.from({ length: 5 }, (_, i) => i < Math.round(rating) ? 'filled' : 'empty');
+  }
+
+  activityLabel(event: ActivityEvent): string {
+    switch (event.type) {
+      case 'completed': return 'Completed';
+      case 'reviewed':  return 'Reviewed';
+      case 'saved':     return 'Saved';
+    }
+  }
+
+  formatActivityDate(iso: string): string {
+    const date = new Date(iso);
+    const now   = new Date();
+    const days  = Math.floor((now.getTime() - date.getTime()) / 86_400_000);
+    if (days === 0) return 'Today';
+    if (days === 1) return 'Yesterday';
+    if (days < 7)  return `${days} days ago`;
+    if (days < 30) return `${Math.floor(days / 7)} weeks ago`;
+    if (days < 365) return date.toLocaleDateString('en-IN', { month: 'short', day: 'numeric' });
+    return date.toLocaleDateString('en-IN', { month: 'short', year: 'numeric' });
   }
 }

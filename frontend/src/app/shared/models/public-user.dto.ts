@@ -18,6 +18,20 @@ export interface PublicReviewDto {
   visitedOn: string;
 }
 
+export type ActivityEventType = 'completed' | 'reviewed' | 'saved';
+
+export interface ActivityEvent {
+  id:         string;
+  type:       ActivityEventType;
+  timestamp:  string;          // ISO-8601
+  trailName:  string;
+  trailSlug:  string;
+  difficulty: DifficultyLevel;
+  regionName: string;
+  rating?:    number;          // only for 'reviewed'
+  comment?:   string;          // only for 'reviewed'
+}
+
 export interface PublicUserDto {
   id:                   string;
   username:             string;
@@ -29,4 +43,5 @@ export interface PublicUserDto {
   savedTrailsCount:     number;
   completedTrails:      PublicTrailRef[];
   recentReviews:        PublicReviewDto[];
+  recentActivity:       ActivityEvent[];
 }

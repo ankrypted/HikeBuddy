@@ -42,6 +42,15 @@ const MOCK_PROFILES: Record<string, PublicUserDto> = {
         visitedOn: 'June 2023',
       },
     ],
+    recentActivity: [
+      { id: 'a1', type: 'completed', timestamp: '2025-02-18T00:00:00Z', trailName: 'Brahmatal',      trailSlug: 'brahmatal',       difficulty: 'MODERATE', regionName: 'Uttarakhand' },
+      { id: 'a2', type: 'reviewed',  timestamp: '2025-01-30T00:00:00Z', trailName: 'Roopkund Trek',  trailSlug: 'roopkund',        difficulty: 'HARD',     regionName: 'Uttarakhand',      rating: 5, comment: 'One of the most surreal experiences of my life. The skeleton lake at dusk, the ridgeline with Trishul looming above — absolutely breathtaking.' },
+      { id: 'a3', type: 'saved',     timestamp: '2025-01-12T00:00:00Z', trailName: 'Pin Parvati',    trailSlug: 'pin-parvati',     difficulty: 'EXPERT',   regionName: 'Himachal Pradesh' },
+      { id: 'a4', type: 'completed', timestamp: '2024-10-05T00:00:00Z', trailName: 'Roopkund Trek',  trailSlug: 'roopkund',        difficulty: 'HARD',     regionName: 'Uttarakhand' },
+      { id: 'a5', type: 'reviewed',  timestamp: '2024-04-22T00:00:00Z', trailName: 'Goechala',       trailSlug: 'goechala',        difficulty: 'HARD',     regionName: 'Sikkim',           rating: 5, comment: 'Standing face-to-face with Kangchenjunga from the viewpoint — nothing prepares you for that.' },
+      { id: 'a6', type: 'completed', timestamp: '2024-04-14T00:00:00Z', trailName: 'Goechala',       trailSlug: 'goechala',        difficulty: 'HARD',     regionName: 'Sikkim' },
+      { id: 'a7', type: 'saved',     timestamp: '2024-02-01T00:00:00Z', trailName: 'Kang Yatse II',  trailSlug: 'kang-yatse-ii',   difficulty: 'EXPERT',   regionName: 'Ladakh' },
+    ],
   },
 
   'trekkie_raj': {
@@ -77,6 +86,14 @@ const MOCK_PROFILES: Record<string, PublicUserDto> = {
         visitedOn: 'September 2024',
       },
     ],
+    recentActivity: [
+      { id: 'b1', type: 'reviewed',  timestamp: '2025-02-10T00:00:00Z', trailName: 'Hampta Pass',       trailSlug: 'hampta-pass',       difficulty: 'MODERATE', regionName: 'Himachal Pradesh', rating: 5, comment: 'The contrast between the green Kullu valley and the barren Lahaul desert is jaw-dropping. Highly recommend adding Chandratal on Day 5.' },
+      { id: 'b2', type: 'completed', timestamp: '2025-02-01T00:00:00Z', trailName: 'Hampta Pass',       trailSlug: 'hampta-pass',       difficulty: 'MODERATE', regionName: 'Himachal Pradesh' },
+      { id: 'b3', type: 'saved',     timestamp: '2025-01-20T00:00:00Z', trailName: 'Stok Kangri',       trailSlug: 'stok-kangri',       difficulty: 'EXPERT',   regionName: 'Ladakh' },
+      { id: 'b4', type: 'completed', timestamp: '2024-01-28T00:00:00Z', trailName: 'Kedarkantha',       trailSlug: 'kedarkantha',       difficulty: 'EASY',     regionName: 'Uttarkashi' },
+      { id: 'b5', type: 'reviewed',  timestamp: '2024-01-29T00:00:00Z', trailName: 'Kedarkantha',       trailSlug: 'kedarkantha',       difficulty: 'EASY',     regionName: 'Uttarkashi',       rating: 5, comment: 'My first winter trek. Summit sunrise at −10°C with a 360° panorama of white peaks — absolutely magical.' },
+      { id: 'b6', type: 'saved',     timestamp: '2024-01-05T00:00:00Z', trailName: 'Kuari Pass',        trailSlug: 'kuari-pass',        difficulty: 'EASY',     regionName: 'Garhwal' },
+    ],
   },
 
   'trailblazer.neha': {
@@ -104,6 +121,13 @@ const MOCK_PROFILES: Record<string, PublicUserDto> = {
         comment: 'First time seeing snow in my life! The meadow at sunrise with fresh powder was something I will never forget. The guide from Barsu was incredibly knowledgeable.',
         visitedOn: 'January 2025',
       },
+    ],
+    recentActivity: [
+      { id: 'c1', type: 'reviewed',  timestamp: '2025-01-18T00:00:00Z', trailName: 'Dayara Bugyal',     trailSlug: 'dayara-bugyal',     difficulty: 'EASY', regionName: 'Uttarkashi', rating: 5, comment: 'First time seeing snow in my life! The meadow at sunrise with fresh powder was something I will never forget.' },
+      { id: 'c2', type: 'completed', timestamp: '2025-01-10T00:00:00Z', trailName: 'Dayara Bugyal',     trailSlug: 'dayara-bugyal',     difficulty: 'EASY', regionName: 'Uttarkashi' },
+      { id: 'c3', type: 'saved',     timestamp: '2024-12-05T00:00:00Z', trailName: 'Kedarkantha',       trailSlug: 'kedarkantha',       difficulty: 'EASY', regionName: 'Uttarkashi' },
+      { id: 'c4', type: 'reviewed',  timestamp: '2024-08-22T00:00:00Z', trailName: 'Valley of Flowers', trailSlug: 'valley-of-flowers', difficulty: 'EASY', regionName: 'Chamoli',   rating: 5, comment: 'More than 300 species of wildflowers all at once — it felt unreal. The walk from Ghangaria is gentle and well-marked.' },
+      { id: 'c5', type: 'completed', timestamp: '2024-08-15T00:00:00Z', trailName: 'Valley of Flowers', trailSlug: 'valley-of-flowers', difficulty: 'EASY', regionName: 'Chamoli' },
     ],
   },
 };
