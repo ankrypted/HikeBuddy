@@ -1,0 +1,214 @@
+@use 'styles/variables' as v;
+
+.chat-widget {
+  position: fixed;
+  bottom:   1.75rem;
+  right:    1.75rem;
+  z-index:  100;
+  display:  flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap:      0.75rem;
+}
+
+// ─── FAB ─────────────────────────────────────────────────────────────────
+.chat-fab {
+  position:        relative;
+  width:           52px;
+  height:          52px;
+  border-radius:   50%;
+  background:      v.$accent-green;
+  border:          none;
+  cursor:          pointer;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  box-shadow:      0 4px 20px rgba(126, 203, 63, 0.45);
+  transition:      background 0.2s, box-shadow 0.2s, transform 0.15s;
+  flex-shrink:     0;
+
+  svg {
+    width:  22px;
+    height: 22px;
+    color:  #0d1b2a;
+  }
+
+  &:hover {
+    background:  v.$accent-lighter;
+    box-shadow:  0 6px 28px rgba(126, 203, 63, 0.6);
+    transform:   translateY(-2px);
+  }
+
+  &:active { transform: translateY(0); }
+}
+
+.fab-badge {
+  position:    absolute;
+  top:         -3px;
+  right:       -3px;
+  min-width:   18px;
+  height:      18px;
+  border-radius: 9px;
+  background:  #e53e3e;
+  color:       #fff;
+  font-size:   0.62rem;
+  font-weight: 800;
+  display:     flex;
+  align-items: center;
+  justify-content: center;
+  padding:     0 4px;
+  border:      2px solid v.$bg-primary;
+  line-height: 1;
+}
+
+// ─── Panel ────────────────────────────────────────────────────────────────
+.chat-panel {
+  width:          300px;
+  border-radius:  16px;
+  background:     rgba(17, 34, 51, 0.92);
+  backdrop-filter: blur(v.$glass-blur);
+  -webkit-backdrop-filter: blur(v.$glass-blur);
+  border:         1px solid v.$glass-border;
+  box-shadow:     0 8px 32px rgba(0, 0, 0, 0.45);
+  overflow:       hidden;
+
+  // Collapsed by default
+  max-height:     0;
+  opacity:        0;
+  pointer-events: none;
+  transform:      translateY(8px);
+  transition:     max-height 0.3s ease, opacity 0.25s ease, transform 0.25s ease;
+
+  &--open {
+    max-height:     500px;
+    opacity:        1;
+    pointer-events: auto;
+    transform:      translateY(0);
+  }
+}
+
+.cp-header {
+  display:         flex;
+  align-items:     center;
+  justify-content: space-between;
+  padding:         1rem 1rem 0.75rem;
+  border-bottom:   1px solid rgba(255, 255, 255, 0.07);
+}
+
+.cp-title {
+  font-size:   0.88rem;
+  font-weight: 700;
+  color:       #fff;
+}
+
+.cp-close {
+  background: transparent;
+  border:     none;
+  cursor:     pointer;
+  padding:    0;
+  display:    flex;
+  align-items: center;
+  justify-content: center;
+  color:      v.$text-muted;
+  transition: color 0.15s;
+
+  svg { width: 16px; height: 16px; }
+
+  &:hover { color: #fff; }
+}
+
+// ─── Conversation list ────────────────────────────────────────────────────
+.cp-list {
+  display:        flex;
+  flex-direction: column;
+  max-height:     340px;
+  overflow-y:     auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.1) transparent;
+}
+
+.cp-item {
+  display:    flex;
+  align-items: center;
+  gap:        0.65rem;
+  width:      100%;
+  padding:    0.7rem 1rem;
+  background: transparent;
+  border:     none;
+  cursor:     pointer;
+  text-align: left;
+  transition: background 0.15s;
+
+  &:hover { background: rgba(255, 255, 255, 0.05); }
+  &:not(:last-child) { border-bottom: 1px solid rgba(255, 255, 255, 0.04); }
+}
+
+.cp-avatar {
+  width:           36px;
+  height:          36px;
+  border-radius:   50%;
+  background:      rgba(126, 203, 63, 0.15);
+  border:          1px solid rgba(126, 203, 63, 0.3);
+  font-size:       0.68rem;
+  font-weight:     800;
+  color:           v.$accent-green;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  flex-shrink:     0;
+}
+
+.cp-info {
+  display:   flex;
+  flex-direction: column;
+  gap:       0.15rem;
+  min-width: 0;
+  flex:      1;
+}
+
+.cp-row {
+  display:         flex;
+  align-items:     baseline;
+  justify-content: space-between;
+  gap:             0.4rem;
+}
+
+.cp-name {
+  font-size:     0.82rem;
+  font-weight:   700;
+  color:         #fff;
+  white-space:   nowrap;
+  overflow:      hidden;
+  text-overflow: ellipsis;
+}
+
+.cp-time {
+  font-size:  0.65rem;
+  color:      v.$text-muted;
+  flex-shrink: 0;
+}
+
+.cp-preview {
+  font-size:     0.75rem;
+  color:         v.$text-muted;
+  white-space:   nowrap;
+  overflow:      hidden;
+  text-overflow: ellipsis;
+
+  &--unread { color: rgba(255, 255, 255, 0.85); font-weight: 600; }
+}
+
+.cp-badge {
+  min-width:   18px;
+  height:      18px;
+  border-radius: 9px;
+  background:  v.$accent-green;
+  color:       #0d1b2a;
+  font-size:   0.62rem;
+  font-weight: 800;
+  display:     flex;
+  align-items: center;
+  justify-content: center;
+  padding:     0 4px;
+  flex-shrink: 0;
+}
