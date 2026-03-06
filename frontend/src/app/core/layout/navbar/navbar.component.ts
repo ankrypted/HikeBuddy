@@ -35,6 +35,7 @@ export class NavbarComponent {
   );
 
   readonly isLoggedIn   = this.authService.isLoggedIn;
+  readonly currentUser  = this.authService.currentUser;
   readonly onDashboard  = computed(() => this.currentUrl()?.startsWith('/dashboard') ?? false);
   readonly onFeed       = computed(() => this.currentUrl()?.startsWith('/feed') ?? false);
   readonly searchOpen   = signal(false);
@@ -54,6 +55,11 @@ export class NavbarComponent {
   onEscape(): void {
     this.closeSearch();
     this.closeMenu();
+  }
+
+  initials(username: string | undefined): string {
+    if (!username) return '?';
+    return username.replace(/[^a-zA-Z]/g, '').slice(0, 2).toUpperCase() || '?';
   }
 
   readonly navLinks = [

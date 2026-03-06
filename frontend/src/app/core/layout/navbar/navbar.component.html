@@ -34,9 +34,13 @@
       @if (!onFeed()) {
         <a routerLink="/feed" class="btn-login">Feed</a>
       }
-      @if (!onDashboard()) {
-        <a routerLink="/dashboard" class="btn-signup">My Dashboard</a>
-      }
+      <a routerLink="/dashboard" class="nav-avatar" aria-label="My profile">
+        @if (currentUser()?.avatarUrl) {
+          <img class="nav-avatar-img" [src]="currentUser()!.avatarUrl" [alt]="currentUser()!.username">
+        } @else {
+          <span class="nav-avatar-initials">{{ initials(currentUser()?.username) }}</span>
+        }
+      </a>
       <button class="btn-signout" type="button" (click)="logout()">Sign out</button>
     } @else {
       <a routerLink="/auth/login"    class="btn-login">Log In</a>

@@ -40,7 +40,7 @@ export class LoginComponent {
       email:    this.f['email'].value!,
       password: this.f['password'].value!,
     }).subscribe({
-      next:  () => this.router.navigate(['/dashboard']),
+      next:  () => this.router.navigate(['/feed']),
       error: (err) => {
         this.serverError.set(err?.error?.message ?? 'Login failed. Please check your credentials.');
         this.loading.set(false);

@@ -41,7 +41,7 @@ export class AuthCallbackComponent implements OnInit {
 
   ngOnInit(): void {
     const token     = this.route.snapshot.queryParamMap.get('token');
-    const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') ?? '/';
+    const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') ?? '/feed';
 
     if (token) {
       this.authService.handleOAuthCallback(token);

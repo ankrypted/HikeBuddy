@@ -101,6 +101,41 @@
   }
 }
 
+// ─── Avatar icon (logged-in state) ───────────────────────────────────
+.nav-avatar {
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  width:           36px;
+  height:          36px;
+  border-radius:   50%;
+  background:      rgba(126, 203, 63, 0.12);
+  border:          1px solid rgba(126, 203, 63, 0.35);
+  text-decoration: none;
+  overflow:        hidden;
+  flex-shrink:     0;
+  transition:      border-color 0.2s, box-shadow 0.2s;
+
+  &:hover {
+    border-color: rgba(126, 203, 63, 0.65);
+    box-shadow:   0 0 10px rgba(126, 203, 63, 0.35);
+  }
+}
+
+.nav-avatar-img {
+  width:      100%;
+  height:     100%;
+  object-fit: cover;
+}
+
+.nav-avatar-initials {
+  font-size:      0.7rem;
+  font-weight:    800;
+  color:          v.$accent-green;
+  letter-spacing: 0.02em;
+  user-select:    none;
+}
+
 .search-btn {
   background:  rgba(255, 255, 255, 0.1) !important;
   border:      1px solid v.$glass-border !important;
