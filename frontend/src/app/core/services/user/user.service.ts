@@ -150,6 +150,8 @@ export class UserService {
   }
 
   getPublicProfiles(): Observable<PublicUserDto[]> {
-    return of(Object.values(MOCK_PROFILES));
+    return this.http.get<PublicUserDto[]>(`${this.base}/public`).pipe(
+      catchError(() => of(Object.values(MOCK_PROFILES))),
+    );
   }
 }

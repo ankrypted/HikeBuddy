@@ -90,7 +90,7 @@ export class FeedComponent implements OnInit {
   ngOnInit(): void {
     this.userService.getPublicProfiles().subscribe(profiles => {
       const items: FeedEvent[] = profiles.flatMap(p =>
-        p.recentActivity.map(e => ({
+        (p.recentActivity ?? []).map(e => ({
           ...e,
           username:  p.username,
           avatarUrl: p.avatarUrl,
