@@ -81,7 +81,7 @@ public class CustomOAuth2UserService extends OidcUserService {
     /** Derive a unique username from the Google display name or email prefix. */
     private String deriveUsername(String displayName, String email) {
         String base = (displayName != null && !displayName.isBlank())
-                ? displayName.replaceAll("\s+", "").toLowerCase()
+                ? displayName.replaceAll("\\s+", "").toLowerCase()
                 : email.split("@")[0];
 
         String candidate = base.length() > 48 ? base.substring(0, 48) : base;

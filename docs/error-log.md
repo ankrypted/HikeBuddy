@@ -2,7 +2,7 @@
 
 > **Audience**: This document is written for both laypeople and engineers.
 > Each error has a plain-English summary followed by the full technical explanation.
-> Last updated: 2026-02-26
+> Last updated: 2026-03-06
 
 ---
 
@@ -21,6 +21,8 @@
 11. [OnChanges Lifecycle Not Triggering](#11-onchanges-lifecycle-not-triggering)
 12. [SVG Hiker Limb Animation Pivots from Wrong Point](#12-svg-hiker-limb-animation-pivots-from-wrong-point)
 13. [Security: CORS Preflight Requests Blocked by Spring Security](#13-security-cors-preflight-requests-blocked-by-spring-security)
+14. [Google OAuth2 Login — 500 ClassCastException](#14-google-oauth2-login--500-classcastexception)
+15. [Backend Won't Start — UnsupportedClassVersionError (Java 21 vs 17)](#15-backend-wont-start--unsupportedclassversionerror-java-21-vs-17)
 
 ---
 
@@ -485,6 +487,106 @@ CorsConfigurationSource corsConfigurationSource() {
 
 ---
 
+---
+
+## 14. Google OAuth2 Login — 500 ClassCastException
+
+### In plain English
+Clicking "Sign in with Google" redirected successfully to Google's login page, but when Google redirected back to our app, the server crashed with a 500 error. The user never got a JWT — the login silently failed.
+
+### What the error looked like
+```
+java.lang.ClassCastException:
+  org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser
+  cannot be cast to com.hikebuddy.auth.oauth2.CustomOAuth2User
+```
+
+### Root cause (for engineers)
+Google is an **OpenID Connect (OIDC)** provider, not plain OAuth2. Spring Security detects this and routes Google logins through `OidcUserService`, not `DefaultOAuth2UserService`. Our `CustomOAuth2UserService` extended `DefaultOAuth2UserService`, which is **never called** for OIDC flows — so Spring used its built-in `OidcUserService` and returned a raw `DefaultOidcUser`. When the success handler then cast the principal to `CustomOAuth2User`, it crashed.
+
+Additionally, `CustomOAuth2User` only implemented `OAuth2User`, not `OidcUser`, so even if the cast were somehow reached, Spring's OIDC session management would have rejected it.
+
+### The fix
+
+Three files changed:
+
+**1. `CustomOAuth2UserService.java`** — extend `OidcUserService`, not `DefaultOAuth2UserService`:
+```java
+// Before
+public class CustomOAuth2UserService extends DefaultOAuth2UserService {
+    public OAuth2User loadUser(OAuth2UserRequest request) { ... }
+}
+
+// After
+public class CustomOAuth2UserService extends OidcUserService {
+    public OidcUser loadUser(OidcUserRequest request) { ... }
+}
+```
+
+**2. `CustomOAuth2User.java`** — implement `OidcUser`, delegating OIDC methods to the wrapped `OidcUser`:
+```java
+// Before
+public class CustomOAuth2User implements OAuth2User {
+    private final Map<String, Object> attributes;
+}
+
+// After
+public class CustomOAuth2User implements OidcUser {
+    private final OidcUser delegate;
+
+    @Override public Map<String, Object> getClaims()     { return delegate.getClaims(); }
+    @Override public OidcUserInfo getUserInfo()           { return delegate.getUserInfo(); }
+    @Override public OidcIdToken getIdToken()             { return delegate.getIdToken(); }
+    @Override public Map<String, Object> getAttributes() { return delegate.getAttributes(); }
+}
+```
+
+**3. `SecurityConfig.java`** — register the service for the OIDC flow specifically:
+```java
+// Before
+.userInfoEndpoint(u -> u.userService(oAuth2UserService))
+
+// After
+.userInfoEndpoint(u -> u.oidcUserService(oAuth2UserService))
+```
+
+---
+
+## 15. Backend Won't Start — UnsupportedClassVersionError (Java 21 vs 17)
+
+### In plain English
+After fixing the OAuth2 issue, the backend refused to start at all, printing a message about "class file version 65.0". The server just crashed immediately on launch.
+
+### What the error looked like
+```
+java.lang.UnsupportedClassVersionError:
+  com/hikebuddy/HikeBuddyApplication has been compiled by a more recent version
+  of the Java Runtime (class file version 65.0), this version of the Java Runtime
+  only recognises class file versions up to 61.0
+```
+
+### Root cause (for engineers)
+The `target/` directory contained `.class` files compiled with Java 21 (major version 65) from a previous session. The current runtime is Java 17 (major version 61). Maven's incremental compilation does not recompile unchanged files, so stale 21-compiled classes remain even after a partial rebuild. The origin of the Java 21 compilation is unknown (no JDK 21 installed on the dev machine), but the fix is reliable regardless.
+
+### The fix
+
+Force a clean recompile against the correct JDK:
+
+```bash
+cd HikeBuddy/backend
+mvn clean spring-boot:run -Dspring-boot.run.profiles=local
+```
+
+`mvn clean` wipes `target/` entirely. The subsequent `spring-boot:run` recompiles everything from source using the system Maven (Java 17), producing class files at major version 61.
+
+**Verification** (optional): After `mvn clean compile`, confirm the compiled version:
+```bash
+javap -verbose target/classes/com/hikebuddy/HikeBuddyApplication.class | grep "major version"
+# Should print: major version: 61
+```
+
+---
+
 ## Summary Table
 
 | # | Error | Layer | Severity | Fix category |
@@ -502,3 +604,5 @@ CorsConfigurationSource corsConfigurationSource() {
 | 11 | `ngOnChanges` not called | Angular | Medium | Implement `OnChanges` interface |
 | 12 | Hiker limb pivot wrong | CSS/SVG | Medium | `transform-box: fill-box` |
 | 13 | CORS preflight blocked | Security | High | `OPTIONS permitAll()` first |
+| 14 | Google OAuth2 `ClassCastException` | Security/Auth | High | Switch to `OidcUserService` |
+| 15 | `UnsupportedClassVersionError` on startup | Build/JVM | High | `mvn clean spring-boot:run` |
