@@ -31,6 +31,9 @@
   <!-- Auth buttons — top-right -->
   <div class="auth-buttons">
     @if (isLoggedIn()) {
+      @if (!onFeed()) {
+        <a routerLink="/feed" class="btn-login">Feed</a>
+      }
       @if (!onDashboard()) {
         <a routerLink="/dashboard" class="btn-signup">My Dashboard</a>
       }

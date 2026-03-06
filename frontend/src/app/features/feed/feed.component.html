@@ -1,0 +1,81 @@
+<div class="feed-page">
+  <hb-navbar />
+  <hb-scene-background />
+
+  <main class="feed-main">
+
+    <header class="feed-header">
+      <h1 class="feed-title">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 11a9 9 0 0 1 9 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M4 4a16 16 0 0 1 16 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="5" cy="19" r="1" fill="currentColor"/>
+        </svg>
+        Your Feed
+      </h1>
+      <p class="feed-subtitle">Latest activity from hikers you follow</p>
+    </header>
+
+    @if (loading()) {
+      <div class="feed-skeleton">
+        @for (_ of [1,2,3]; track $index) {
+          <div class="feed-card-skeleton glass"></div>
+        }
+      </div>
+    } @else if (!feedItems().length) {
+      <div class="feed-empty glass">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="2"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <h2>Nothing here yet</h2>
+        <p>Subscribe to hikers from their profiles to see their trail activity here.</p>
+        <a routerLink="/trails" class="btn-browse">Discover Trails</a>
+      </div>
+    } @else {
+      <div class="feed-list">
+        @for (item of feedItems(); track item.id) {
+          <article class="feed-card glass">
+
+            <!-- Card header: avatar + user + timestamp -->
+            <div class="fc-header">
+              <a [routerLink]="['/users', item.username]" class="fc-user">
+                <div class="fc-avatar">{{ initials(item.username) }}</div>
+                <span class="fc-username">{{ item.username }}</span>
+              </a>
+              <time class="fc-time">{{ formatDate(item.timestamp) }}</time>
+            </div>
+
+            <!-- Activity line -->
+            <div class="fc-action">
+              <span class="fc-verb fc-verb--{{ item.type }}">{{ activityVerb(item.type) }}</span>
+              <a [routerLink]="['/trails', item.trailSlug]" class="fc-trail">{{ item.trailName }}</a>
+            </div>
+
+            <!-- Trail meta -->
+            <div class="fc-meta">
+              <span class="chip chip--{{ item.difficulty.toLowerCase() }}">{{ item.difficulty }}</span>
+              <span class="fc-region">{{ item.regionName }}</span>
+            </div>
+
+            <!-- Review snippet (only for reviewed events) -->
+            @if (item.type === 'reviewed' && item.rating && item.comment) {
+              <div class="fc-review">
+                <div class="fc-stars">
+                  @for (s of stars(item.rating); track $index) {
+                    <span class="fc-star" [class.fc-star--filled]="s === 'filled'">★</span>
+                  }
+                </div>
+                <p class="fc-comment">"{{ item.comment }}"</p>
+              </div>
+            }
+
+          </article>
+        }
+      </div>
+    }
+
+  </main>
+</div>

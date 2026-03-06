@@ -85,6 +85,12 @@ export const routes: Routes = [
     ],
   },
   {
+    path: 'feed',
+    loadComponent: () =>
+      import('./features/feed/feed.component').then(m => m.FeedComponent),
+    title: 'Feed — HikeBuddy',
+  },
+  {
     path: 'users/:username',
     loadComponent: () =>
       import('./features/user-profile/user-profile.component').then(m => m.UserProfileComponent),
