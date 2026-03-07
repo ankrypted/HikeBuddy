@@ -109,7 +109,7 @@
       </section>
 
       <!-- ── Completed Trails ────────────────────────────────────────── -->
-      @if (profile()!.completedTrails.length) {
+      @if ((completedTrails() ?? []).length) {
         <section class="up-section">
           <h2 class="up-section-heading">
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 11l3 3L22 4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -117,7 +117,7 @@
             <span class="up-section-count">{{ profile()!.completedTrailsCount }}</span>
           </h2>
           <div class="up-trails-grid">
-            @for (trail of profile()!.completedTrails; track trail.id) {
+            @for (trail of (completedTrails() ?? []); track trail.id) {
               <a [routerLink]="['/trails', trail.slug]" class="up-trail-card glass">
                 <div class="up-trail-top">
                   <span class="chip chip--{{ trail.difficulty.toLowerCase() }}">{{ trail.difficulty }}</span>
@@ -135,7 +135,7 @@
       }
 
       <!-- ── Recent Reviews ──────────────────────────────────────────── -->
-      @if (profile()!.recentReviews.length) {
+      @if (profile()!.recentReviews?.length) {
         <section class="up-section">
           <h2 class="up-section-heading">
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -143,7 +143,7 @@
             <span class="up-section-count">{{ profile()!.reviewsCount }}</span>
           </h2>
           <div class="up-reviews-list">
-            @for (review of profile()!.recentReviews; track review.id) {
+            @for (review of (profile()!.recentReviews ?? []); track review.id) {
               <article class="up-review glass">
                 <div class="up-review-header">
                   <a [routerLink]="['/trails', review.trailSlug]" class="up-review-trail">{{ review.trailName }}</a>
@@ -162,7 +162,7 @@
       }
 
       <!-- Empty activity state -->
-      @if (!profile()!.completedTrails.length && !profile()!.recentReviews.length) {
+      @if (!(completedTrails() ?? []).length && !profile()!.recentReviews?.length) {
         <div class="up-empty glass">
           <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0z" stroke="currentColor" stroke-width="2"/><path d="M12 8v4l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
           <p>{{ profile()!.username }} hasn't completed any trails yet — but the adventure is coming.</p>
@@ -170,14 +170,14 @@
       }
 
       <!-- ── Recent Activity timeline ─────────────────────────────── -->
-      @if (profile()!.recentActivity.length) {
+      @if (resolvedActivity().length) {
         <section class="up-section">
           <h2 class="up-section-heading">
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><polyline points="12 6 12 12 16 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             Recent Activity
           </h2>
-          <div class="up-activity">
-            @for (event of profile()!.recentActivity; track event.id) {
+          <div class="up-activity glass">
+            @for (event of resolvedActivity(); track event.id) {
               <div class="up-activity-item">
 
                 <!-- Timeline dot -->

@@ -20,16 +20,18 @@ export interface PublicReviewDto {
 
 export type ActivityEventType = 'completed' | 'reviewed' | 'saved';
 
+
 export interface ActivityEvent {
   id:         string;
   type:       ActivityEventType;
-  timestamp:  string;          // ISO-8601
-  trailName:  string;
-  trailSlug:  string;
-  difficulty: DifficultyLevel;
-  regionName: string;
-  rating?:    number;          // only for 'reviewed'
-  comment?:   string;          // only for 'reviewed'
+  timestamp:  string;           // ISO-8601
+  trailId?:   string;           // set by backend; resolved to metadata by component
+  trailName?: string;
+  trailSlug?: string;
+  difficulty?: DifficultyLevel;
+  regionName?: string;
+  rating?:    number;           // only for 'reviewed'
+  comment?:   string;           // only for 'reviewed'
 }
 
 export interface PublicUserDto {
@@ -41,7 +43,8 @@ export interface PublicUserDto {
   completedTrailsCount: number;
   reviewsCount:         number;
   savedTrailsCount:     number;
-  completedTrails:      PublicTrailRef[];
+  completedTrailIds:    string[];          // IDs from backend — resolved to refs in component
+  completedTrails:      PublicTrailRef[];  // populated by mock profiles only
   recentReviews:        PublicReviewDto[];
   recentActivity:       ActivityEvent[];
 }

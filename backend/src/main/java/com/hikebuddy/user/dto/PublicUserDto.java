@@ -14,11 +14,17 @@ public record PublicUserDto(
         long completedTrailsCount,
         long reviewsCount,
         long savedTrailsCount,
-        List<Object> completedTrails,
+        List<String> completedTrailIds,
         List<Object> recentReviews,
-        List<Object> recentActivity
+        List<ActivityEventDto> recentActivity
 ) {
-    public static PublicUserDto from(User user, long completedCount, long reviewCount, long savedCount) {
+    public static PublicUserDto from(
+            User user,
+            long completedCount,
+            long reviewCount,
+            long savedCount,
+            List<String> completedTrailIds,
+            List<ActivityEventDto> recentActivity) {
         return new PublicUserDto(
                 user.getId().toString(),
                 user.getUsername(),
@@ -28,9 +34,9 @@ public record PublicUserDto(
                 completedCount,
                 reviewCount,
                 savedCount,
+                completedTrailIds,
                 List.of(),
-                List.of(),
-                List.of()
+                recentActivity
         );
     }
 }

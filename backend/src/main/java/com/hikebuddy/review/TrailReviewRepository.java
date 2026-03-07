@@ -9,6 +9,8 @@ public interface TrailReviewRepository extends JpaRepository<TrailReview, UUID> 
 
     List<TrailReview> findByTrailIdOrderByCreatedAtDesc(String trailId);
 
+    List<TrailReview> findByUserIdOrderByCreatedAtDesc(UUID userId);
+
     boolean existsByUserIdAndTrailId(UUID userId, String trailId);
 
     long countByUserId(UUID userId);

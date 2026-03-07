@@ -1,13 +1,17 @@
 package com.hikebuddy.user;
 
 import com.hikebuddy.completedtrail.UserCompletedTrailRepository;
+import com.hikebuddy.review.TrailReview;
 import com.hikebuddy.review.TrailReviewRepository;
+import com.hikebuddy.savedtrail.UserSavedTrail;
 import com.hikebuddy.savedtrail.UserSavedTrailRepository;
 import com.hikebuddy.storage.S3Service;
+import com.hikebuddy.user.dto.ActivityEventDto;
 import com.hikebuddy.user.dto.PublicUserDto;
 import com.hikebuddy.user.dto.UpdatePasswordRequestDto;
 import com.hikebuddy.user.dto.UpdateProfileRequestDto;
 import com.hikebuddy.user.dto.UserProfileDto;
+import com.hikebuddy.completedtrail.UserCompletedTrail;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,7 +21,9 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -84,20 +90,63 @@ public class UserService {
                 .map(u -> PublicUserDto.from(u,
                         completedTrailRepository.countByUserId(u.getId()),
                         reviewRepository.countByUserId(u.getId()),
-                        savedTrailRepository.countByUserId(u.getId())))
+                        savedTrailRepository.countByUserId(u.getId()),
+                        List.of(),
+                        List.of()))
                 .toList();
     }
 
     public PublicUserDto getPublicUserProfile(String username) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        List<String> trailIds = completedTrailRepository.findTrailIdsByUserId(user.getId());
+        List<ActivityEventDto> activity = buildActivityEvents(user.getId());
         return PublicUserDto.from(user,
-                completedTrailRepository.countByUserId(user.getId()),
+                trailIds.size(),
                 reviewRepository.countByUserId(user.getId()),
-                savedTrailRepository.countByUserId(user.getId()));
+                savedTrailRepository.countByUserId(user.getId()),
+                trailIds,
+                activity);
     }
 
     // ── Helpers ──────────────────────────────────────────────────────────────
+
+    private List<ActivityEventDto> buildActivityEvents(UUID userId) {
+        List<ActivityEventDto> events = new ArrayList<>();
+
+        for (UserCompletedTrail c : completedTrailRepository.findById_UserIdOrderByCompletedAtDesc(userId)) {
+            events.add(new ActivityEventDto(
+                    "c-" + c.getId().getTrailId(),
+                    "completed",
+                    c.getCompletedAt(),
+                    c.getId().getTrailId(),
+                    null,
+                    null));
+        }
+
+        for (TrailReview r : reviewRepository.findByUserIdOrderByCreatedAtDesc(userId)) {
+            events.add(new ActivityEventDto(
+                    r.getId().toString(),
+                    "reviewed",
+                    r.getCreatedAt(),
+                    r.getTrailId(),
+                    (int) r.getRating(),
+                    r.getComment()));
+        }
+
+        for (UserSavedTrail s : savedTrailRepository.findById_UserIdOrderBySavedAtDesc(userId)) {
+            events.add(new ActivityEventDto(
+                    "s-" + s.getId().getTrailId(),
+                    "saved",
+                    s.getSavedAt(),
+                    s.getId().getTrailId(),
+                    null,
+                    null));
+        }
+
+        events.sort((a, b) -> b.timestamp().compareTo(a.timestamp()));
+        return events.stream().limit(20).toList();
+    }
 
     private User findByEmail(String email) {
         return userRepository.findByEmail(email)

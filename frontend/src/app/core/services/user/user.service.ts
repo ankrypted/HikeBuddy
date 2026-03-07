@@ -15,6 +15,7 @@ const MOCK_PROFILES: Record<string, PublicUserDto> = {
     completedTrailsCount: 12,
     reviewsCount:         8,
     savedTrailsCount:     6,
+    completedTrailIds:    [],
     completedTrails: [
       { id: '1',  name: 'Roopkund Trek',      slug: 'roopkund',           difficulty: 'HARD',     regionName: 'Uttarakhand',       averageRating: 4.9 },
       { id: '4',  name: 'Kedarkantha',         slug: 'kedarkantha',        difficulty: 'EASY',     regionName: 'Uttarkashi',        averageRating: 4.8 },
@@ -62,6 +63,7 @@ const MOCK_PROFILES: Record<string, PublicUserDto> = {
     completedTrailsCount: 5,
     reviewsCount:         3,
     savedTrailsCount:     10,
+    completedTrailIds:    [],
     completedTrails: [
       { id: '15', name: 'Triund',            slug: 'triund',            difficulty: 'EASY',     regionName: 'Himachal Pradesh', averageRating: 4.5 },
       { id: '2',  name: 'Valley of Flowers', slug: 'valley-of-flowers', difficulty: 'EASY',     regionName: 'Chamoli',          averageRating: 4.8 },
@@ -105,6 +107,7 @@ const MOCK_PROFILES: Record<string, PublicUserDto> = {
     completedTrailsCount: 3,
     reviewsCount:         5,
     savedTrailsCount:     8,
+    completedTrailIds:    [],
     completedTrails: [
       { id: '15', name: 'Triund',            slug: 'triund',            difficulty: 'EASY', regionName: 'Himachal Pradesh', averageRating: 4.5 },
       { id: '18', name: 'Dayara Bugyal',     slug: 'dayara-bugyal',     difficulty: 'EASY', regionName: 'Uttarkashi',       averageRating: 4.6 },
