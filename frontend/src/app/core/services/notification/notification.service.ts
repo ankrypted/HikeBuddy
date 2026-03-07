@@ -1,6 +1,7 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient }                           from '@angular/common/http';
 import { AuthService }                          from '../auth/auth.service';
+import { environment }                          from '../../../../environments/environment';
 import { NotificationDto }                      from '../../../shared/models/notification.dto';
 
 @Injectable({ providedIn: 'root' })
@@ -8,7 +9,7 @@ export class NotificationService {
 
   private readonly http        = inject(HttpClient);
   private readonly authService = inject(AuthService);
-  private readonly base        = '/api/v1/notifications';
+  private readonly base        = `${environment.apiUrl}/notifications`;
 
   readonly notifications  = signal<NotificationDto[]>([]);
   readonly unreadCount    = computed(() => this.notifications().filter(n => !n.read).length);

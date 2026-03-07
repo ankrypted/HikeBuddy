@@ -30,9 +30,10 @@ export class UserProfileComponent implements OnInit {
 
   private readonly allTrails = toSignal(this.trailService.getAllTrails(), { initialValue: [] });
 
-  readonly profile    = signal<PublicUserDto | null>(null);
-  readonly loading    = signal(true);
-  readonly notFound   = signal(false);
+  readonly profile     = signal<PublicUserDto | null>(null);
+  readonly loading     = signal(true);
+  readonly notFound    = signal(false);
+  readonly avatarError = signal(false);
   readonly subscribed = computed(() => this.userService.isSubscribed(this.username));
   readonly copied     = signal(false);
 

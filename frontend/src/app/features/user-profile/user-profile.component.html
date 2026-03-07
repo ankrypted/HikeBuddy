@@ -36,8 +36,9 @@
 
         <!-- Avatar -->
         <div class="up-avatar-wrap">
-          @if (profile()!.avatarUrl) {
-            <img class="up-avatar-img" [src]="profile()!.avatarUrl" [alt]="profile()!.username">
+          @if (profile()!.avatarUrl && !avatarError()) {
+            <img class="up-avatar-img" [src]="profile()!.avatarUrl" [alt]="profile()!.username"
+                 (error)="avatarError.set(true)">
           } @else {
             <div class="up-avatar-initials">{{ initials(profile()!.username) }}</div>
           }

@@ -114,8 +114,9 @@
             <div class="fc-header">
               <a [routerLink]="['/users', item.username]" class="fc-user">
                 <div class="fc-avatar">
-                  @if (item.avatarUrl) {
-                    <img [src]="item.avatarUrl" [alt]="item.username" />
+                  @if (item.avatarUrl && !failedAvatars().has(item.username)) {
+                    <img [src]="item.avatarUrl" [alt]="item.username"
+                         (error)="onAvatarError(item.username)" />
                   } @else {
                     {{ initials(item.username) }}
                   }

@@ -1,13 +1,14 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient }         from '@angular/common/http';
 import { Observable }         from 'rxjs';
+import { environment }        from '../../../../environments/environment';
 import { FeedCommentDto, FeedEventRef, InteractionSummaryDto } from '../../../shared/models/feed-interaction.dto';
 
 @Injectable({ providedIn: 'root' })
 export class FeedInteractionService {
 
   private readonly http = inject(HttpClient);
-  private readonly base = '/api/v1/feed';
+  private readonly base = `${environment.apiUrl}/feed`;
 
   /** Toggle like on an activity event. Returns updated summary. */
   toggleLike(ownerUsername: string, eventId: string,

@@ -1,6 +1,7 @@
 package com.hikebuddy.storage;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -10,8 +11,11 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URI;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class S3Service {
@@ -42,5 +46,35 @@ public class S3Service {
         );
 
         return "https://" + bucket + ".s3." + region + ".amazonaws.com/" + key;
+    }
+
+    /**
+     * Downloads an image from an external URL and re-uploads it to S3.
+     * Returns the S3 URL on success, or null on any failure (caller should fall back).
+     */
+    public String uploadAvatarFromUrl(String imageUrl, String userId) {
+        try {
+            HttpURLConnection conn = (HttpURLConnection) URI.create(imageUrl).toURL().openConnection();
+            conn.setConnectTimeout(5_000);
+            conn.setReadTimeout(10_000);
+            byte[] bytes = conn.getInputStream().readAllBytes();
+            String contentType = conn.getContentType();
+            if (contentType == null || !contentType.startsWith("image/")) contentType = "image/jpeg";
+            String ext = contentType.contains("png") ? "png" : "jpg";
+            String key = "avatars/" + userId + "/" + UUID.randomUUID() + "." + ext;
+            s3Client.putObject(
+                    PutObjectRequest.builder().bucket(bucket).key(key).contentType(contentType).build(),
+                    RequestBody.fromBytes(bytes)
+            );
+            return "https://" + bucket + ".s3." + region + ".amazonaws.com/" + key;
+        } catch (Exception e) {
+            log.warn("Failed to mirror avatar to S3 for userId={}: {}", userId, e.getMessage());
+            return null;
+        }
+    }
+
+    /** Returns true if the URL already points to our own S3 bucket. */
+    public boolean isOwnedUrl(String url) {
+        return url != null && url.contains(bucket + ".s3.");
     }
 }

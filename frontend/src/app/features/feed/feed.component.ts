@@ -57,7 +57,8 @@ export class FeedComponent implements OnInit {
   readonly interactionMap = signal<Map<string, InteractionSummaryDto>>(new Map());
   readonly openComments   = signal<ReadonlySet<string>>(new Set());
   readonly drafts         = signal<ReadonlyMap<string, string>>(new Map());
-  readonly copiedId       = signal<string | null>(null);
+  readonly copiedId        = signal<string | null>(null);
+  readonly failedAvatars   = signal<ReadonlySet<string>>(new Set());
 
   readonly completedCount  = this.completedService.count;
   readonly savedCount      = this.favoritesService.count;
@@ -223,6 +224,10 @@ export class FeedComponent implements OnInit {
     navigator.clipboard.writeText(window.location.origin + '/trails/' + slug);
     this.copiedId.set(itemId);
     setTimeout(() => this.copiedId.set(null), 2000);
+  }
+
+  onAvatarError(username: string): void {
+    this.failedAvatars.update(s => new Set([...s, username]));
   }
 
   // ── Helpers ──────────────────────────────────────────────────────────────

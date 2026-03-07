@@ -1,5 +1,6 @@
 package com.hikebuddy.auth.oauth2;
 
+import com.hikebuddy.storage.S3Service;
 import com.hikebuddy.user.User;
 import com.hikebuddy.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import java.util.UUID;
 public class CustomOAuth2UserService extends OidcUserService {
 
     private final UserRepository userRepository;
+    private final S3Service s3Service;
 
     @Override
     public OidcUser loadUser(OidcUserRequest request) throws OAuth2AuthenticationException {
@@ -40,30 +42,34 @@ public class CustomOAuth2UserService extends OidcUserService {
     private User findOrCreateUser(String googleId, String email, String name, String avatarUrl) {
         log.info("findOrCreateUser: googleId={}, email={}", googleId, email);
 
-        // Case 1: Returning Google user — update avatar if changed
+        // Case 1: Returning Google user — re-mirror avatar if it's still a Google URL
         Optional<User> byGoogleId = userRepository.findByGoogleId(googleId);
         if (byGoogleId.isPresent()) {
             log.info("Case 1: existing Google user found");
             User existing = byGoogleId.get();
-            if (avatarUrl != null && !avatarUrl.equals(existing.getAvatarUrl())) {
-                existing.setAvatarUrl(avatarUrl);
+            if (avatarUrl != null && !s3Service.isOwnedUrl(existing.getAvatarUrl())) {
+                String s3Url = s3Service.uploadAvatarFromUrl(avatarUrl, existing.getId().toString());
+                existing.setAvatarUrl(s3Url != null ? s3Url : avatarUrl);
                 userRepository.saveAndFlush(existing);
             }
             return existing;
         }
 
-        // Case 2: Same email registered locally — link Google account to it
+        // Case 2: Same email registered locally — link Google account and mirror avatar
         Optional<User> byEmail = userRepository.findByEmail(email);
         if (byEmail.isPresent()) {
             log.info("Case 2: linking Google to existing local user: {}", email);
             User existingLocal = byEmail.get();
             existingLocal.setGoogleId(googleId);
-            if (avatarUrl != null) existingLocal.setAvatarUrl(avatarUrl);
+            if (avatarUrl != null) {
+                String s3Url = s3Service.uploadAvatarFromUrl(avatarUrl, existingLocal.getId().toString());
+                existingLocal.setAvatarUrl(s3Url != null ? s3Url : avatarUrl);
+            }
             userRepository.saveAndFlush(existingLocal);
             return existingLocal;
         }
 
-        // Case 3: Brand-new user via Google
+        // Case 3: Brand-new user via Google — save first to get ID, then mirror avatar
         log.info("Case 3: creating new Google user: {}", email);
         String username = deriveUsername(name, email);
         User newUser = User.builder()
@@ -75,6 +81,13 @@ public class CustomOAuth2UserService extends OidcUserService {
                 .build();
         userRepository.saveAndFlush(newUser);
         log.info("New Google user saved with id={}", newUser.getId());
+        if (avatarUrl != null) {
+            String s3Url = s3Service.uploadAvatarFromUrl(avatarUrl, newUser.getId().toString());
+            if (s3Url != null) {
+                newUser.setAvatarUrl(s3Url);
+                userRepository.saveAndFlush(newUser);
+            }
+        }
         return newUser;
     }
 
