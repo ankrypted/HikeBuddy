@@ -127,6 +127,7 @@ public class UserService {
                         completedTrailRepository.countByUserId(u.getId()),
                         reviewRepository.countByUserId(u.getId()),
                         savedTrailRepository.countByUserId(u.getId()),
+                        subscriptionRepository.countByIdFolloweeId(u.getId()),
                         completedTrailRepository.findTrailIdsByUserId(u.getId()),
                         buildActivityEvents(u.getId())))
                 .toList();
@@ -138,6 +139,7 @@ public class UserService {
                         completedTrailRepository.countByUserId(u.getId()),
                         reviewRepository.countByUserId(u.getId()),
                         savedTrailRepository.countByUserId(u.getId()),
+                        subscriptionRepository.countByIdFolloweeId(u.getId()),
                         List.of(),
                         List.of()))
                 .toList();
@@ -152,6 +154,7 @@ public class UserService {
                 trailIds.size(),
                 reviewRepository.countByUserId(user.getId()),
                 savedTrailRepository.countByUserId(user.getId()),
+                subscriptionRepository.countByIdFolloweeId(user.getId()),
                 trailIds,
                 activity);
     }

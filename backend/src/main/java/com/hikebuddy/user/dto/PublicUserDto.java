@@ -14,6 +14,7 @@ public record PublicUserDto(
         long completedTrailsCount,
         long reviewsCount,
         long savedTrailsCount,
+        long subscribersCount,
         List<String> completedTrailIds,
         List<Object> recentReviews,
         List<ActivityEventDto> recentActivity
@@ -23,6 +24,7 @@ public record PublicUserDto(
             long completedCount,
             long reviewCount,
             long savedCount,
+            long subscribersCount,
             List<String> completedTrailIds,
             List<ActivityEventDto> recentActivity) {
         return new PublicUserDto(
@@ -34,6 +36,7 @@ public record PublicUserDto(
                 completedCount,
                 reviewCount,
                 savedCount,
+                subscribersCount,
                 completedTrailIds,
                 List.of(),
                 recentActivity

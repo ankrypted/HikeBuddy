@@ -43,6 +43,7 @@ export interface PublicUserDto {
   completedTrailsCount: number;
   reviewsCount:         number;
   savedTrailsCount:     number;
+  subscribersCount:     number;
   completedTrailIds:    string[];          // IDs from backend — resolved to refs in component
   completedTrails:      PublicTrailRef[];  // populated by mock profiles only
   recentReviews:        PublicReviewDto[];
