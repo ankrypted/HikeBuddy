@@ -1,0 +1,37 @@
+import { Injectable, inject, signal, computed } from '@angular/core';
+import { HttpClient }                           from '@angular/common/http';
+import { AuthService }                          from '../auth/auth.service';
+import { NotificationDto }                      from '../../../shared/models/notification.dto';
+
+@Injectable({ providedIn: 'root' })
+export class NotificationService {
+
+  private readonly http        = inject(HttpClient);
+  private readonly authService = inject(AuthService);
+  private readonly base        = '/api/v1/notifications';
+
+  readonly notifications  = signal<NotificationDto[]>([]);
+  readonly unreadCount    = computed(() => this.notifications().filter(n => !n.read).length);
+  readonly panelOpen      = signal(false);
+
+  /** Call once after login or on app init when user is already logged in. */
+  load(): void {
+    if (!this.authService.isLoggedIn()) return;
+    this.http.get<NotificationDto[]>(this.base).subscribe(list => this.notifications.set(list));
+  }
+
+  markAllRead(): void {
+    this.http.put<void>(`${this.base}/read-all`, {}).subscribe(() => {
+      this.notifications.update(list => list.map(n => ({ ...n, read: true })));
+    });
+  }
+
+  dismiss(id: string): void {
+    this.http.delete<void>(`${this.base}/${id}`).subscribe(() => {
+      this.notifications.update(list => list.filter(n => n.id !== id));
+    });
+  }
+
+  togglePanel(): void { this.panelOpen.update(v => !v); }
+  closePanel():  void { this.panelOpen.set(false);       }
+}

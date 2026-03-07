@@ -11,6 +11,7 @@ import { filter, map, startWith }            from 'rxjs';
 import { HikerLogoComponent }                from '../../../shared/components/hiker-logo/hiker-logo.component';
 import { SearchOverlayComponent }            from '../../../shared/components/search-overlay/search-overlay.component';
 import { AuthService }                       from '../../services/auth/auth.service';
+import { NotificationService }               from '../../services/notification/notification.service';
 
 @Component({
   selector: 'hb-navbar',
@@ -27,6 +28,7 @@ import { AuthService }                       from '../../services/auth/auth.serv
 export class NavbarComponent {
   private readonly authService = inject(AuthService);
   private readonly router      = inject(Router);
+  readonly notificationService = inject(NotificationService);
 
   private readonly currentUrl = toSignal(
     this.router.events.pipe(
@@ -57,6 +59,12 @@ export class NavbarComponent {
   onEscape(): void {
     this.closeSearch();
     this.closeMenu();
+    this.notificationService.closePanel();
+  }
+
+  @HostListener('document:click')
+  onDocumentClick(): void {
+    this.notificationService.closePanel();
   }
 
   initials(username: string | undefined): string {

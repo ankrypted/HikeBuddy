@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal, effect } from '@angular/core';
 import { HttpErrorResponse }       from '@angular/common/http';
 import { RouterOutlet }            from '@angular/router';
 import { CompletedTrailsService }  from './core/services/completed-trails/completed-trails.service';
@@ -6,6 +6,8 @@ import { TrailService }            from './core/services/trail/trail.service';
 import { ToastService }            from './core/services/toast/toast.service';
 import { ReviewModalComponent, ReviewSubmission } from './shared/components/review-modal/review-modal.component';
 import { ToastComponent }          from './shared/components/toast/toast.component';
+import { NotificationService }    from './core/services/notification/notification.service';
+import { AuthService }            from './core/services/auth/auth.service';
 import { TrailSummaryDto }         from './shared/models/trail.dto';
 
 @Component({
@@ -28,12 +30,23 @@ import { TrailSummaryDto }         from './shared/models/trail.dto';
   styles: [`:host { display: block; }`],
 })
 export class AppComponent {
-  readonly completedTrailsService = inject(CompletedTrailsService);
-  private readonly trailService   = inject(TrailService);
-  private readonly toastService   = inject(ToastService);
+  readonly completedTrailsService  = inject(CompletedTrailsService);
+  private readonly trailService    = inject(TrailService);
+  private readonly toastService    = inject(ToastService);
+  private readonly notifService    = inject(NotificationService);
+  private readonly authService     = inject(AuthService);
 
   private readonly _reviewError = signal<string | null>(null);
   readonly reviewError = this._reviewError.asReadonly();
+
+  constructor() {
+    // Load notifications whenever login state changes
+    effect(() => {
+      if (this.authService.isLoggedIn()) {
+        this.notifService.load();
+      }
+    });
+  }
 
   onReviewSubmitted(trail: TrailSummaryDto, submission: ReviewSubmission): void {
     this._reviewError.set(null);

@@ -10,8 +10,11 @@ import { UserService }               from '../../core/services/user/user.service
 import { TrailService }              from '../../core/services/trail/trail.service';
 import { FavoritesService }          from '../../core/services/favorites/favorites.service';
 import { CompletedTrailsService }    from '../../core/services/completed-trails/completed-trails.service';
+import { FeedInteractionService }    from '../../core/services/feed-interaction/feed-interaction.service';
+import { combineLatest }              from 'rxjs';
 import { ActivityEvent, PublicUserDto } from '../../shared/models/public-user.dto';
 import { TrailSummaryDto }           from '../../shared/models/trail.dto';
+import { InteractionSummaryDto }     from '../../shared/models/feed-interaction.dto';
 
 export interface FeedEvent extends ActivityEvent {
   username:  string;
@@ -37,17 +40,24 @@ export interface Achievement {
   styleUrl:        './feed.component.scss',
 })
 export class FeedComponent implements OnInit {
-  private readonly authService      = inject(AuthService);
-  private readonly userService      = inject(UserService);
-  private readonly trailService     = inject(TrailService);
-  private readonly favoritesService = inject(FavoritesService);
-  private readonly completedService = inject(CompletedTrailsService);
+  private readonly authService         = inject(AuthService);
+  private readonly userService         = inject(UserService);
+  private readonly trailService        = inject(TrailService);
+  private readonly favoritesService    = inject(FavoritesService);
+  private readonly completedService    = inject(CompletedTrailsService);
+  private readonly interactionService  = inject(FeedInteractionService);
 
   readonly feedItems          = signal<FeedEvent[]>([]);
   readonly loading            = signal(true);
   readonly suggestedTrails    = signal<TrailSummaryDto[]>([]);
   private readonly allUsers   = signal<PublicUserDto[]>([]);
   readonly subscribersCount   = signal<number>(0);
+
+  // -- Interaction state (backed by database) ---
+  readonly interactionMap = signal<Map<string, InteractionSummaryDto>>(new Map());
+  readonly openComments   = signal<ReadonlySet<string>>(new Set());
+  readonly drafts         = signal<ReadonlyMap<string, string>>(new Map());
+  readonly copiedId       = signal<string | null>(null);
 
   readonly completedCount  = this.completedService.count;
   readonly savedCount      = this.favoritesService.count;
@@ -120,21 +130,102 @@ export class FeedComponent implements OnInit {
 
   private loadFeed(): void {
     this.loading.set(true);
-    this.userService.getFeedProfiles().subscribe(profiles => {
+    combineLatest([
+      this.userService.getFeedProfiles(),
+      this.trailService.getAllTrails(),
+    ]).subscribe(([profiles, trails]) => {
+      const trailMap = new Map<string, TrailSummaryDto>();
+      for (const t of trails) { trailMap.set(t.id, t); trailMap.set(t.slug, t); }
       const items: FeedEvent[] = profiles.flatMap(p =>
-        (p.recentActivity ?? []).map(e => ({
-          ...e,
-          username:  p.username,
-          avatarUrl: p.avatarUrl,
-        })),
+        (p.recentActivity ?? []).map(e => {
+          const trail = e.trailId ? trailMap.get(e.trailId) : undefined;
+          return {
+            ...e,
+            trailName:  trail?.name           ?? e.trailName,
+            trailSlug:  trail?.slug           ?? e.trailSlug,
+            difficulty: trail?.difficulty     ?? e.difficulty,
+            regionName: trail?.region?.name   ?? e.regionName,
+            username:   p.username,
+            avatarUrl:  p.avatarUrl,
+          };
+        }),
       );
       items.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
       this.feedItems.set(items);
       this.loading.set(false);
+
+      // Fetch interaction summaries for all feed items in one call
+      if (items.length) {
+        const refs = items.map(i => ({ ownerUsername: i.username, eventId: i.id }));
+        this.interactionService.batchSummaries(refs).subscribe(map => {
+          this.interactionMap.set(new Map(Object.entries(map)));
+        });
+      }
     });
   }
 
-  // ── Helpers ──────────────────────────────────────────────────────────
+  // ── Interaction helpers ───────────────────────────────────────────────────
+
+  key(item: FeedEvent): string {
+    return `${item.username}:${item.id}`;
+  }
+
+  summaryOf(item: FeedEvent): InteractionSummaryDto {
+    return this.interactionMap().get(this.key(item))
+        ?? { likeCount: 0, likedByMe: false, comments: [] };
+  }
+
+  // ── Interaction handlers ──────────────────────────────────────────────────
+
+  toggleLike(item: FeedEvent): void {
+    this.interactionService
+      .toggleLike(item.username, item.id, item.trailName ?? '', item.type)
+      .subscribe(summary => {
+        this.interactionMap.update(m => new Map(m).set(this.key(item), summary));
+      });
+  }
+
+  toggleComments(id: string): void {
+    this.openComments.update(s => {
+      const n = new Set(s);
+      n.has(id) ? n.delete(id) : n.add(id);
+      return n;
+    });
+  }
+
+  updateDraft(id: string, text: string): void {
+    this.drafts.update(m => new Map([...m, [id, text]]));
+  }
+
+  postComment(item: FeedEvent): void {
+    const text = this.drafts().get(item.id)?.trim();
+    if (!text) return;
+
+    this.interactionService
+      .postComment(item.username, item.id, text, item.trailName ?? '', item.type)
+      .subscribe(comment => {
+        this.interactionMap.update(m => {
+          const current = m.get(this.key(item)) ?? { likeCount: 0, likedByMe: false, comments: [] };
+          return new Map(m).set(this.key(item), {
+            ...current,
+            comments: [...current.comments, comment],
+          });
+        });
+        this.drafts.update(m => new Map([...m, [item.id, '']]));
+        if (!this.openComments().has(item.id)) {
+          this.openComments.update(s => new Set([...s, item.id]));
+        }
+      });
+  }
+
+  copyLink(itemId: string, slug: string | undefined): void {
+    if (!slug) return;
+    navigator.clipboard.writeText(window.location.origin + '/trails/' + slug);
+    this.copiedId.set(itemId);
+    setTimeout(() => this.copiedId.set(null), 2000);
+  }
+
+  // ── Helpers ──────────────────────────────────────────────────────────────
   initials(username: string): string {
     return username.replace(/[^a-zA-Z]/g, '').slice(0, 2).toUpperCase() || '?';
   }

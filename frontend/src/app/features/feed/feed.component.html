@@ -113,7 +113,13 @@
             <!-- Card header: avatar + user + timestamp -->
             <div class="fc-header">
               <a [routerLink]="['/users', item.username]" class="fc-user">
-                <div class="fc-avatar">{{ initials(item.username) }}</div>
+                <div class="fc-avatar">
+                  @if (item.avatarUrl) {
+                    <img [src]="item.avatarUrl" [alt]="item.username" />
+                  } @else {
+                    {{ initials(item.username) }}
+                  }
+                </div>
                 <span class="fc-username">{{ item.username }}</span>
               </a>
               <time class="fc-time">{{ formatDate(item.timestamp) }}</time>
@@ -143,6 +149,72 @@
               </div>
             }
 
+          <!-- Action bar -->
+          <div class="fc-actions">
+            <button class="fc-act-btn" [class.fc-act-btn--liked]="summaryOf(item).likedByMe"
+                    (click)="toggleLike(item)" type="button">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"
+                      [attr.fill]="summaryOf(item).likedByMe ? 'currentColor' : 'none'"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span>{{ summaryOf(item).likeCount }}</span>
+            </button>
+            <button class="fc-act-btn" [class.fc-act-btn--active]="openComments().has(item.id)"
+                    (click)="toggleComments(item.id)" type="button">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span>{{ summaryOf(item).comments.length }}</span>
+            </button>
+            <button class="fc-act-btn" [class.fc-act-btn--copied]="copiedId() === item.id"
+                    (click)="copyLink(item.id, item.trailSlug)" type="button">
+              @if (copiedId() === item.id) {
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>Copied!</span>
+              } @else {
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>Share</span>
+              }
+            </button>
+          </div>
+
+          <!-- Comment section -->
+          @if (openComments().has(item.id)) {
+            <div class="fc-comment-section">
+              @for (c of summaryOf(item).comments; track c.id) {
+                <div class="fc-cmt-item">
+                  <div class="fc-cmt-avatar">
+                    @if (c.avatarUrl) {
+                      <img [src]="c.avatarUrl" [alt]="c.author" />
+                    } @else {
+                      {{ initials(c.author) }}
+                    }
+                  </div>
+                  <div class="fc-cmt-body">
+                    <span class="fc-cmt-author">{{ c.author }}</span>
+                    <span class="fc-cmt-text">{{ c.text }}</span>
+                  </div>
+                </div>
+              }
+              <div class="fc-cmt-input-row">
+                <input class="fc-cmt-input" type="text" placeholder="Add a comment…"
+                       [value]="drafts().get(item.id) ?? ''"
+                       (input)="updateDraft(item.id, $any($event.target).value)"
+                       (keydown.enter)="postComment(item)">
+                <button class="fc-cmt-post" type="button"
+                        [disabled]="!(drafts().get(item.id)?.trim())"
+                        (click)="postComment(item)">Post</button>
+              </div>
+            </div>
+          }
+
           </article>
         }
       </div>
@@ -157,7 +229,13 @@
           <h3 class="sidebar-heading">Suggested Hikers</h3>
           @for (hiker of suggestedHikers(); track hiker.id) {
             <a [routerLink]="['/users', hiker.username]" class="hiker-item">
-              <div class="hiker-avatar">{{ initials(hiker.username) }}</div>
+              <div class="hiker-avatar">
+                @if (hiker.avatarUrl) {
+                  <img [src]="hiker.avatarUrl" [alt]="hiker.username" />
+                } @else {
+                  {{ initials(hiker.username) }}
+                }
+              </div>
               <div class="hiker-info">
                 <span class="hiker-name">{{ hiker.username }}</span>
                 <span class="hiker-meta">{{ hiker.completedTrailsCount }} trails completed</span>
