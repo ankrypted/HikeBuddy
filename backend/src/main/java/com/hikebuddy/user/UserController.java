@@ -60,4 +60,30 @@ public class UserController {
     public PublicUserDto getPublicUserProfile(@PathVariable String username) {
         return userService.getPublicUserProfile(username);
     }
+
+    @PostMapping("/{username}/subscribe")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void subscribe(
+            @AuthenticationPrincipal UserDetails principal,
+            @PathVariable String username) {
+        userService.subscribe(principal.getUsername(), username);
+    }
+
+    @DeleteMapping("/{username}/subscribe")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void unsubscribe(
+            @AuthenticationPrincipal UserDetails principal,
+            @PathVariable String username) {
+        userService.unsubscribe(principal.getUsername(), username);
+    }
+
+    @GetMapping("/subscriptions")
+    public List<String> getSubscriptions(@AuthenticationPrincipal UserDetails principal) {
+        return userService.getSubscribedUsernames(principal.getUsername());
+    }
+
+    @GetMapping("/feed")
+    public List<PublicUserDto> getFeed(@AuthenticationPrincipal UserDetails principal) {
+        return userService.getFeedProfiles(principal.getUsername());
+    }
 }

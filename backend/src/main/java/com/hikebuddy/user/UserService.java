@@ -1,6 +1,9 @@
 package com.hikebuddy.user;
 
 import com.hikebuddy.completedtrail.UserCompletedTrailRepository;
+import com.hikebuddy.subscription.UserSubscription;
+import com.hikebuddy.subscription.UserSubscriptionId;
+import com.hikebuddy.subscription.UserSubscriptionRepository;
 import com.hikebuddy.review.TrailReview;
 import com.hikebuddy.review.TrailReviewRepository;
 import com.hikebuddy.savedtrail.UserSavedTrail;
@@ -35,6 +38,7 @@ public class UserService {
     private final UserCompletedTrailRepository completedTrailRepository;
     private final TrailReviewRepository reviewRepository;
     private final UserSavedTrailRepository savedTrailRepository;
+    private final UserSubscriptionRepository subscriptionRepository;
 
     public UserProfileDto getUserProfile(String email) {
         return UserProfileDto.from(findByEmail(email));
@@ -83,6 +87,49 @@ public class UserService {
         } catch (IOException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Upload failed");
         }
+    }
+
+    @Transactional
+    public void subscribe(String followerEmail, String followeeUsername) {
+        User follower = findByEmail(followerEmail);
+        User followee = userRepository.findByUsername(followeeUsername)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        if (follower.getId().equals(followee.getId())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot subscribe to yourself");
+        }
+        UserSubscriptionId id = new UserSubscriptionId(follower.getId(), followee.getId());
+        if (!subscriptionRepository.existsById(id)) {
+            subscriptionRepository.save(UserSubscription.builder().id(id).build());
+        }
+    }
+
+    @Transactional
+    public void unsubscribe(String followerEmail, String followeeUsername) {
+        User follower = findByEmail(followerEmail);
+        User followee = userRepository.findByUsername(followeeUsername)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        subscriptionRepository.deleteById(new UserSubscriptionId(follower.getId(), followee.getId()));
+    }
+
+    public List<String> getSubscribedUsernames(String email) {
+        User follower = findByEmail(email);
+        return subscriptionRepository.findFolloweeIdsByFollowerId(follower.getId()).stream()
+                .flatMap(id -> userRepository.findById(id).stream())
+                .map(User::getUsername)
+                .toList();
+    }
+
+    public List<PublicUserDto> getFeedProfiles(String email) {
+        User follower = findByEmail(email);
+        return subscriptionRepository.findFolloweeIdsByFollowerId(follower.getId()).stream()
+                .flatMap(id -> userRepository.findById(id).stream())
+                .map(u -> PublicUserDto.from(u,
+                        completedTrailRepository.countByUserId(u.getId()),
+                        reviewRepository.countByUserId(u.getId()),
+                        savedTrailRepository.countByUserId(u.getId()),
+                        completedTrailRepository.findTrailIdsByUserId(u.getId()),
+                        buildActivityEvents(u.getId())))
+                .toList();
     }
 
     public List<PublicUserDto> getPublicUsers() {

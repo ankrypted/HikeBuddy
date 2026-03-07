@@ -1,6 +1,7 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, signal, effect } from '@angular/core';
 import { HttpClient }         from '@angular/common/http';
-import { Observable, of, catchError } from 'rxjs';
+import { Observable, of, catchError, tap } from 'rxjs';
+import { AuthService } from '../auth/auth.service';
 import { environment }        from '../../../../environments/environment';
 import { PublicUserDto }      from '../../../shared/models/public-user.dto';
 
@@ -137,8 +138,66 @@ const MOCK_PROFILES: Record<string, PublicUserDto> = {
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
-  private readonly http = inject(HttpClient);
-  private readonly base = `${environment.apiUrl}/users`;
+  private readonly http        = inject(HttpClient);
+  private readonly authService = inject(AuthService);
+  private readonly base        = `${environment.apiUrl}/users`;
+
+  /** Set of usernames the current user is subscribed to. */
+  readonly subscriptions = signal<Set<string>>(new Set());
+
+  constructor() {
+    // Load (or clear) subscriptions whenever the auth state changes
+    effect(() => {
+      if (this.authService.isLoggedIn()) {
+        this.loadSubscriptions();
+      } else {
+        this.subscriptions.set(new Set());
+      }
+    });
+  }
+
+  loadSubscriptions(): void {
+    this.http.get<string[]>(`${this.base}/subscriptions`).pipe(
+      catchError(() => of([] as string[])),
+    ).subscribe(usernames => this.subscriptions.set(new Set(usernames)));
+  }
+
+  isSubscribed(username: string): boolean {
+    return this.subscriptions().has(username);
+  }
+
+  toggleSubscription(username: string): void {
+    const wasSubscribed = this.subscriptions().has(username);
+    // Optimistic update
+    this.subscriptions.update(set => {
+      const next = new Set(set);
+      if (next.has(username)) next.delete(username); else next.add(username);
+      return next;
+    });
+    // Sync to backend; revert on error
+    const call = wasSubscribed
+      ? this.http.delete(`${this.base}/${username}/subscribe`, { responseType: 'text' })
+      : this.http.post(`${this.base}/${username}/subscribe`, null, { responseType: 'text' });
+    call.pipe(
+      catchError(() => {
+        this.subscriptions.update(set => {
+          const next = new Set(set);
+          if (wasSubscribed) next.add(username); else next.delete(username);
+          return next;
+        });
+        return of(null);
+      }),
+    ).subscribe();
+  }
+
+  getFeedProfiles(): Observable<PublicUserDto[]> {
+    return this.http.get<PublicUserDto[]>(`${this.base}/feed`).pipe(
+      catchError(() => {
+        const subs = [...this.subscriptions()];
+        return of(subs.map(u => MOCK_PROFILES[u]).filter(Boolean) as PublicUserDto[]);
+      }),
+    );
+  }
 
   getPublicProfile(username: string): Observable<PublicUserDto> {
     return this.http

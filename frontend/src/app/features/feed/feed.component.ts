@@ -1,5 +1,5 @@
 import {
-  Component, OnInit, signal, inject, ChangeDetectionStrategy, computed,
+  Component, OnInit, signal, inject, ChangeDetectionStrategy, computed, effect,
 } from '@angular/core';
 import { RouterLink }                from '@angular/router';
 import { NavbarComponent }           from '../../core/layout/navbar/navbar.component';
@@ -41,14 +41,19 @@ export class FeedComponent implements OnInit {
   private readonly favoritesService = inject(FavoritesService);
   private readonly completedService = inject(CompletedTrailsService);
 
-  readonly feedItems       = signal<FeedEvent[]>([]);
-  readonly loading         = signal(true);
-  readonly suggestedTrails = signal<TrailSummaryDto[]>([]);
-  readonly suggestedHikers = signal<PublicUserDto[]>([]);
+  readonly feedItems        = signal<FeedEvent[]>([]);
+  readonly loading          = signal(true);
+  readonly suggestedTrails  = signal<TrailSummaryDto[]>([]);
+  private readonly allUsers = signal<PublicUserDto[]>([]);
 
   readonly completedCount  = this.completedService.count;
   readonly savedCount      = this.favoritesService.count;
-  readonly followingCount  = computed(() => this.suggestedHikers().length);
+  readonly followingCount  = computed(() => this.userService.subscriptions().size);
+
+  readonly suggestedHikers = computed(() => {
+    const subs = this.userService.subscriptions();
+    return this.allUsers().filter(p => !subs.has(p.username)).slice(0, 3);
+  });
 
   readonly achievements = computed<Achievement[]>(() => {
     const done  = this.completedCount();
@@ -87,8 +92,28 @@ export class FeedComponent implements OnInit {
     ];
   });
 
+  constructor() {
+    // Re-fetch feed whenever the subscriptions set changes
+    effect(() => {
+      this.userService.subscriptions();
+      this.loadFeed();
+    });
+  }
+
   ngOnInit(): void {
-    this.userService.getPublicProfiles().subscribe(profiles => {
+    this.userService.getPublicProfiles().subscribe(all => this.allUsers.set(all));
+    this.trailService.getAllTrails().subscribe(trails => {
+      const top = trails
+        .filter(t => t.isFeatured)
+        .sort((a, b) => b.averageRating - a.averageRating)
+        .slice(0, 4);
+      this.suggestedTrails.set(top);
+    });
+  }
+
+  private loadFeed(): void {
+    this.loading.set(true);
+    this.userService.getFeedProfiles().subscribe(profiles => {
       const items: FeedEvent[] = profiles.flatMap(p =>
         (p.recentActivity ?? []).map(e => ({
           ...e,
@@ -99,15 +124,6 @@ export class FeedComponent implements OnInit {
       items.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
       this.feedItems.set(items);
       this.loading.set(false);
-      this.suggestedHikers.set(profiles.slice(0, 3));
-    });
-
-    this.trailService.getAllTrails().subscribe(trails => {
-      const top = trails
-        .filter(t => t.isFeatured)
-        .sort((a, b) => b.averageRating - a.averageRating)
-        .slice(0, 4);
-      this.suggestedTrails.set(top);
     });
   }
 

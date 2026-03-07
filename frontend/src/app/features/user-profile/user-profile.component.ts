@@ -33,7 +33,7 @@ export class UserProfileComponent implements OnInit {
   readonly profile    = signal<PublicUserDto | null>(null);
   readonly loading    = signal(true);
   readonly notFound   = signal(false);
-  readonly subscribed = signal(false);
+  readonly subscribed = computed(() => this.userService.isSubscribed(this.username));
   readonly copied     = signal(false);
 
   readonly currentUser  = this.authService.currentUser;
@@ -92,7 +92,7 @@ export class UserProfileComponent implements OnInit {
   }
 
   toggleSubscribe(): void {
-    this.subscribed.update(v => !v);
+    this.userService.toggleSubscription(this.username);
   }
 
   shareProfile(): void {
