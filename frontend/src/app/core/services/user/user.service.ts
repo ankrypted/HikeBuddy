@@ -16,6 +16,7 @@ const MOCK_PROFILES: Record<string, PublicUserDto> = {
     completedTrailsCount: 12,
     reviewsCount:         8,
     savedTrailsCount:     6,
+    subscribersCount:     0,
     completedTrailIds:    [],
     completedTrails: [
       { id: '1',  name: 'Roopkund Trek',      slug: 'roopkund',           difficulty: 'HARD',     regionName: 'Uttarakhand',       averageRating: 4.9 },
@@ -64,6 +65,7 @@ const MOCK_PROFILES: Record<string, PublicUserDto> = {
     completedTrailsCount: 5,
     reviewsCount:         3,
     savedTrailsCount:     10,
+    subscribersCount:     0,
     completedTrailIds:    [],
     completedTrails: [
       { id: '15', name: 'Triund',            slug: 'triund',            difficulty: 'EASY',     regionName: 'Himachal Pradesh', averageRating: 4.5 },
@@ -108,6 +110,7 @@ const MOCK_PROFILES: Record<string, PublicUserDto> = {
     completedTrailsCount: 3,
     reviewsCount:         5,
     savedTrailsCount:     8,
+    subscribersCount:     0,
     completedTrailIds:    [],
     completedTrails: [
       { id: '15', name: 'Triund',            slug: 'triund',            difficulty: 'EASY', regionName: 'Himachal Pradesh', averageRating: 4.5 },

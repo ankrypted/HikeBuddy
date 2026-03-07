@@ -5,6 +5,7 @@ import { RouterLink }                from '@angular/router';
 import { NavbarComponent }           from '../../core/layout/navbar/navbar.component';
 import { SceneBackgroundComponent }  from '../../shared/components/scene-background/scene-background.component';
 import { ChatWidgetComponent }       from '../../shared/components/chat-widget/chat-widget.component';
+import { AuthService }               from '../../core/services/auth/auth.service';
 import { UserService }               from '../../core/services/user/user.service';
 import { TrailService }              from '../../core/services/trail/trail.service';
 import { FavoritesService }          from '../../core/services/favorites/favorites.service';
@@ -36,15 +37,17 @@ export interface Achievement {
   styleUrl:        './feed.component.scss',
 })
 export class FeedComponent implements OnInit {
+  private readonly authService      = inject(AuthService);
   private readonly userService      = inject(UserService);
   private readonly trailService     = inject(TrailService);
   private readonly favoritesService = inject(FavoritesService);
   private readonly completedService = inject(CompletedTrailsService);
 
-  readonly feedItems        = signal<FeedEvent[]>([]);
-  readonly loading          = signal(true);
-  readonly suggestedTrails  = signal<TrailSummaryDto[]>([]);
-  private readonly allUsers = signal<PublicUserDto[]>([]);
+  readonly feedItems          = signal<FeedEvent[]>([]);
+  readonly loading            = signal(true);
+  readonly suggestedTrails    = signal<TrailSummaryDto[]>([]);
+  private readonly allUsers   = signal<PublicUserDto[]>([]);
+  readonly subscribersCount   = signal<number>(0);
 
   readonly completedCount  = this.completedService.count;
   readonly savedCount      = this.favoritesService.count;
@@ -101,6 +104,10 @@ export class FeedComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    const username = this.authService.currentUser()?.username;
+    if (username) {
+      this.userService.getPublicProfile(username).subscribe(p => this.subscribersCount.set(p.subscribersCount));
+    }
     this.userService.getPublicProfiles().subscribe(all => this.allUsers.set(all));
     this.trailService.getAllTrails().subscribe(trails => {
       const top = trails

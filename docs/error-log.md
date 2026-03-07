@@ -2,7 +2,7 @@
 
 > **Audience**: This document is written for both laypeople and engineers.
 > Each error has a plain-English summary followed by the full technical explanation.
-> Last updated: 2026-03-06
+> Last updated: 2026-03-07
 
 ---
 
@@ -23,6 +23,8 @@
 13. [Security: CORS Preflight Requests Blocked by Spring Security](#13-security-cors-preflight-requests-blocked-by-spring-security)
 14. [Google OAuth2 Login — 500 ClassCastException](#14-google-oauth2-login--500-classcastexception)
 15. [Backend Won't Start — UnsupportedClassVersionError (Java 21 vs 17)](#15-backend-wont-start--unsupportedclassversionerror-java-21-vs-17)
+16. [New DTO Field Not Showing — Mock Data Missing Required Property](#16-new-dto-field-not-showing--mock-data-missing-required-property)
+17. [SVG Icon Path Renders Poorly at Small Size](#17-svg-icon-path-renders-poorly-at-small-size)
 
 ---
 
@@ -587,6 +589,82 @@ javap -verbose target/classes/com/hikebuddy/HikeBuddyApplication.class | grep "m
 
 ---
 
+## 16. New DTO Field Not Showing — Mock Data Missing Required Property
+
+### In plain English
+We added a new "subscribers count" field to the user profile and wired it up in the template. The browser showed the stat card but the value was always zero and the component appeared stuck — no subscribers count appeared even after a full page reload. No error appeared in the console.
+
+### What the error looked like
+The Subscribers stat was added to the HTML and the TypeScript signal was wired correctly, but the UI never updated from `0` even though the backend was returning real data. The Angular dev server compiled silently.
+
+### Root cause (for engineers)
+The `PublicUserDto` TypeScript interface was updated to require `subscribersCount: number`, but the three hardcoded mock profile objects in `user.service.ts` were not updated. TypeScript strict mode would normally catch this at compile time, but the project's `tsconfig` strictness settings allowed the omission to pass compilation. The `getPublicProfile()` call fell through to the mock fallback (because the backend was unavailable during development), and the mock returned an object without the field — resulting in `undefined`, which Angular rendered as nothing and the signal never received a real number.
+
+### The fix
+
+**File**: `frontend/src/app/core/services/user/user.service.ts`
+
+Add the missing field to every mock profile object:
+
+```typescript
+const MOCK_PROFILES: Record<string, PublicUserDto> = {
+  'mountain.wanderer': {
+    // ...
+    savedTrailsCount:  6,
+    subscribersCount:  0,   // ← added
+    completedTrailIds: [],
+    // ...
+  },
+  'trekkie_raj': {
+    // ...
+    savedTrailsCount:  10,
+    subscribersCount:  0,   // ← added
+    // ...
+  },
+  'trailblazer.neha': {
+    // ...
+    savedTrailsCount:  8,
+    subscribersCount:  0,   // ← added
+    // ...
+  },
+};
+```
+
+**Rule**: Whenever a required field is added to a shared DTO interface, immediately update all mock objects that implement that interface. The mock fallback path is exercised every time the backend is offline during development — a stale mock silently hides the real data flow.
+
+---
+
+## 17. SVG Icon Path Renders Poorly at Small Size
+
+### In plain English
+We chose an icon for the new "Subscribers" stat by writing an SVG path that combines a person silhouette with a `+` symbol (to suggest "add follower"). At the small size used in the sidebar stat list, the `+` symbol's two lines crossed each other awkwardly and the icon looked more like a hashtag or a crossed-out figure than a meaningful symbol.
+
+### What the error looked like
+The Subscribers stat icon appeared visually cluttered next to the clean single-stroke icons used for Completed, Saved, and Following.
+
+### Root cause (for engineers)
+The original path `M16 21v-2a4 4 0 0 0-4-4H6...M19 8v6M22 11h-6` used two separate lines to form a `+` sign appended to a person silhouette. At 20–24px render size, the `+` strokes sat very close together and visually merged with the silhouette's shoulder arc, producing an ambiguous glyph. The long vertical stroke of the `+` also visually dominated at small scale.
+
+### The fix
+
+**File**: `frontend/src/app/features/feed/feed.component.html`
+
+Replace the "person + plus" icon with a **user-check** icon (person silhouette + checkmark `✓`), which reads as "confirmed subscriber" at any size:
+
+```html
+<!-- Before: person-plus (cluttered at small size) -->
+<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M13 3.13a4 4 0 0 1 0 7.75M19 8v6M22 11h-6"
+      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+
+<!-- After: user-check (clear at any size) -->
+<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM17 11l2 2 4-4"
+      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+```
+
+**Rule**: When choosing icons for compact UI elements (< 28px), prefer icons whose meaning is carried by a single recognisable shape rather than two overlapping geometric primitives. A checkmark reads as "confirmed"; two crossing lines read as ambiguous.
+
+---
+
 ## Summary Table
 
 | # | Error | Layer | Severity | Fix category |
@@ -606,3 +684,5 @@ javap -verbose target/classes/com/hikebuddy/HikeBuddyApplication.class | grep "m
 | 13 | CORS preflight blocked | Security | High | `OPTIONS permitAll()` first |
 | 14 | Google OAuth2 `ClassCastException` | Security/Auth | High | Switch to `OidcUserService` |
 | 15 | `UnsupportedClassVersionError` on startup | Build/JVM | High | `mvn clean spring-boot:run` |
+| 16 | New DTO field missing from mock data | TypeScript/Frontend | Medium | Update all mock objects when interface changes |
+| 17 | SVG icon cluttered at small size | UI/SVG | Low | Use single-shape icon (user-check) |
