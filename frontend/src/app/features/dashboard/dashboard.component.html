@@ -3,8 +3,8 @@
   <!-- Hero greeting -->
   <header class="dashboard-header">
     <div class="user-info">
-      @if (currentUser()?.avatarUrl) {
-        <img class="avatar" [src]="currentUser()!.avatarUrl" alt="Profile picture" />
+      @if (currentUser()?.avatarUrl && !avatarFailed()) {
+        <img class="avatar" [src]="currentUser()!.avatarUrl" alt="Profile picture" (error)="onAvatarError()" />
       } @else {
         <div class="avatar avatar--placeholder">
           {{ currentUser()?.username?.charAt(0)?.toUpperCase() ?? '?' }}

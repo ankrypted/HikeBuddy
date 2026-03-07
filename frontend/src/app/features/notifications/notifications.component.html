@@ -1,0 +1,125 @@
+<hb-chat-widget />
+
+<div class="notifs-page">
+
+  <!-- Main notifications -->
+  <main class="notifs-main">
+    <div class="notifs-header">
+      <h1 class="notifs-title">Notifications</h1>
+      <div class="notifs-actions">
+        @if (totalItems() > 0) {
+          <span class="notifs-count">{{ totalItems() }} total</span>
+        }
+        @if (notifService.unreadCount() > 0) {
+          <button class="btn-mark-all" (click)="markAllRead()">Mark all read</button>
+        }
+      </div>
+    </div>
+
+    @if (loading()) {
+      <div class="notifs-loading">
+        <div class="spinner"></div>
+      </div>
+    } @else if (!items().length) {
+      <div class="notifs-empty">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"
+                stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <p>No notifications yet</p>
+        <span>Activity from hikers you follow will appear here.</span>
+      </div>
+    } @else {
+      <div class="notifs-list">
+        @for (n of items(); track n.id) {
+          <div class="notif-row" [class.notif-row--unread]="!n.read" (click)="markRead(n.id)">
+            <div class="notif-avatar">
+              @if (n.actorAvatarUrl && !failedAvatars().has(n.actorUsername)) {
+                <img [src]="n.actorAvatarUrl" [alt]="n.actorUsername" (error)="onAvatarError(n.actorUsername)" />
+              } @else {
+                {{ initials(n.actorUsername) }}
+              }
+            </div>
+            <div class="notif-body">
+              <p class="notif-msg">{{ n.message }}</p>
+              <div class="notif-meta">
+                <span class="notif-type" [class.notif-type--like]="n.type === 'LIKE'"
+                                         [class.notif-type--comment]="n.type === 'COMMENT'">
+                  {{ typeLabel(n.type) }}
+                </span>
+                <span class="notif-dot">·</span>
+                <span class="notif-time">{{ timeAgo(n.createdAt) }}</span>
+              </div>
+            </div>
+            @if (!n.read) {
+              <span class="unread-dot" aria-label="Unread"></span>
+            }
+            <button class="notif-dismiss" (click)="$event.stopPropagation(); dismiss(n.id)" aria-label="Dismiss">&#x2715;</button>
+          </div>
+        }
+      </div>
+
+      @if (totalPages() > 1) {
+        <div class="pagination">
+          <button class="page-btn" [disabled]="page() === 0" (click)="loadPage(page() - 1)">&#8249;</button>
+          @for (p of pages(); track p) {
+            <button class="page-btn" [class.page-btn--active]="p === page()" (click)="loadPage(p)">{{ p + 1 }}</button>
+          }
+          <button class="page-btn" [disabled]="page() === totalPages() - 1" (click)="loadPage(page() + 1)">&#8250;</button>
+        </div>
+      }
+    }
+  </main>
+
+  <!-- Right sidebar: stats + suggested hikers + trails -->
+  <aside class="notifs-sidebar">
+
+    @if (suggestedHikers().length) {
+      <div class="sidebar-card glass">
+        <h3 class="sidebar-heading">Suggested Hikers</h3>
+        @for (hiker of suggestedHikers(); track hiker.id) {
+          <a [routerLink]="['/users', hiker.username]" class="hiker-item">
+            <div class="hiker-avatar">
+              @if (hiker.avatarUrl) {
+                <img [src]="hiker.avatarUrl" [alt]="hiker.username" />
+              } @else {
+                {{ initials(hiker.username) }}
+              }
+            </div>
+            <div class="hiker-info">
+              <span class="hiker-name">{{ hiker.username }}</span>
+              <span class="hiker-meta">{{ hiker.completedTrailsCount }} trails completed</span>
+            </div>
+          </a>
+        }
+      </div>
+    }
+
+    @if (suggestedTrails().length) {
+      <div class="sidebar-card glass">
+        <h3 class="sidebar-heading">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M2 20h20M6 20L12 4l6 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Suggested Trails
+        </h3>
+        @for (trail of suggestedTrails(); track trail.id) {
+          <a [routerLink]="['/trails', trail.slug]" class="trail-item">
+            <span class="trail-item-name">{{ trail.name }}</span>
+            <div class="trail-item-meta">
+              <span class="chip chip--{{ trail.difficulty.toLowerCase() }}">{{ trail.difficulty }}</span>
+              <span class="trail-item-rating">
+                <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+                {{ trail.averageRating.toFixed(1) }}
+              </span>
+            </div>
+          </a>
+        }
+      </div>
+    }
+
+  </aside>
+
+</div>

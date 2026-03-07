@@ -6,6 +6,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,6 +26,14 @@ public class NotificationController {
         return service.getNotifications(auth.getName());
     }
 
+    /** GET /api/v1/notifications/all?page=0&size=20 */
+    @GetMapping("/all")
+    public Page<NotificationDto> getAllPaged(
+            Authentication auth,
+            @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        return service.getAllPaged(auth.getName(), pageable);
+    }
+
     /** GET /api/v1/notifications/unread-count */
     @GetMapping("/unread-count")
     public long getUnreadCount(Authentication auth) {
@@ -32,6 +44,13 @@ public class NotificationController {
     @PutMapping("/read-all")
     public ResponseEntity<Void> markAllRead(Authentication auth) {
         service.markAllRead(auth.getName());
+        return ResponseEntity.noContent().build();
+    }
+
+    /** PUT /api/v1/notifications/{id}/read */
+    @PutMapping("/{id}/read")
+    public ResponseEntity<Void> markRead(Authentication auth, @PathVariable UUID id) {
+        service.markRead(auth.getName(), id);
         return ResponseEntity.noContent().build();
     }
 

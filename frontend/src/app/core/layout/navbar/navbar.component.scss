@@ -91,6 +91,7 @@
   border-radius:    50%;
   background:       rgba(126, 203, 63, 0.12);
   border:           1px solid rgba(126, 203, 63, 0.35);
+  position:         relative;
   overflow:         hidden;
   flex-shrink:      0;
   cursor:           pointer;
@@ -104,6 +105,8 @@
 }
 
 .nav-avatar-img {
+  position:   absolute;
+  inset:      0;
   width:      100%;
   height:     100%;
   object-fit: cover;
@@ -296,11 +299,14 @@
   font-weight:     800;
   color:           v.$accent-green;
 
+  position: relative;
+  overflow:  hidden;
   img {
-    width:         100%;
-    height:        100%;
-    border-radius: 50%;
-    object-fit:    cover;
+    position:   absolute;
+    inset:      0;
+    width:      100%;
+    height:     100%;
+    object-fit: cover;
   }
 }
 
@@ -333,4 +339,19 @@
   flex-shrink: 0;
 
   &:hover { color: #fff; }
+}
+
+.notif-view-all {
+  display:         block;
+  text-align:      center;
+  padding:         0.6rem 1rem;
+  margin-top:      0.25rem;
+  border-top:      1px solid rgba(255,255,255,0.07);
+  font-size:       0.78rem;
+  font-weight:     600;
+  color:           v.$accent-green;
+  text-decoration: none;
+  transition:      background 0.15s;
+
+  &:hover { background: rgba(126, 203, 63, 0.07); }
 }

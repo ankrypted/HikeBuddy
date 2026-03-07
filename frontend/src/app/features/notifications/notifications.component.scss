@@ -1,0 +1,282 @@
+@use 'styles/variables' as v;
+
+// Two-column layout inside the dashboard shell
+.notifs-page {
+  display:               grid;
+  grid-template-columns: 1fr 220px;
+  gap:                   10rem;
+  padding:               2rem 10rem 4rem;
+  align-items:           start;
+  max-width:             1500px;
+  margin:                0 auto 0 0;
+}
+
+.notifs-sidebar {
+  position: sticky;
+  top:      calc(v.$nav-height + 1rem);
+}
+
+.notifs-main { min-width: 0; }
+
+// Sidebar cards
+.sidebar-card {
+  border-radius: 16px;
+  padding:       1.1rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.sidebar-heading {
+  display:        flex;
+  align-items:    center;
+  gap:            0.35rem;
+  font-size:      0.72rem;
+  font-weight:    700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color:          v.$text-muted;
+  margin:         0 0 0.85rem;
+
+  svg { width: 12px; height: 12px; flex-shrink: 0; }
+}
+
+.stat-item {
+  display:     flex;
+  align-items: center;
+  gap:         0.5rem;
+  padding:     0.5rem 0;
+
+  &:not(:last-child) { border-bottom: 1px solid rgba(255, 255, 255, 0.06); }
+
+  svg    { width: 15px; height: 15px; color: v.$accent-green; flex-shrink: 0; }
+  span   { font-size: 0.8rem;  color: v.$text-muted; flex: 1; }
+  strong { font-size: 0.88rem; font-weight: 800; color: #fff; }
+}
+
+.hiker-item {
+  display:         flex;
+  align-items:     center;
+  gap:             0.6rem;
+  padding:         0.5rem 0;
+  text-decoration: none;
+  color:           inherit;
+
+  &:not(:last-child) { border-bottom: 1px solid rgba(255, 255, 255, 0.06); }
+  &:hover .hiker-name { color: v.$accent-green; }
+}
+
+.hiker-avatar {
+  flex-shrink:     0;
+  width:           34px;
+  height:          34px;
+  border-radius:   50%;
+  background:      rgba(126, 203, 63, 0.12);
+  border:          1px solid rgba(126, 203, 63, 0.25);
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  font-size:       0.65rem;
+  font-weight:     800;
+  color:           v.$accent-green;
+  position:        relative;
+  overflow:        hidden;
+
+  img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+}
+
+.hiker-info   { display: flex; flex-direction: column; gap: 0.1rem; min-width: 0; }
+.hiker-name   { font-size: 0.8rem; font-weight: 600; color: rgba(255,255,255,0.9); transition: color 0.15s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hiker-meta   { font-size: 0.7rem; color: v.$text-muted; }
+
+.trail-item {
+  display:         flex;
+  flex-direction:  column;
+  gap:             0.3rem;
+  padding:         0.5rem 0;
+  text-decoration: none;
+  color:           inherit;
+
+  &:not(:last-child) { border-bottom: 1px solid rgba(255, 255, 255, 0.06); }
+  &:hover .trail-item-name { color: v.$accent-green; }
+}
+
+.trail-item-name   { font-size: 0.8rem; font-weight: 600; color: rgba(255,255,255,0.9); transition: color 0.15s; line-height: 1.3; }
+.trail-item-meta   { display: flex; align-items: center; gap: 0.4rem; }
+.trail-item-rating {
+  display: flex; align-items: center; gap: 0.2rem; font-size: 0.72rem; color: #f5c542;
+  svg { width: 10px; height: 10px; }
+}
+
+// Difficulty chips
+.chip {
+  display:        inline-block;
+  padding:        2px 8px;
+  border-radius:  5px;
+  font-size:      0.65rem;
+  font-weight:    700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border:         1px solid transparent;
+
+  &--easy     { background: rgba(63,185,80,0.18);  border-color: rgba(63,185,80,0.4);  color: #7edb5a; }
+  &--moderate { background: rgba(255,180,0,0.15);  border-color: rgba(255,180,0,0.4);  color: #ffc940; }
+  &--hard     { background: rgba(255,90,50,0.15);  border-color: rgba(255,90,50,0.4);  color: #ff7a55; }
+  &--expert   { background: rgba(200,40,40,0.15);  border-color: rgba(200,40,40,0.4);  color: #ff5555; }
+}
+
+// Header
+.notifs-header {
+  display:         flex;
+  align-items:     center;
+  justify-content: space-between;
+  margin-bottom:   1.5rem;
+}
+
+.notifs-title   { font-size: 1.6rem; font-weight: 700; color: v.$text-primary; margin: 0; }
+.notifs-actions { display: flex; align-items: center; gap: 1rem; }
+.notifs-count   { font-size: 0.82rem; color: v.$text-muted; }
+
+.btn-mark-all {
+  background:    transparent;
+  border:        1px solid rgba(126, 203, 63, 0.4);
+  border-radius: 1rem;
+  padding:       0.3rem 0.85rem;
+  font-size:     0.78rem;
+  font-weight:   600;
+  color:         v.$accent-green;
+  cursor:        pointer;
+  transition:    border-color 0.2s, background 0.2s;
+
+  &:hover { background: rgba(126, 203, 63, 0.08); border-color: rgba(126, 203, 63, 0.7); }
+}
+
+// Loading
+.notifs-loading { display: flex; justify-content: center; padding: 4rem 0; }
+
+.spinner {
+  width:         36px;
+  height:        36px;
+  border:        3px solid rgba(126, 203, 63, 0.2);
+  border-top:    3px solid v.$accent-green;
+  border-radius: 50%;
+  animation:     spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+// Empty state
+.notifs-empty {
+  display:        flex;
+  flex-direction: column;
+  align-items:    center;
+  gap:            0.5rem;
+  padding:        5rem 0;
+  color:          v.$text-muted;
+  text-align:     center;
+
+  svg  { width: 48px; height: 48px; opacity: 0.35; margin-bottom: 0.5rem; }
+  p    { font-size: 1.05rem; font-weight: 600; color: rgba(255,255,255,0.5); margin: 0; }
+  span { font-size: 0.85rem; }
+}
+
+// List
+.notifs-list {
+  display:         flex;
+  flex-direction:  column;
+  gap:             0;
+  border-radius:   14px;
+  overflow:        hidden;
+  border:          1px solid rgba(255,255,255,0.07);
+  background:      rgba(13,27,42,0.7);
+  backdrop-filter: blur(12px);
+}
+
+.notif-row {
+  display:       flex;
+  align-items:   center;
+  gap:           0.85rem;
+  padding:       0.85rem 1.1rem;
+  cursor:        pointer;
+  transition:    background 0.15s;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  position:      relative;
+
+  &:last-child { border-bottom: none; }
+  &:hover      { background: rgba(255,255,255,0.04); }
+  &--unread    { background: rgba(126,203,63,0.04); }
+}
+
+.notif-avatar {
+  flex-shrink:     0;
+  width:           40px;
+  height:          40px;
+  border-radius:   50%;
+  background:      rgba(126,203,63,0.12);
+  border:          1px solid rgba(126,203,63,0.3);
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  font-size:       0.7rem;
+  font-weight:     800;
+  color:           v.$accent-green;
+  position:        relative;
+  overflow:        hidden;
+
+  img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+}
+
+.notif-body { flex: 1; min-width: 0; }
+.notif-msg  { font-size: 0.875rem; color: rgba(255,255,255,0.9); line-height: 1.4; margin: 0 0 0.2rem; word-break: break-word; }
+.notif-meta { display: flex; align-items: center; gap: 0.4rem; font-size: 0.72rem; color: v.$text-muted; }
+
+.notif-type {
+  font-weight: 600;
+  &--like    { color: #ff6b6b; }
+  &--comment { color: v.$accent-green; }
+}
+
+.notif-dot  { opacity: 0.4; }
+
+.unread-dot { width: 7px; height: 7px; border-radius: 50%; background: v.$accent-green; flex-shrink: 0; }
+
+.notif-dismiss {
+  background:  transparent;
+  border:      none;
+  cursor:      pointer;
+  color:       v.$text-muted;
+  font-size:   0.8rem;
+  padding:     0.25rem;
+  line-height: 1;
+  flex-shrink: 0;
+  opacity:     0;
+  transition:  opacity 0.15s, color 0.15s;
+
+  .notif-row:hover & { opacity: 1; }
+  &:hover { color: #fff; }
+}
+
+// Pagination
+.pagination { display: flex; justify-content: center; align-items: center; gap: 0.4rem; margin-top: 2rem; }
+
+.page-btn {
+  min-width:     36px;
+  height:        36px;
+  border-radius: 8px;
+  border:        1px solid rgba(255,255,255,0.1);
+  background:    rgba(13,27,42,0.6);
+  color:         rgba(255,255,255,0.7);
+  font-size:     0.85rem;
+  font-weight:   600;
+  cursor:        pointer;
+  transition:    background 0.15s, border-color 0.15s, color 0.15s;
+  padding:       0 0.5rem;
+
+  &:hover:not(:disabled) { background: rgba(126,203,63,0.1); border-color: rgba(126,203,63,0.5); color: #fff; }
+  &--active   { background: rgba(126,203,63,0.15); border-color: rgba(126,203,63,0.6); color: v.$accent-green; }
+  &:disabled  { opacity: 0.3; cursor: not-allowed; }
+}
+
+// Responsive
+@media (max-width: 700px) {
+  .notifs-page    { grid-template-columns: 1fr; }
+  .notifs-sidebar { position: static; display: none; }
+}

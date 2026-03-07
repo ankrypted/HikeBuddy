@@ -9,8 +9,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,8 +19,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class NotificationService {
 
-    private static final DateTimeFormatter FMT =
-            DateTimeFormatter.ofPattern("MMM d, yyyy").withZone(ZoneId.of("UTC"));
 
     private final NotificationRepository notificationRepo;
     private final UserRepository         userRepository;
@@ -49,10 +48,16 @@ public class NotificationService {
 
     public List<NotificationDto> getNotifications(String email) {
         User user = findByEmail(email);
-        return notificationRepo.findByRecipientIdOrderByCreatedAtDesc(user.getId())
+        return notificationRepo.findTop20ByRecipientIdOrderByCreatedAtDesc(user.getId())
                 .stream()
                 .map(this::toDto)
                 .toList();
+    }
+
+    public Page<NotificationDto> getAllPaged(String email, Pageable pageable) {
+        User user = findByEmail(email);
+        Page<Notification> page = notificationRepo.findByRecipientIdOrderByCreatedAtDesc(user.getId(), pageable);
+        return new PageImpl<>(page.getContent().stream().map(this::toDto).toList(), pageable, page.getTotalElements());
     }
 
     public long getUnreadCount(String email) {
@@ -64,6 +69,20 @@ public class NotificationService {
     public void markAllRead(String email) {
         User user = findByEmail(email);
         notificationRepo.markAllReadForRecipient(user.getId());
+    }
+
+    @Transactional
+    public void markRead(String email, UUID notificationId) {
+        Notification n = notificationRepo.findById(notificationId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        User user = findByEmail(email);
+        if (!n.getRecipientId().equals(user.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
+        if (!n.isRead()) {
+            n.setRead(true);
+            notificationRepo.save(n);
+        }
     }
 
     @Transactional
@@ -103,7 +122,7 @@ public class NotificationService {
                 n.getEventId(),
                 n.getMessage(),
                 n.isRead(),
-                FMT.format(n.getCreatedAt()));
+                n.getCreatedAt().toString());
     }
 
     private User findByEmail(String email) {

@@ -27,6 +27,16 @@ export class NotificationService {
     });
   }
 
+  markRead(id: string): void {
+    const n = this.notifications().find(x => x.id === id);
+    if (!n || n.read) return;
+    this.http.put<void>(`${this.base}/${id}/read`, {}).subscribe(() => {
+      this.notifications.update(list =>
+        list.map(x => x.id === id ? { ...x, read: true } : x)
+      );
+    });
+  }
+
   dismiss(id: string): void {
     this.http.delete<void>(`${this.base}/${id}`).subscribe(() => {
       this.notifications.update(list => list.filter(n => n.id !== id));

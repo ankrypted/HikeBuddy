@@ -84,6 +84,12 @@ export const routes: Routes = [
           import('./features/profile/profile.component').then(m => m.ProfileComponent),
         title: 'Profile — HikeBuddy',
       },
+      {
+        path: 'notifications',
+        loadComponent: () =>
+          import('./features/notifications/notifications.component').then(m => m.NotificationsComponent),
+        title: 'Notifications — HikeBuddy',
+      },
     ],
   },
   {
@@ -91,6 +97,12 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/feed/feed.component').then(m => m.FeedComponent),
     title: 'Feed — HikeBuddy',
+  },
+  // /notifications is now under the dashboard shell; redirect old URL
+  {
+    path: 'notifications',
+    redirectTo: '/dashboard/notifications',
+    pathMatch: 'full',
   },
   {
     path: 'users/:username',
