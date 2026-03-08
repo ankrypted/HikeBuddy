@@ -2,50 +2,113 @@
 
   <!-- ── Conversation panel ───────────────────────────────────────── -->
   <div class="chat-panel" [class.chat-panel--open]="open()">
-    <div class="cp-header">
-      <span class="cp-title">Messages</span>
-      <button class="cp-close" (click)="toggle()" aria-label="Close messages">
-        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-      </button>
-    </div>
 
-    <div class="cp-list">
-      @for (convo of conversations; track convo.id) {
-        <button class="cp-item">
-          <div class="cp-avatar">{{ initials(convo.username) }}</div>
-          <div class="cp-info">
-            <div class="cp-row">
-              <span class="cp-name">{{ convo.username }}</span>
-              <span class="cp-time">{{ convo.time }}</span>
-            </div>
-            <span class="cp-preview" [class.cp-preview--unread]="convo.unread > 0">
-              {{ convo.lastMessage }}
-            </span>
-          </div>
-          @if (convo.unread > 0) {
-            <span class="cp-badge">{{ convo.unread }}</span>
-          }
+    @if (!activeConvo()) {
+      <!-- ── Conversation list view ──────────────────────────────── -->
+      <div class="cp-header">
+        <span class="cp-title">Messages</span>
+        <button class="cp-close" (click)="toggle()" aria-label="Close messages">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         </button>
-      }
-    </div>
+      </div>
+
+      <div class="cp-list">
+        @if (conversations().length === 0) {
+          <div class="cp-empty">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+                    stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>No messages yet</span>
+          </div>
+        } @else {
+          @for (convo of conversations(); track convo.id) {
+            <button class="cp-item" (click)="openThread(convo)">
+              <div class="cp-avatar">{{ initials(convo.otherUsername) }}</div>
+              <div class="cp-info">
+                <div class="cp-row">
+                  <span class="cp-name">{{ convo.otherUsername }}</span>
+                  <span class="cp-time">{{ convo.lastMessageTime }}</span>
+                </div>
+                <span class="cp-preview" [class.cp-preview--unread]="convo.unreadCount > 0">
+                  {{ convo.lastMessage }}
+                </span>
+              </div>
+              @if (convo.unreadCount > 0) {
+                <span class="cp-badge">{{ convo.unreadCount }}</span>
+              }
+            </button>
+          }
+        }
+      </div>
+
+    } @else {
+      <!-- ── Thread view ──────────────────────────────────────────── -->
+      <div class="cp-header">
+        <button class="cp-back" (click)="closeThread()" aria-label="Back to conversations">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M19 12H5M12 5l-7 7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div class="cp-thread-title">
+          <div class="cp-avatar cp-avatar--sm">{{ initials(activeConvo()!.otherUsername) }}</div>
+          <span class="cp-title">{{ activeConvo()!.otherUsername }}</span>
+        </div>
+        <button class="cp-close" (click)="toggle()" aria-label="Close messages">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+
+      <div class="cp-messages" #msgContainer>
+        @if (loadingMessages()) {
+          <div class="cp-loading">
+            <span class="cp-dot"></span><span class="cp-dot"></span><span class="cp-dot"></span>
+          </div>
+        } @else if (messages().length === 0) {
+          <div class="cp-empty cp-empty--thread">
+            <span>Say hello!</span>
+          </div>
+        }
+        @for (msg of messages(); track msg.id) {
+          <div class="cp-msg" [class.cp-msg--mine]="msg.mine">
+            <span class="cp-msg-body">{{ msg.body }}</span>
+            <span class="cp-msg-time">{{ msg.sentAt }}</span>
+          </div>
+        }
+      </div>
+
+      <div class="cp-input-row">
+        <input class="cp-input"
+               [value]="draft()"
+               (input)="updateDraft($event)"
+               (keydown)="onDraftKeydown($event)"
+               placeholder="Type a message…"
+               autocomplete="off" />
+        <button class="cp-send" (click)="sendMessage()" [disabled]="sending()" aria-label="Send">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+    }
+
   </div>
 
   <!-- ── FAB button ────────────────────────────────────────────────── -->
   <button class="chat-fab" (click)="toggle()" aria-label="Toggle messages">
     @if (open()) {
-      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg viewBox="0 0 24 24" fill="none">
         <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
       </svg>
     } @else {
-      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg viewBox="0 0 24 24" fill="none">
         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
     }
-    @if (!open() && totalUnread > 0) {
-      <span class="fab-badge">{{ totalUnread }}</span>
+    @if (!open() && totalUnread() > 0) {
+      <span class="fab-badge">{{ totalUnread() }}</span>
     }
   </button>
 

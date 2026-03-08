@@ -6,15 +6,17 @@ import { TrailService }            from './core/services/trail/trail.service';
 import { ToastService }            from './core/services/toast/toast.service';
 import { ReviewModalComponent, ReviewSubmission } from './shared/components/review-modal/review-modal.component';
 import { ToastComponent }          from './shared/components/toast/toast.component';
-import { NotificationService }    from './core/services/notification/notification.service';
-import { AuthService }            from './core/services/auth/auth.service';
+import { ChatWidgetComponent }     from './shared/components/chat-widget/chat-widget.component';
+import { NotificationService }     from './core/services/notification/notification.service';
+import { MessageService }          from './core/services/message/message.service';
+import { AuthService }             from './core/services/auth/auth.service';
 import { TrailSummaryDto }         from './shared/models/trail.dto';
 
 @Component({
   selector:        'app-root',
   standalone:      true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports:         [RouterOutlet, ReviewModalComponent, ToastComponent],
+  imports:         [RouterOutlet, ReviewModalComponent, ToastComponent, ChatWidgetComponent],
   template: `
     <router-outlet />
     @if (completedTrailsService.pendingReviewTrail(); as trail) {
@@ -26,6 +28,7 @@ import { TrailSummaryDto }         from './shared/models/trail.dto';
       />
     }
     <hb-toast />
+    <hb-chat-widget />
   `,
   styles: [`:host { display: block; }`],
 })
@@ -34,6 +37,7 @@ export class AppComponent {
   private readonly trailService    = inject(TrailService);
   private readonly toastService    = inject(ToastService);
   private readonly notifService    = inject(NotificationService);
+  private readonly messageService  = inject(MessageService);
   private readonly authService     = inject(AuthService);
 
   private readonly _reviewError = signal<string | null>(null);
@@ -45,8 +49,11 @@ export class AppComponent {
       if (this.authService.isLoggedIn()) {
         this.notifService.load();
         this.notifService.startPolling();
+        this.messageService.loadConversations();
+        this.messageService.startPolling();
       } else {
         this.notifService.stopPolling();
+        this.messageService.stopPolling();
       }
     });
   }

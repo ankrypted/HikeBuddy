@@ -9,6 +9,7 @@ import { SceneBackgroundComponent } from '../../shared/components/scene-backgrou
 import { UserService }             from '../../core/services/user/user.service';
 import { TrailService }            from '../../core/services/trail/trail.service';
 import { AuthService }             from '../../core/services/auth/auth.service';
+import { MessageService }          from '../../core/services/message/message.service';
 import { PublicUserDto, ActivityEvent, PublicTrailRef } from '../../shared/models/public-user.dto';
 import { DOCUMENT }               from '@angular/common';
 
@@ -26,6 +27,7 @@ export class UserProfileComponent implements OnInit {
   private readonly userService  = inject(UserService);
   private readonly trailService = inject(TrailService);
   private readonly authService  = inject(AuthService);
+  private readonly messageService = inject(MessageService);
   private readonly document     = inject(DOCUMENT);
 
   private readonly allTrails = toSignal(this.trailService.getAllTrails(), { initialValue: [] });
@@ -90,6 +92,10 @@ export class UserProfileComponent implements OnInit {
       next:  p  => { this.profile.set(p); this.loading.set(false); },
       error: () => { this.notFound.set(true); this.loading.set(false); },
     });
+  }
+
+  openChatWith(username: string): void {
+    this.messageService.openChatWith(username);
   }
 
   toggleSubscribe(): void {

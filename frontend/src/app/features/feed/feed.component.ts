@@ -4,7 +4,6 @@ import {
 import { RouterLink }                from '@angular/router';
 import { NavbarComponent }           from '../../core/layout/navbar/navbar.component';
 import { SceneBackgroundComponent }  from '../../shared/components/scene-background/scene-background.component';
-import { ChatWidgetComponent }       from '../../shared/components/chat-widget/chat-widget.component';
 import { AuthService }               from '../../core/services/auth/auth.service';
 import { UserService }               from '../../core/services/user/user.service';
 import { TrailService }              from '../../core/services/trail/trail.service';
@@ -35,7 +34,7 @@ export interface Achievement {
   selector:        'hb-feed',
   standalone:      true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports:         [NavbarComponent, SceneBackgroundComponent, RouterLink, ChatWidgetComponent],
+  imports:         [NavbarComponent, SceneBackgroundComponent, RouterLink],
   templateUrl:     './feed.component.html',
   styleUrl:        './feed.component.scss',
 })

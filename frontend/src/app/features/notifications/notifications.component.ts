@@ -2,7 +2,6 @@ import {
   Component, OnInit, signal, inject, ChangeDetectionStrategy, computed,
 } from '@angular/core';
 import { RouterLink }              from '@angular/router';
-import { ChatWidgetComponent }    from '../../shared/components/chat-widget/chat-widget.component';
 import { NotificationService }     from '../../core/services/notification/notification.service';
 import { NotificationDto }         from '../../shared/models/notification.dto';
 import { environment }             from '../../../environments/environment';
@@ -26,7 +25,7 @@ interface PagedResponse {
   selector:        'hb-notifications',
   standalone:      true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports:         [RouterLink, ChatWidgetComponent],
+  imports:         [RouterLink],
   templateUrl:     './notifications.component.html',
   styleUrl:        './notifications.component.scss',
 })
