@@ -268,6 +268,72 @@
                 </div>
               </div>
               <p class="review-text">{{ review.comment }}</p>
+
+              <!-- Action bar -->
+              <div class="rv-actions">
+                <button class="rv-act-btn" [class.rv-act-btn--liked]="reviewSummary(review).likedByMe"
+                        (click)="toggleReviewLike(review)" type="button">
+                  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"
+                          [attr.fill]="reviewSummary(review).likedByMe ? 'currentColor' : 'none'"
+                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <span>{{ reviewSummary(review).likeCount }}</span>
+                </button>
+                <button class="rv-act-btn" [class.rv-act-btn--active]="openReviewComments().has(review.id)"
+                        (click)="toggleReviewComments(review.id)" type="button">
+                  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <span>{{ reviewSummary(review).comments.length }}</span>
+                </button>
+                <button class="rv-act-btn" [class.rv-act-btn--copied]="copiedReviewId() === review.id"
+                        (click)="copyReviewLink(review.id)" type="button">
+                  @if (copiedReviewId() === review.id) {
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>Copied!</span>
+                  } @else {
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>Share</span>
+                  }
+                </button>
+              </div>
+
+              <!-- Comment section -->
+              @if (openReviewComments().has(review.id)) {
+                <div class="rv-comment-section">
+                  @for (c of reviewSummary(review).comments; track c.id) {
+                    <div class="rv-cmt-item">
+                      <div class="rv-cmt-avatar">
+                        @if (c.avatarUrl) {
+                          <img [src]="c.avatarUrl" [alt]="c.author" />
+                        } @else {
+                          {{ initials(c.author) }}
+                        }
+                      </div>
+                      <div class="rv-cmt-body">
+                        <span class="rv-cmt-author">{{ c.author }}</span>
+                        <span class="rv-cmt-text">{{ c.text }}</span>
+                      </div>
+                    </div>
+                  }
+                  <div class="rv-cmt-input-row">
+                    <input class="rv-cmt-input" type="text" placeholder="Add a comment…"
+                           [value]="reviewDrafts().get(review.id) ?? ''"
+                           (input)="updateReviewDraft(review.id, $any($event.target).value)"
+                           (keydown.enter)="postReviewComment(review)">
+                    <button class="rv-cmt-post" type="button"
+                            [disabled]="!(reviewDrafts().get(review.id)?.trim())"
+                            (click)="postReviewComment(review)">Post</button>
+                  </div>
+                </div>
+              }
             </article>
           }
         </div>

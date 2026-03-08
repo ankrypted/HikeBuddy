@@ -9,7 +9,9 @@ import { TrailService }              from '../../../core/services/trail/trail.se
 import { AuthService }               from '../../../core/services/auth/auth.service';
 import { FavoritesService }          from '../../../core/services/favorites/favorites.service';
 import { CompletedTrailsService }    from '../../../core/services/completed-trails/completed-trails.service';
+import { FeedInteractionService }    from '../../../core/services/feed-interaction/feed-interaction.service';
 import { TrailDetailDto, TrailSummaryDto, ReviewDto } from '../../../shared/models/trail.dto';
+import { InteractionSummaryDto }     from '../../../shared/models/feed-interaction.dto';
 import { INSIDE_SHELL }              from '../../../shared/tokens/shell.token';
 import { GeolocationService }        from '../../../core/services/geolocation/geolocation.service';
 
@@ -24,12 +26,13 @@ import { GeolocationService }        from '../../../core/services/geolocation/ge
 export class TrailDetailComponent implements OnInit {
   @Input() slug = '';   // auto-bound by withComponentInputBinding()
 
-  private readonly trailService      = inject(TrailService);
-  private readonly authService       = inject(AuthService);
-  private readonly favService        = inject(FavoritesService);
-  private readonly completedService  = inject(CompletedTrailsService);
-  private readonly router            = inject(Router);
-  private readonly geoService        = inject(GeolocationService);
+  private readonly trailService        = inject(TrailService);
+  private readonly authService         = inject(AuthService);
+  private readonly favService          = inject(FavoritesService);
+  private readonly completedService    = inject(CompletedTrailsService);
+  private readonly interactionService  = inject(FeedInteractionService);
+  private readonly router              = inject(Router);
+  private readonly geoService          = inject(GeolocationService);
 
   readonly insideShell = inject(INSIDE_SHELL);
 
@@ -84,6 +87,66 @@ export class TrailDetailComponent implements OnInit {
     this.trail() ? this.completedService.isCompleted(this.trail()!.id) : false,
   );
 
+  // ── Review interaction state ─────────────────────────────────────────
+  readonly reviewInteractionMap = signal<Map<string, InteractionSummaryDto>>(new Map());
+  readonly openReviewComments   = signal<ReadonlySet<string>>(new Set());
+  readonly reviewDrafts         = signal<ReadonlyMap<string, string>>(new Map());
+  readonly copiedReviewId       = signal<string | null>(null);
+
+  reviewKey(review: ReviewDto): string {
+    return `${review.authorName}:${review.id}`;
+  }
+
+  reviewSummary(review: ReviewDto): InteractionSummaryDto {
+    return this.reviewInteractionMap().get(this.reviewKey(review))
+        ?? { likeCount: 0, likedByMe: false, comments: [] };
+  }
+
+  toggleReviewLike(review: ReviewDto): void {
+    const trailName = this.trail()?.name ?? '';
+    this.interactionService
+      .toggleLike(review.authorName, review.id, trailName, 'reviewed')
+      .subscribe(summary => {
+        this.reviewInteractionMap.update(m => new Map(m).set(this.reviewKey(review), summary));
+      });
+  }
+
+  toggleReviewComments(id: string): void {
+    this.openReviewComments.update(s => {
+      const n = new Set(s);
+      n.has(id) ? n.delete(id) : n.add(id);
+      return n;
+    });
+  }
+
+  updateReviewDraft(id: string, text: string): void {
+    this.reviewDrafts.update(m => new Map([...m, [id, text]]));
+  }
+
+  postReviewComment(review: ReviewDto): void {
+    const text = this.reviewDrafts().get(review.id)?.trim();
+    if (!text) return;
+    const trailName = this.trail()?.name ?? '';
+    this.interactionService
+      .postComment(review.authorName, review.id, text, trailName, 'reviewed')
+      .subscribe(comment => {
+        this.reviewInteractionMap.update(m => {
+          const cur = m.get(this.reviewKey(review)) ?? { likeCount: 0, likedByMe: false, comments: [] };
+          return new Map(m).set(this.reviewKey(review), { ...cur, comments: [...cur.comments, comment] });
+        });
+        this.reviewDrafts.update(m => new Map([...m, [review.id, '']]));
+        if (!this.openReviewComments().has(review.id)) {
+          this.openReviewComments.update(s => new Set([...s, review.id]));
+        }
+      });
+  }
+
+  copyReviewLink(reviewId: string): void {
+    navigator.clipboard.writeText(window.location.href);
+    this.copiedReviewId.set(reviewId);
+    setTimeout(() => this.copiedReviewId.set(null), 2000);
+  }
+
   // ── Review form state ───────────────────────────────────────────────
   readonly reviewRating = signal(0);
   readonly hoverRating  = signal(0);
@@ -119,7 +182,15 @@ export class TrailDetailComponent implements OnInit {
     });
 
     this.trailService.getTrailReviews(this.slug).subscribe({
-      next: r => this.reviews.set(r),
+      next: r => {
+        this.reviews.set(r);
+        if (r.length) {
+          const refs = r.map(rv => ({ ownerUsername: rv.authorName, eventId: rv.id }));
+          this.interactionService.batchSummaries(refs).subscribe(map => {
+            this.reviewInteractionMap.set(new Map(Object.entries(map)));
+          });
+        }
+      },
     });
 
     this.geoService.getUserPosition().subscribe({
@@ -189,6 +260,10 @@ export class TrailDetailComponent implements OnInit {
   }
 
   // ── Helpers ─────────────────────────────────────────────────────────
+  initials(username: string): string {
+    return username.replace(/[^a-zA-Z]/g, '').slice(0, 2).toUpperCase() || '?';
+  }
+
   formatInr(n: number): string {
     return '₹' + n.toLocaleString('en-IN');
   }

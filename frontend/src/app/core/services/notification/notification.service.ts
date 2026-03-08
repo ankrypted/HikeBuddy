@@ -1,5 +1,6 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient }                           from '@angular/common/http';
+import { Subscription, interval }               from 'rxjs';
 import { AuthService }                          from '../auth/auth.service';
 import { environment }                          from '../../../../environments/environment';
 import { NotificationDto }                      from '../../../shared/models/notification.dto';
@@ -14,6 +15,8 @@ export class NotificationService {
   readonly notifications  = signal<NotificationDto[]>([]);
   readonly unreadCount    = computed(() => this.notifications().filter(n => !n.read).length);
   readonly panelOpen      = signal(false);
+
+  private pollSub: Subscription | null = null;
 
   /** Call once after login or on app init when user is already logged in. */
   load(): void {
@@ -41,6 +44,17 @@ export class NotificationService {
     this.http.delete<void>(`${this.base}/${id}`).subscribe(() => {
       this.notifications.update(list => list.filter(n => n.id !== id));
     });
+  }
+
+  /** Start polling every 60 s so new notifications from others appear automatically. */
+  startPolling(): void {
+    if (this.pollSub) return;
+    this.pollSub = interval(60_000).subscribe(() => this.load());
+  }
+
+  stopPolling(): void {
+    this.pollSub?.unsubscribe();
+    this.pollSub = null;
   }
 
   togglePanel(): void { this.panelOpen.update(v => !v); }

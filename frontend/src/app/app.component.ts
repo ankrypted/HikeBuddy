@@ -40,10 +40,13 @@ export class AppComponent {
   readonly reviewError = this._reviewError.asReadonly();
 
   constructor() {
-    // Load notifications whenever login state changes
+    // Load notifications whenever login state changes; poll while logged in
     effect(() => {
       if (this.authService.isLoggedIn()) {
         this.notifService.load();
+        this.notifService.startPolling();
+      } else {
+        this.notifService.stopPolling();
       }
     });
   }

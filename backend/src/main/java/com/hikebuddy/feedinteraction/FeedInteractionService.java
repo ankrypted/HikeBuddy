@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -121,12 +122,15 @@ public class FeedInteractionService {
     private FeedCommentDto toCommentDto(FeedComment c, User author) {
         String username  = author != null ? author.getUsername()  : "Unknown";
         String avatarUrl = author != null ? author.getAvatarUrl() : null;
+        // @CreationTimestamp may be null on the in-memory entity immediately after save()
+        // (Hibernate populates it during flush, not before). Fall back to now().
+        Instant ts = c.getCreatedAt() != null ? c.getCreatedAt() : Instant.now();
         return new FeedCommentDto(
                 c.getId().toString(),
                 username,
                 avatarUrl,
                 c.getBody(),
-                FMT.format(c.getCreatedAt()));
+                FMT.format(ts));
     }
 
     private User findByEmail(String email) {
