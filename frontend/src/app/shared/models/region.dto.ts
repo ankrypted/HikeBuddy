@@ -1,6 +1,7 @@
 export interface RegionSummaryDto {
   id: string;
   name: string;
+  state: string;
   country: string;
   countryCode: string;  // ISO 3166-1 alpha-2
   thumbnailUrl: string;

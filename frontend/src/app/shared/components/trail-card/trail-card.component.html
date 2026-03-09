@@ -5,7 +5,7 @@
   (keydown.enter)="onCardClick()"
   tabindex="0"
   role="article"
-  [attr.aria-label]="'View trail: ' + trail.name + ', ' + trail.region.name"
+  [attr.aria-label]="'View trail: ' + trail.name + ', ' + trail.region.name + ', ' + trail.region.state"
 >
   <!-- Illustration / thumbnail -->
   <div class="trail-img">
@@ -170,7 +170,7 @@
   <div class="trail-footer">
     <span class="trail-name">{{ trail.name }}</span>
     <div class="trail-info-badge">
-      <span class="trail-country">{{ trail.region.name }}</span>
+      <span class="trail-country">{{ trail.region.name }}<span class="trail-state">, {{ trail.region.state }}</span></span>
       <button
         class="trail-play"
         [attr.aria-label]="'View trail ' + trail.name"
