@@ -96,6 +96,21 @@ public class NotificationService {
         notificationRepo.delete(n);
     }
 
+    public void createSubscriptionNotification(String recipientUsername, User actor) {
+        User recipient = userRepository.findByUsername(recipientUsername).orElse(null);
+        if (recipient == null) return;
+
+        notificationRepo.save(Notification.builder()
+                .recipientId(recipient.getId())
+                .actorUsername(actor.getUsername())
+                .actorAvatarUrl(actor.getAvatarUrl())
+                .type(Notification.NotificationType.SUBSCRIPTION)
+                .ownerUsername(recipientUsername)
+                .eventId("follow")
+                .message(actor.getUsername() + " subscribed to you")
+                .build());
+    }
+
     // ── Helpers ──────────────────────────────────────────────────────────────
 
     private String buildMessage(Notification.NotificationType type,

@@ -1,6 +1,7 @@
 package com.hikebuddy.user;
 
 import com.hikebuddy.completedtrail.UserCompletedTrailRepository;
+import com.hikebuddy.notification.NotificationService;
 import com.hikebuddy.subscription.UserSubscription;
 import com.hikebuddy.subscription.UserSubscriptionId;
 import com.hikebuddy.subscription.UserSubscriptionRepository;
@@ -39,6 +40,7 @@ public class UserService {
     private final TrailReviewRepository reviewRepository;
     private final UserSavedTrailRepository savedTrailRepository;
     private final UserSubscriptionRepository subscriptionRepository;
+    private final NotificationService notificationService;
 
     public UserProfileDto getUserProfile(String email) {
         return UserProfileDto.from(findByEmail(email));
@@ -100,6 +102,7 @@ public class UserService {
         UserSubscriptionId id = new UserSubscriptionId(follower.getId(), followee.getId());
         if (!subscriptionRepository.existsById(id)) {
             subscriptionRepository.save(UserSubscription.builder().id(id).build());
+            notificationService.createSubscriptionNotification(followee.getUsername(), follower);
         }
     }
 
