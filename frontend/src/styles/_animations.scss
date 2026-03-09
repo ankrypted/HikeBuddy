@@ -18,13 +18,13 @@
 }
 
 @keyframes swing-a {
-  from { transform: rotate(-24deg); }
-  to   { transform: rotate(24deg);  }
+  0%, 100% { transform: rotate(-24deg); }
+  50%       { transform: rotate(24deg);  }
 }
 
 @keyframes swing-b {
-  from { transform: rotate(24deg);  }
-  to   { transform: rotate(-24deg); }
+  0%, 100% { transform: rotate(24deg);  }
+  50%       { transform: rotate(-24deg); }
 }
 
 @keyframes dot-pulse {
@@ -40,35 +40,35 @@
 .fire-glow  { transform-box: fill-box; transform-origin: center bottom; animation: flicker 1.4s ease-in-out infinite reverse; }
 
 .hiker-staff { animation: staff-glow 2s ease-in-out infinite; }
-.hiker-body  { animation: hiker-bob 0.65s linear infinite; }
+.hiker-body  { animation: hiker-bob 1.0s linear infinite; }
 
 .hiker-arm-l {
   transform-box: fill-box;
   transform-origin: right top;
-  animation: swing-a 0.65s linear infinite alternate;
+  animation: swing-a 1.0s linear infinite;
 }
 .hiker-leg-r {
   transform-box: fill-box;
   transform-origin: left top;
-  animation: swing-a 0.65s linear infinite alternate;
+  animation: swing-a 1.0s linear infinite;
 }
 .hiker-arm-r {
   transform-box: fill-box;
   transform-origin: left top;
-  animation: swing-b 0.65s linear infinite alternate;
+  animation: swing-b 1.0s linear infinite;
 }
 .hiker-leg-l {
   transform-box: fill-box;
   transform-origin: right top;
-  animation: swing-b 0.65s linear infinite alternate;
+  animation: swing-b 1.0s linear infinite;
 }
 
-// Speed up on logo hover (linear kept for consistent pace)
-.hb-logo:hover .hiker-body  { animation: hiker-bob 0.32s linear infinite; }
-.hb-logo:hover .hiker-arm-l { animation: swing-a   0.32s linear infinite alternate; }
-.hb-logo:hover .hiker-leg-r { animation: swing-a   0.32s linear infinite alternate; }
-.hb-logo:hover .hiker-arm-r { animation: swing-b   0.32s linear infinite alternate; }
-.hb-logo:hover .hiker-leg-l { animation: swing-b   0.32s linear infinite alternate; }
+// Speed up on logo hover
+.hb-logo:hover .hiker-body  { animation: hiker-bob 0.5s linear infinite; }
+.hb-logo:hover .hiker-arm-l { animation: swing-a   0.5s linear infinite; }
+.hb-logo:hover .hiker-leg-r { animation: swing-a   0.5s linear infinite; }
+.hb-logo:hover .hiker-arm-r { animation: swing-b   0.5s linear infinite; }
+.hb-logo:hover .hiker-leg-l { animation: swing-b   0.5s linear infinite; }
 
 .dot-pulse { animation: dot-pulse 2.4s ease-in-out infinite; }
 

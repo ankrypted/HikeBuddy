@@ -28,7 +28,9 @@ import { TrailSummaryDto }         from './shared/models/trail.dto';
       />
     }
     <hb-toast />
-    <hb-chat-widget />
+    @if (authService.isLoggedIn()) {
+      <hb-chat-widget />
+    }
   `,
   styles: [`:host { display: block; }`],
 })
@@ -38,7 +40,7 @@ export class AppComponent {
   private readonly toastService    = inject(ToastService);
   private readonly notifService    = inject(NotificationService);
   private readonly messageService  = inject(MessageService);
-  private readonly authService     = inject(AuthService);
+  protected readonly authService   = inject(AuthService);
 
   private readonly _reviewError = signal<string | null>(null);
   readonly reviewError = this._reviewError.asReadonly();

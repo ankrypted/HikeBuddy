@@ -31,10 +31,6 @@
   <!-- Auth buttons — top-right -->
   <div class="auth-buttons">
     @if (isLoggedIn()) {
-      @if (!onFeed() && !onDashboard()) {
-        <a routerLink="/feed" class="btn-login">Feed</a>
-      }
-
       <!-- Notification bell -->
       <div class="notif-wrap">
         <button class="notif-btn" (click)="notificationService.togglePanel(); $event.stopPropagation()" aria-label="Notifications">
