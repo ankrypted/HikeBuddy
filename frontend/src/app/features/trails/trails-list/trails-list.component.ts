@@ -9,6 +9,7 @@ import { TrailService }          from '../../../core/services/trail/trail.servic
 import { AuthService }           from '../../../core/services/auth/auth.service';
 import { FavoritesService }      from '../../../core/services/favorites/favorites.service';
 import { TrailSummaryDto }       from '../../../shared/models/trail.dto';
+import { RegionSummaryDto }     from '../../../shared/models/region.dto';
 import { INSIDE_SHELL }          from '../../../shared/tokens/shell.token';
 
 @Component({
@@ -38,9 +39,13 @@ export class TrailsListComponent implements OnInit {
     search: '', difficulty: '', region: '', sort: 'rating',
   });
 
-  readonly regions = computed(() =>
-    [...new Set(this.trails().map(t => t.region.name))].sort(),
-  );
+  readonly regions = computed((): RegionSummaryDto[] => {
+    const seen = new Set<string>();
+    return this.trails()
+      .map(t => t.region)
+      .filter(r => { if (seen.has(r.id)) return false; seen.add(r.id); return true; })
+      .sort((a, b) => a.state.localeCompare(b.state) || a.name.localeCompare(b.name));
+  });
 
   readonly filteredTrails = computed(() => {
     const { search, difficulty, region, sort } = this.filterState();
@@ -50,7 +55,8 @@ export class TrailsListComponent implements OnInit {
       const q = search.toLowerCase();
       list = list.filter(t =>
         t.name.toLowerCase().includes(q) ||
-        t.region.name.toLowerCase().includes(q),
+        t.region.name.toLowerCase().includes(q) ||
+        t.region.state.toLowerCase().includes(q),
       );
     }
     if (difficulty) list = list.filter(t => t.difficulty === difficulty);

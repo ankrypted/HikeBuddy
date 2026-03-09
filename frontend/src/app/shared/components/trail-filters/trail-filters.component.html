@@ -50,8 +50,12 @@
         aria-label="Filter by region"
       >
         <option value="">All regions</option>
-        @for (r of regions(); track r) {
-          <option [value]="r">{{ r }}</option>
+        @for (group of regionsByState(); track group[0]) {
+          <optgroup [label]="group[0]">
+            @for (r of group[1]; track r.id) {
+              <option [value]="r.name">{{ r.name }}</option>
+            }
+          </optgroup>
         }
       </select>
 

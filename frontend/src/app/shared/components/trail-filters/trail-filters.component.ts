@@ -1,5 +1,6 @@
-import { Component, ChangeDetectionStrategy, input, output, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, output, signal, computed } from '@angular/core';
 import { DifficultyLevel } from '../../models/trail.dto';
+import { RegionSummaryDto } from '../../models/region.dto';
 
 export interface TrailFilterState {
   search:     string;
@@ -16,7 +17,16 @@ export interface TrailFilterState {
   styleUrl:         './trail-filters.component.scss',
 })
 export class TrailFiltersComponent {
-  readonly regions       = input<string[]>([]);
+  readonly regions       = input<RegionSummaryDto[]>([]);
+
+  readonly regionsByState = computed((): [string, RegionSummaryDto[]][] => {
+    const map = new Map<string, RegionSummaryDto[]>();
+    for (const r of this.regions()) {
+      if (!map.has(r.state)) map.set(r.state, []);
+      map.get(r.state)!.push(r);
+    }
+    return [...map.entries()].sort(([a], [b]) => a.localeCompare(b));
+  });
   readonly filtersChange = output<TrailFilterState>();
 
   readonly search     = signal('');
