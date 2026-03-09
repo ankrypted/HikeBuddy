@@ -3,6 +3,7 @@ package com.hikebuddy.user;
 import com.hikebuddy.user.dto.PublicUserDto;
 import com.hikebuddy.user.dto.UpdatePasswordRequestDto;
 import com.hikebuddy.user.dto.UpdateProfileRequestDto;
+import com.hikebuddy.user.dto.UpdateProfileResponseDto;
 import com.hikebuddy.user.dto.UserProfileDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,8 +29,15 @@ public class UserController {
         return userService.getUserProfile(principal.getUsername());
     }
 
+    @GetMapping("/check-username")
+    public Map<String, Boolean> checkUsername(
+            @AuthenticationPrincipal UserDetails principal,
+            @RequestParam String username) {
+        return Map.of("available", userService.isUsernameAvailable(principal.getUsername(), username));
+    }
+
     @PatchMapping("/me")
-    public UserProfileDto updateProfile(
+    public UpdateProfileResponseDto updateProfile(
             @AuthenticationPrincipal UserDetails principal,
             @Valid @RequestBody UpdateProfileRequestDto dto) {
         return userService.updateProfile(principal.getUsername(), dto);

@@ -9,14 +9,19 @@ import com.hikebuddy.review.TrailReview;
 import com.hikebuddy.review.TrailReviewRepository;
 import com.hikebuddy.savedtrail.UserSavedTrail;
 import com.hikebuddy.savedtrail.UserSavedTrailRepository;
+import com.hikebuddy.messaging.ConversationRepository;
+import com.hikebuddy.messaging.MessageRepository;
 import com.hikebuddy.storage.S3Service;
+import com.hikebuddy.security.JwtService;
 import com.hikebuddy.user.dto.ActivityEventDto;
 import com.hikebuddy.user.dto.PublicUserDto;
 import com.hikebuddy.user.dto.UpdatePasswordRequestDto;
 import com.hikebuddy.user.dto.UpdateProfileRequestDto;
+import com.hikebuddy.user.dto.UpdateProfileResponseDto;
 import com.hikebuddy.user.dto.UserProfileDto;
 import com.hikebuddy.completedtrail.UserCompletedTrail;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -36,22 +41,66 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final S3Service s3Service;
+    private final JwtService jwtService;
     private final UserCompletedTrailRepository completedTrailRepository;
     private final TrailReviewRepository reviewRepository;
     private final UserSavedTrailRepository savedTrailRepository;
     private final UserSubscriptionRepository subscriptionRepository;
     private final NotificationService notificationService;
+    private final ConversationRepository conversationRepository;
+    private final MessageRepository messageRepository;
 
     public UserProfileDto getUserProfile(String email) {
         return UserProfileDto.from(findByEmail(email));
     }
 
+    /** Returns true if {@code username} is free to use (not taken by anyone other than the caller). */
+    public boolean isUsernameAvailable(String callerEmail, String username) {
+        User caller = findByEmail(callerEmail);
+        if (caller.getUsername().equals(username)) return true;   // it's already theirs
+        return !userRepository.existsByUsername(username);
+    }
+
     @Transactional
-    public UserProfileDto updateProfile(String email, UpdateProfileRequestDto dto) {
+    public UpdateProfileResponseDto updateProfile(String email, UpdateProfileRequestDto dto) {
         User user = findByEmail(email);
+        boolean usernameChanged = false;
+
+        String oldUsername = user.getUsername();
+
+        if (dto.username() != null) {
+            String newUsername = dto.username().trim();
+            if (!newUsername.equals(oldUsername)) {
+                if (userRepository.existsByUsername(newUsername)) {
+                    throw new ResponseStatusException(HttpStatus.CONFLICT, "Username is already taken");
+                }
+                user.setUsername(newUsername);
+                usernameChanged = true;
+            }
+        }
         if (dto.bio() != null)       user.setBio(dto.bio());
         if (dto.avatarUrl() != null) user.setAvatarUrl(dto.avatarUrl());
-        return UserProfileDto.from(userRepository.save(user));
+
+        User saved = userRepository.save(user);
+
+        if (usernameChanged) {
+            String newUsername = saved.getUsername();
+            try {
+                // Remove any orphaned rows that used the new username before the cascade fix existed
+                messageRepository.deleteAllByConversationParticipant(newUsername);
+                conversationRepository.deleteAllByParticipant(newUsername);
+                // Now safely rename
+                conversationRepository.renameParticipantA(oldUsername, newUsername);
+                conversationRepository.renameParticipantB(oldUsername, newUsername);
+                messageRepository.renameSender(oldUsername, newUsername);
+            } catch (DataIntegrityViolationException e) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT,
+                        "Username could not be updated due to a data conflict. Please contact support.");
+            }
+        }
+
+        String newToken = usernameChanged ? jwtService.generateToken(saved) : null;
+        return new UpdateProfileResponseDto(UserProfileDto.from(saved), newToken);
     }
 
     @Transactional

@@ -32,4 +32,14 @@ public interface MessageRepository extends JpaRepository<Message, UUID> {
     void markReadForRecipient(@Param("conversationId") UUID conversationId,
                                @Param("recipient") String recipient,
                                @Param("readAt") Instant readAt);
+
+    @Modifying
+    @Query("UPDATE Message m SET m.senderUsername = :newName WHERE m.senderUsername = :oldName")
+    void renameSender(@Param("oldName") String oldName, @Param("newName") String newName);
+
+    /** Deletes orphaned messages in conversations that belong to a stale participant username. */
+    @Modifying
+    @Query("DELETE FROM Message m WHERE m.conversationId IN " +
+           "(SELECT c.id FROM Conversation c WHERE c.participantA = :username OR c.participantB = :username)")
+    void deleteAllByConversationParticipant(@Param("username") String username);
 }
