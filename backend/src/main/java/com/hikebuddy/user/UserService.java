@@ -7,7 +7,6 @@ import com.hikebuddy.subscription.UserSubscriptionId;
 import com.hikebuddy.subscription.UserSubscriptionRepository;
 import com.hikebuddy.review.TrailReview;
 import com.hikebuddy.review.TrailReviewRepository;
-import com.hikebuddy.savedtrail.UserSavedTrail;
 import com.hikebuddy.savedtrail.UserSavedTrailRepository;
 import com.hikebuddy.messaging.ConversationRepository;
 import com.hikebuddy.messaging.MessageRepository;
@@ -234,16 +233,6 @@ public class UserService {
                     r.getTrailId(),
                     (int) r.getRating(),
                     r.getComment()));
-        }
-
-        for (UserSavedTrail s : savedTrailRepository.findById_UserIdOrderBySavedAtDesc(userId)) {
-            events.add(new ActivityEventDto(
-                    "s-" + s.getId().getTrailId(),
-                    "saved",
-                    s.getSavedAt(),
-                    s.getId().getTrailId(),
-                    null,
-                    null));
         }
 
         events.sort((a, b) -> b.timestamp().compareTo(a.timestamp()));

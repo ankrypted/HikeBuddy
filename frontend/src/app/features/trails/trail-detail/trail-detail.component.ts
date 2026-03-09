@@ -245,6 +245,7 @@ export class TrailDetailComponent implements OnInit {
         body,
         authorName:           user.username,
         authorAvatarInitials: initials,
+        trailName:            this.trail()?.name ?? this.slug,
       })
       .subscribe({
         next: review => {

@@ -27,6 +27,12 @@ public class TrailReview {
     @Column(name = "trail_id", nullable = false, length = 64)
     private String trailId;
 
+    @Column(name = "trail_name", length = 128)
+    private String trailName;
+
+    @Column(name = "trail_slug", length = 128)
+    private String trailSlug;
+
     @Column(nullable = false)
     private short rating;
 

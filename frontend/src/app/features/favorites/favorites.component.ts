@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { Router, RouterLink }    from '@angular/router';
 import { FavoritesService }      from '../../core/services/favorites/favorites.service';
 import { TrailSummaryDto }       from '../../shared/models/trail.dto';
+import { RegionSummaryDto }      from '../../shared/models/region.dto';
 import { TrailFiltersComponent, TrailFilterState } from '../../shared/components/trail-filters/trail-filters.component';
 
 @Component({
@@ -21,9 +22,13 @@ export class FavoritesComponent {
     search: '', difficulty: '', region: '', sort: 'rating',
   });
 
-  readonly regions = computed(() =>
-    [...new Set(this.favService.favorites().map(t => t.region.name))].sort(),
-  );
+  readonly regions = computed((): RegionSummaryDto[] => {
+    const seen = new Set<string>();
+    return this.favService.favorites()
+      .map(t => t.region)
+      .filter(r => !seen.has(r.id) && seen.add(r.id))
+      .sort((a, b) => a.name.localeCompare(b.name));
+  });
 
   readonly filteredFavorites = computed(() => {
     const { search, difficulty, region, sort } = this.filterState();

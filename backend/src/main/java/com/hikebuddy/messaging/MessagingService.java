@@ -20,9 +20,9 @@ import java.util.UUID;
 public class MessagingService {
 
     private static final DateTimeFormatter TIME_FMT =
-            DateTimeFormatter.ofPattern("h:mm a").withZone(ZoneId.of("UTC"));
+            DateTimeFormatter.ofPattern("h:mm a").withZone(ZoneId.systemDefault());
     private static final DateTimeFormatter DATE_FMT =
-            DateTimeFormatter.ofPattern("MMM d").withZone(ZoneId.of("UTC"));
+            DateTimeFormatter.ofPattern("MMM d").withZone(ZoneId.systemDefault());
 
     private final ConversationRepository convRepo;
     private final MessageRepository      messageRepo;

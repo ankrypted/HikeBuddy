@@ -67,6 +67,7 @@ export class AppComponent {
       body:                 submission.comment,
       authorName:           '',
       authorAvatarInitials: '',
+      trailName:            trail.name,
     }).subscribe({
       next: () => this.completedTrailsService.clearPendingReview(),
       error: (err: HttpErrorResponse) => {

@@ -2,6 +2,7 @@ package com.hikebuddy.review;
 
 import com.hikebuddy.review.dto.CreateReviewRequest;
 import com.hikebuddy.review.dto.ReviewResponse;
+import com.hikebuddy.review.dto.UserReviewResponse;
 import com.hikebuddy.user.User;
 import com.hikebuddy.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,9 +13,11 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -50,6 +53,8 @@ public class ReviewService {
         TrailReview review = TrailReview.builder()
                 .userId(user.getId())
                 .trailId(trailId)
+                .trailName(req.trailName())
+                .trailSlug(req.trailSlug() != null ? req.trailSlug() : trailId)
                 .rating((short) req.rating())
                 .comment(req.comment())
                 .build();
@@ -59,6 +64,16 @@ public class ReviewService {
         // Plain save() defers the flush to transaction commit, leaving createdAt null.
         review = repo.saveAndFlush(review);
         return toResponse(review, user);
+    }
+
+    public List<UserReviewResponse> getMyReviews(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                        "Authenticated user not found: " + email));
+        return repo.findByUserIdOrderByCreatedAtDesc(user.getId())
+                   .stream()
+                   .map(r -> toUserReviewResponse(r, user))
+                   .toList();
     }
 
     // ── Helpers ──────────────────────────────────────────────────────────────
@@ -77,6 +92,28 @@ public class ReviewService {
                 r.getComment(),
                 VISITED_ON_FMT.format(r.getCreatedAt())
         );
+    }
+
+    private UserReviewResponse toUserReviewResponse(TrailReview r, User user) {
+        String slug = r.getTrailSlug() != null ? r.getTrailSlug() : r.getTrailId();
+        String name = r.getTrailName() != null ? r.getTrailName() : slugToTitle(slug);
+        return new UserReviewResponse(
+                r.getId().toString(),
+                user.getUsername(),
+                initials(user.getUsername()),
+                r.getRating(),
+                r.getComment(),
+                VISITED_ON_FMT.format(r.getCreatedAt()),
+                name,
+                slug
+        );
+    }
+
+    /** Converts a kebab-case slug to Title Case: "hampta-pass" → "Hampta Pass" */
+    private String slugToTitle(String slug) {
+        return Arrays.stream(slug.split("-"))
+                .map(w -> w.isEmpty() ? w : Character.toUpperCase(w.charAt(0)) + w.substring(1))
+                .collect(Collectors.joining(" "));
     }
 
     private String initials(String username) {

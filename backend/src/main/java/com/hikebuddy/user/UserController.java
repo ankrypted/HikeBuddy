@@ -1,5 +1,7 @@
 package com.hikebuddy.user;
 
+import com.hikebuddy.review.ReviewService;
+import com.hikebuddy.review.dto.UserReviewResponse;
 import com.hikebuddy.user.dto.PublicUserDto;
 import com.hikebuddy.user.dto.UpdatePasswordRequestDto;
 import com.hikebuddy.user.dto.UpdateProfileRequestDto;
@@ -22,11 +24,17 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final UserService userService;
+    private final UserService   userService;
+    private final ReviewService reviewService;
 
     @GetMapping("/me")
     public UserProfileDto getProfile(@AuthenticationPrincipal UserDetails principal) {
         return userService.getUserProfile(principal.getUsername());
+    }
+
+    @GetMapping("/me/reviews")
+    public List<UserReviewResponse> getMyReviews(@AuthenticationPrincipal UserDetails principal) {
+        return reviewService.getMyReviews(principal.getUsername());
     }
 
     @GetMapping("/check-username")

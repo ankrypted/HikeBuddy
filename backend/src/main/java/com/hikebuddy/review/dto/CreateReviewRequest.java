@@ -6,5 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 
 public record CreateReviewRequest(
         @Min(1) @Max(5) int rating,
-        @NotBlank String comment
+        @NotBlank String comment,
+        String trailName,
+        String trailSlug
 ) {}

@@ -1,0 +1,3 @@
+ALTER TABLE trail_reviews
+    ADD COLUMN IF NOT EXISTS trail_name VARCHAR(128),
+    ADD COLUMN IF NOT EXISTS trail_slug VARCHAR(128);
