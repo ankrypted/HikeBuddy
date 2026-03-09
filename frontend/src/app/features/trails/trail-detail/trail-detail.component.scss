@@ -401,48 +401,6 @@
   .info-card    { padding: 1.25rem; }
 }
 
-// ─── More Details CTA ─────────────────────────────────────────────────
-.more-details-row {
-  display:         flex;
-  justify-content: center;
-}
-
-.btn-more-details {
-  display:         inline-flex;
-  align-items:     center;
-  gap:             0.5rem;
-  padding:         0.65rem 2rem;
-  border-radius:   2rem;
-  font-size:       0.9rem;
-  font-weight:     700;
-  letter-spacing:  0.04em;
-  color:           #0d1b2a;
-  background:      v.$accent-green;
-  border:          none;
-  cursor:          pointer;
-  transition:      background 0.2s, box-shadow 0.2s, transform 0.2s;
-  box-shadow:      0 0 14px rgba(126, 203, 63, 0.50), 0 0 32px rgba(126, 203, 63, 0.20);
-
-  &:hover:not(:disabled) {
-    background:  #8fd94a;
-    box-shadow:  0 0 20px rgba(126, 203, 63, 0.75), 0 0 44px rgba(126, 203, 63, 0.30);
-    transform:   translateY(-1px);
-  }
-
-  &:disabled {
-    opacity: 0.65;
-    cursor:  not-allowed;
-  }
-
-  .coming-soon {
-    font-size:      0.65rem;
-    font-weight:    500;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    opacity:        0.7;
-  }
-}
-
 // ─── Reviews ──────────────────────────────────────────────────────────
 .reviews-section { display: flex; flex-direction: column; gap: 1rem; }
 
@@ -456,6 +414,45 @@
   display:               grid;
   grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
   gap:                   1rem;
+}
+
+.reviews-login-prompt {
+  display:         flex;
+  flex-direction:  column;
+  align-items:     center;
+  gap:             1rem;
+  padding:         2.5rem 2rem;
+  border-radius:   1rem;
+  text-align:      center;
+
+  svg {
+    width:   2.5rem;
+    height:  2.5rem;
+    color:   rgba(255, 255, 255, 0.4);
+  }
+
+  p {
+    color:      rgba(255, 255, 255, 0.65);
+    font-size:  0.95rem;
+    max-width:  340px;
+  }
+}
+
+.btn-login-prompt {
+  display:         inline-block;
+  padding:         0.6rem 1.75rem;
+  border-radius:   2rem;
+  background:      v.$accent-green;
+  color:           #0d1b2a;
+  font-weight:     700;
+  font-size:       0.9rem;
+  text-decoration: none;
+  transition:      background 0.2s, transform 0.2s;
+
+  &:hover {
+    background:  #8fd94a;
+    transform:   translateY(-1px);
+  }
 }
 
 .review-card {

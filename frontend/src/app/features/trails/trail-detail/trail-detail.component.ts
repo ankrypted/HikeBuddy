@@ -2,7 +2,7 @@ import {
   Component, Input, OnInit,
   ChangeDetectionStrategy, signal, computed, inject,
 } from '@angular/core';
-import { Router }                    from '@angular/router';
+import { Router, RouterLink }        from '@angular/router';
 import { NavbarComponent }           from '../../../core/layout/navbar/navbar.component';
 import { SceneBackgroundComponent }  from '../../../shared/components/scene-background/scene-background.component';
 import { TrailService }              from '../../../core/services/trail/trail.service';
@@ -19,7 +19,7 @@ import { GeolocationService }        from '../../../core/services/geolocation/ge
   selector:         'hb-trail-detail',
   standalone:       true,
   changeDetection:  ChangeDetectionStrategy.OnPush,
-  imports:          [NavbarComponent, SceneBackgroundComponent],
+  imports:          [NavbarComponent, SceneBackgroundComponent, RouterLink],
   templateUrl:      './trail-detail.component.html',
   styleUrl:         './trail-detail.component.scss',
 })
