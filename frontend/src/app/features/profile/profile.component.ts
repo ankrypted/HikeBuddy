@@ -1,8 +1,9 @@
 import {
-  ChangeDetectionStrategy, Component, OnInit,
+  ChangeDetectionStrategy, Component, OnDestroy, OnInit,
   effect, inject, signal, untracked,
 } from '@angular/core';
 import { DatePipe }         from '@angular/common';
+import { Subscription }     from 'rxjs';
 import { AuthService }      from '../../core/services/auth/auth.service';
 import { ProfileService }   from '../../core/services/profile/profile.service';
 import { ToastService }     from '../../core/services/toast/toast.service';
@@ -15,13 +16,22 @@ import { ToastService }     from '../../core/services/toast/toast.service';
   templateUrl: './profile.component.html',
   styleUrl:    './profile.component.scss',
 })
-export class ProfileComponent implements OnInit {
+export class ProfileComponent implements OnInit, OnDestroy {
   protected readonly authService    = inject(AuthService);
   protected readonly profileService = inject(ProfileService);
   private   readonly toastService   = inject(ToastService);
 
   readonly profile = this.profileService.profile;
   readonly loading = this.profileService.loading;
+
+  // ── Username ─────────────────────────────────────────────────────────────
+  readonly username          = signal('');
+  readonly usernameSaving    = signal(false);
+  readonly usernameError     = signal<string | null>(null);
+  readonly usernameAvailable = signal<boolean | null>(null);  // null = not checked yet
+  readonly usernameChecking  = signal(false);
+  private  usernameDebounce: ReturnType<typeof setTimeout> | null = null;
+  private  checkSub: Subscription | null = null;
 
   // ── Bio ─────────────────────────────────────────────────────────────────
   readonly bio       = signal('');
@@ -49,6 +59,7 @@ export class ProfileComponent implements OnInit {
       if (!p || this.profileInitialized) return;
       this.profileInitialized = true;
       untracked(() => {
+        this.username.set(p.username);
         this.bio.set(p.bio ?? '');
         this.avatarUrl.set(p.avatarUrl ?? '');
         this.avatarPreviewUrl.set(p.avatarUrl ?? '');
@@ -60,7 +71,64 @@ export class ProfileComponent implements OnInit {
     this.profileService.loadProfile();
   }
 
+  ngOnDestroy(): void {
+    if (this.usernameDebounce) clearTimeout(this.usernameDebounce);
+    this.checkSub?.unsubscribe();
+  }
+
   // ── Actions ──────────────────────────────────────────────────────────────
+
+  onUsernameInput(value: string): void {
+    this.username.set(value);
+    this.usernameError.set(null);
+    this.usernameAvailable.set(null);
+
+    if (this.usernameDebounce) clearTimeout(this.usernameDebounce);
+    this.checkSub?.unsubscribe();
+
+    const trimmed = value.trim();
+    // Don't check if same as current, too short, or invalid chars
+    if (!trimmed || trimmed === this.profile()?.username ||
+        trimmed.length < 3 || !/^[a-zA-Z0-9_]+$/.test(trimmed)) return;
+
+    this.usernameChecking.set(true);
+    this.usernameDebounce = setTimeout(() => {
+      this.checkSub = this.profileService.checkUsername(trimmed).subscribe({
+        next:  available => { this.usernameAvailable.set(available); this.usernameChecking.set(false); },
+        error: ()        => { this.usernameAvailable.set(null);      this.usernameChecking.set(false); },
+      });
+    }, 500);
+  }
+
+  saveUsername(): void {
+    this.usernameError.set(null);
+    const value = this.username().trim();
+    if (value === this.profile()?.username) return;
+    if (value.length < 3) {
+      this.usernameError.set('Username must be at least 3 characters.');
+      return;
+    }
+    if (!/^[a-zA-Z0-9_]+$/.test(value)) {
+      this.usernameError.set('Only letters, numbers, and underscores are allowed.');
+      return;
+    }
+    if (this.usernameAvailable() === false) {
+      this.usernameError.set('This username is already taken. Please choose another.');
+      return;
+    }
+    this.usernameSaving.set(true);
+    this.profileService.updateProfile({ username: value }).subscribe({
+      next: () => {
+        this.toastService.show('Username updated.', 'success');
+        this.usernameSaving.set(false);
+      },
+      error: err => {
+        const msg = err?.error?.message ?? 'Username may already be taken. Please try another.';
+        this.usernameError.set(msg);
+        this.usernameSaving.set(false);
+      },
+    });
+  }
 
   saveBio(): void {
     this.bioSaving.set(true);

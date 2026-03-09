@@ -69,6 +69,16 @@ export class AuthService {
     this.currentUser.update(u => u ? { ...u, ...patch } : null);
   }
 
+  /** Replace the stored JWT with a freshly-issued one (e.g. after a username change). */
+  replaceToken(token: string): void {
+    localStorage.setItem(TOKEN_KEY, token);
+    this.accessToken.set(token);
+    try {
+      const claims = decodeJwtPayload(token);
+      this.currentUser.set({ id: claims.sub, username: claims.username, avatarUrl: claims.avatarUrl });
+    } catch { /* ignore */ }
+  }
+
   logout(): void {
     localStorage.removeItem(TOKEN_KEY);
     this.accessToken.set(null);

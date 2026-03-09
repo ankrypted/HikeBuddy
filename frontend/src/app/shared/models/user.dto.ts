@@ -43,3 +43,8 @@ export interface UpdateProfileRequestDto {
   bio?: string;
   avatarUrl?: string;
 }
+
+export interface UpdateProfileResponseDto {
+  profile: UserProfileDto;
+  newToken: string | null;
+}

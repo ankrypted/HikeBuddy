@@ -2,7 +2,7 @@ import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient }                 from '@angular/common/http';
 import { catchError, map, Observable, tap, throwError } from 'rxjs';
 import { AuthService }               from '../auth/auth.service';
-import { UserProfileDto, UpdateProfileRequestDto, UpdatePasswordRequestDto } from '../../../shared/models/user.dto';
+import { UserProfileDto, UpdateProfileRequestDto, UpdateProfileResponseDto, UpdatePasswordRequestDto } from '../../../shared/models/user.dto';
 import { environment }               from '../../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
@@ -47,12 +47,17 @@ export class ProfileService {
 
   updateProfile(dto: UpdateProfileRequestDto): Observable<UserProfileDto> {
     this._saving.set(true);
-    return this.http.patch<UserProfileDto>(this.base, dto).pipe(
-      tap(updated => {
-        this._profile.set(updated);
-        this.authService.patchCurrentUser({ username: updated.username, avatarUrl: updated.avatarUrl });
+    return this.http.patch<UpdateProfileResponseDto>(this.base, dto).pipe(
+      tap(res => {
+        this._profile.set(res.profile);
+        if (res.newToken) {
+          this.authService.replaceToken(res.newToken);
+        } else {
+          this.authService.patchCurrentUser({ username: res.profile.username, avatarUrl: res.profile.avatarUrl });
+        }
         this._saving.set(false);
       }),
+      map(res => res.profile),
       catchError(err => {
         this._saving.set(false);
         return throwError(() => err);
@@ -71,6 +76,13 @@ export class ProfileService {
       map(res => res.avatarUrl),
       catchError(err => throwError(() => err)),
     );
+  }
+
+  checkUsername(username: string): Observable<boolean> {
+    const params = { username };
+    return this.http
+      .get<{ available: boolean }>(`${environment.apiUrl}/users/check-username`, { params })
+      .pipe(map(r => r.available));
   }
 
   changePassword(dto: UpdatePasswordRequestDto): Observable<void> {

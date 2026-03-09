@@ -13,11 +13,6 @@
     } @else {
 
       <!-- ── Identity card ──────────────────────────────────────────────── -->
-      <!-- TODO: Add a "Username / Handle" edit field here so users can change their
-           display name. Requires: text-input bound to a local `username` signal,
-           a "Save Username" button calling profileService.updateProfile({ username }),
-           a uniqueness check on the backend (UserService.updateProfile), and syncing
-           the updated username back to AuthService.currentUser via patchCurrentUser(). -->
       <section class="profile-card glass identity-card">
         <div class="avatar-display">
           @if (profile()!.avatarUrl) {
@@ -44,6 +39,45 @@
         </div>
       </section>
 
+      <!-- ── Username ──────────────────────────────────────────────────── -->
+      <section class="profile-card glass">
+        <h2 class="card-title">Username</h2>
+        <p class="card-sub">Your public handle — works for both email and Google accounts.</p>
+
+        @if (usernameError()) {
+          <div class="form-error">{{ usernameError() }}</div>
+        }
+
+        <div class="form-group">
+          <label class="form-label" for="usernameInput">Username</label>
+          <div class="username-input-row">
+            <input
+              id="usernameInput"
+              class="text-input"
+              type="text"
+              maxlength="50"
+              autocomplete="username"
+              [value]="username()"
+              (input)="onUsernameInput($any($event.target).value)"
+            />
+            @if (usernameChecking()) {
+              <span class="username-badge username-badge--checking">Checking…</span>
+            } @else if (usernameAvailable() === true) {
+              <span class="username-badge username-badge--available">Available</span>
+            } @else if (usernameAvailable() === false) {
+              <span class="username-badge username-badge--taken">Already taken</span>
+            }
+          </div>
+          <span class="field-hint">3–50 characters, letters, numbers, and underscores only.</span>
+        </div>
+        <button
+          class="btn-save"
+          type="button"
+          [disabled]="usernameSaving() || usernameChecking() || usernameAvailable() === false"
+          (click)="saveUsername()"
+        >{{ usernameSaving() ? 'Saving…' : 'Save Username' }}</button>
+      </section>
+
       <!-- ── Bio ───────────────────────────────────────────────────────── -->
       <section class="profile-card glass">
         <h2 class="card-title">About Me</h2>
@@ -64,53 +98,51 @@
         >{{ bioSaving() ? 'Saving…' : 'Save Bio' }}</button>
       </section>
 
-      <!-- ── Avatar (LOCAL only) ────────────────────────────────────────── -->
-      @if (!authService.isOAuth()) {
-        <section class="profile-card glass">
-          <h2 class="card-title">Profile Picture</h2>
-          <p class="card-sub">Upload a photo or paste an image URL.</p>
+      <!-- ── Avatar ────────────────────────────────────────────────────── -->
+      <section class="profile-card glass">
+        <h2 class="card-title">Profile Picture</h2>
+        <p class="card-sub">Upload a photo or paste an image URL.</p>
 
-          <!-- Preview -->
-          <div class="avatar-edit-row">
-            @if (avatarPreviewUrl()) {
-              <img class="avatar-preview" [src]="avatarPreviewUrl()" alt="Avatar preview" />
-            } @else {
-              <div class="avatar-placeholder avatar-placeholder--sm">
-                {{ profile()!.username.charAt(0).toUpperCase() }}
-              </div>
-            }
-            <div class="avatar-inputs">
-              <!-- File upload -->
-              <div class="upload-row">
-                <input #fileInput type="file" accept="image/*" class="file-input-hidden"
-                       (change)="onFileSelected($event)" />
-                <button class="btn-upload" type="button"
-                        [disabled]="avatarUploading()"
-                        (click)="fileInput.click()">
-                  {{ avatarUploading() ? 'Uploading…' : 'Upload photo' }}
-                </button>
-                <span class="upload-hint">JPG, PNG, WebP — max 5 MB</span>
-              </div>
-              <div class="divider-or">or paste a URL</div>
-              <!-- URL input -->
-              <input
-                class="text-input"
-                type="url"
-                placeholder="https://example.com/avatar.jpg"
-                [value]="avatarUrl()"
-                (input)="onAvatarUrlInput($any($event.target).value)"
-              />
+        <!-- Preview -->
+        <div class="avatar-edit-row">
+          @if (avatarPreviewUrl()) {
+            <img class="avatar-preview" [src]="avatarPreviewUrl()" alt="Avatar preview" />
+          } @else {
+            <div class="avatar-placeholder avatar-placeholder--sm">
+              {{ profile()!.username.charAt(0).toUpperCase() }}
             </div>
+          }
+          <div class="avatar-inputs">
+            <!-- File upload -->
+            <div class="upload-row">
+              <input #fileInput type="file" accept="image/*" class="file-input-hidden"
+                     (change)="onFileSelected($event)" />
+              <button class="btn-upload" type="button"
+                      [disabled]="avatarUploading()"
+                      (click)="fileInput.click()">
+                {{ avatarUploading() ? 'Uploading…' : 'Upload photo' }}
+              </button>
+              <span class="upload-hint">JPG, PNG, WebP — max 5 MB</span>
+            </div>
+            <div class="divider-or">or paste a URL</div>
+            <!-- URL input -->
+            <input
+              class="text-input"
+              type="url"
+              placeholder="https://example.com/avatar.jpg"
+              [value]="avatarUrl()"
+              (input)="onAvatarUrlInput($any($event.target).value)"
+            />
           </div>
+        </div>
 
-          <button
-            class="btn-save"
-            type="button"
-            [disabled]="avatarSaving()"
-            (click)="saveAvatar()"
-          >{{ avatarSaving() ? 'Saving…' : 'Save URL' }}</button>
-        </section>
-      }
+        <button
+          class="btn-save"
+          type="button"
+          [disabled]="avatarSaving()"
+          (click)="saveAvatar()"
+        >{{ avatarSaving() ? 'Saving…' : 'Save URL' }}</button>
+      </section>
 
       <!-- ── Password (LOCAL only) ──────────────────────────────────────── -->
       @if (!authService.isOAuth()) {

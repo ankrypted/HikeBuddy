@@ -249,6 +249,27 @@
   &:focus { border-color: rgba(v.$accent-green, .6); }
 }
 
+// ── Username availability ───────────────────────────────────────────────────
+
+.username-input-row {
+  display:     flex;
+  align-items: center;
+  gap:         .75rem;
+}
+
+.username-badge {
+  flex-shrink:   0;
+  font-size:     .75rem;
+  font-weight:   600;
+  border-radius: 20px;
+  padding:       .2rem .65rem;
+  white-space:   nowrap;
+
+  &--checking  { color: v.$text-muted; background: rgba(255,255,255,.06); }
+  &--available { color: v.$accent-green; background: rgba(v.$accent-green, .12); border: 1px solid rgba(v.$accent-green, .3); }
+  &--taken     { color: #ff6b6b; background: rgba(255,107,107,.1); border: 1px solid rgba(255,107,107,.25); }
+}
+
 // ── Password form ──────────────────────────────────────────────────────────
 
 .form-group {
@@ -261,6 +282,11 @@
   font-size:   .82rem;
   font-weight: 500;
   color:       v.$text-muted;
+}
+
+.field-hint {
+  font-size: .75rem;
+  color:     v.$text-muted;
 }
 
 .form-error {
