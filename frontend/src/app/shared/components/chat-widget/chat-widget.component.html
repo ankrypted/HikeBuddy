@@ -24,7 +24,11 @@
         } @else {
           @for (convo of conversations(); track convo.id) {
             <button class="cp-item" (click)="openThread(convo)">
-              <div class="cp-avatar">{{ initials(convo.otherUsername) }}</div>
+              @if (convo.otherAvatarUrl) {
+                <img class="cp-avatar cp-avatar--img" [src]="convo.otherAvatarUrl" [alt]="convo.otherUsername" />
+              } @else {
+                <div class="cp-avatar">{{ initials(convo.otherUsername) }}</div>
+              }
               <div class="cp-info">
                 <div class="cp-row">
                   <span class="cp-name">{{ convo.otherUsername }}</span>
@@ -51,7 +55,11 @@
           </svg>
         </button>
         <div class="cp-thread-title">
-          <div class="cp-avatar cp-avatar--sm">{{ initials(activeConvo()!.otherUsername) }}</div>
+          @if (activeConvo()!.otherAvatarUrl) {
+            <img class="cp-avatar cp-avatar--sm cp-avatar--img" [src]="activeConvo()!.otherAvatarUrl" [alt]="activeConvo()!.otherUsername" />
+          } @else {
+            <div class="cp-avatar cp-avatar--sm">{{ initials(activeConvo()!.otherUsername) }}</div>
+          }
           <span class="cp-title">{{ activeConvo()!.otherUsername }}</span>
         </div>
         <button class="cp-close" (click)="toggle()" aria-label="Close messages">
