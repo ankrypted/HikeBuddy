@@ -90,7 +90,7 @@ export class NavbarComponent {
 
   readonly navLinks = [
     { label: 'Home',    routerLink: '/',        fragment: undefined },
-    { label: 'Gallery', routerLink: '/gallery', fragment: undefined },
+    { label: 'Explore', routerLink: '/trails',  fragment: undefined },
     { label: 'Contact', routerLink: '/contact', fragment: undefined },
   ] as const;
 }
