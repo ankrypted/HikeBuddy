@@ -230,8 +230,9 @@
 
 .notif-type {
   font-weight: 600;
-  &--like    { color: #ff6b6b; }
-  &--comment { color: v.$accent-green; }
+  &--like         { color: #ff6b6b; }
+  &--comment      { color: v.$accent-green; }
+  &--subscription { color: #7ec8e3; }
 }
 
 .notif-dot  { opacity: 0.4; }

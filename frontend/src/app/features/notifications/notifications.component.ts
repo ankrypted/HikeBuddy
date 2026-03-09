@@ -131,6 +131,8 @@ export class NotificationsComponent implements OnInit {
   }
 
   typeLabel(type: string): string {
-    return type === 'LIKE' ? '♥ liked' : '💬 commented';
+    if (type === 'LIKE')         return '♥ liked';
+    if (type === 'SUBSCRIPTION') return '👤 subscribed to you';
+    return '💬 commented';
   }
 }

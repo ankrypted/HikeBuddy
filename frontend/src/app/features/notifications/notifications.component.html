@@ -43,7 +43,8 @@
               <p class="notif-msg">{{ n.message }}</p>
               <div class="notif-meta">
                 <span class="notif-type" [class.notif-type--like]="n.type === 'LIKE'"
-                                         [class.notif-type--comment]="n.type === 'COMMENT'">
+                                         [class.notif-type--comment]="n.type === 'COMMENT'"
+                                         [class.notif-type--subscription]="n.type === 'SUBSCRIPTION'">
                   {{ typeLabel(n.type) }}
                 </span>
                 <span class="notif-dot">·</span>

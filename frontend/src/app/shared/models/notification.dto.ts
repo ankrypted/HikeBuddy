@@ -2,7 +2,7 @@ export interface NotificationDto {
   id:            string;
   actorUsername: string;
   actorAvatarUrl: string | null;
-  type:          'LIKE' | 'COMMENT';
+  type:          'LIKE' | 'COMMENT' | 'SUBSCRIPTION';
   ownerUsername: string;
   eventId:       string;
   message:       string;
