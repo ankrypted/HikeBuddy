@@ -1,0 +1,39 @@
+{
+  "properties": [
+    {
+      "name": "app.jwt.secret",
+      "type": "java.lang.String",
+      "description": "Secret key used to sign JWT tokens. Must be at least 32 characters. Set via JWT_SECRET environment variable in production."
+    },
+    {
+      "name": "app.jwt.expiration-ms",
+      "type": "java.lang.Long",
+      "description": "JWT token expiration time in milliseconds."
+    },
+    {
+      "name": "app.frontend-url",
+      "type": "java.lang.String",
+      "description": "Base URL of the frontend application. Used for CORS and OAuth2 redirects."
+    },
+    {
+      "name": "aws.s3.bucket",
+      "type": "java.lang.String",
+      "description": "AWS S3 bucket name for storing user avatars and media."
+    },
+    {
+      "name": "aws.s3.region",
+      "type": "java.lang.String",
+      "description": "AWS region where the S3 bucket is hosted."
+    },
+    {
+      "name": "aws.s3.access-key",
+      "type": "java.lang.String",
+      "description": "AWS access key ID. Use environment variables in production."
+    },
+    {
+      "name": "aws.s3.secret-key",
+      "type": "java.lang.String",
+      "description": "AWS secret access key. Use environment variables in production."
+    }
+  ]
+}
