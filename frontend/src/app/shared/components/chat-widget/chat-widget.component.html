@@ -13,7 +13,11 @@
       </div>
 
       <div class="cp-list">
-        @if (conversations().length === 0) {
+        @if (loadingMessages()) {
+          <div class="cp-loading">
+            <span class="cp-dot"></span><span class="cp-dot"></span><span class="cp-dot"></span>
+          </div>
+        } @else if (conversations().length === 0) {
           <div class="cp-empty">
             <svg viewBox="0 0 24 24" fill="none">
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"

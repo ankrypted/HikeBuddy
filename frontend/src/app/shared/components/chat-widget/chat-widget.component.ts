@@ -54,6 +54,7 @@ export class ChatWidgetComponent implements OnDestroy {
       if (!username) return;
       this.messageService.pendingChatUser.set(null);
       this.open.set(true);
+      this.loadingMessages.set(true);
       this.messageService.loadConversations();
       this.messageService.getOrCreateConversation(username).subscribe({
         next: convo => {
@@ -63,8 +64,11 @@ export class ChatWidgetComponent implements OnDestroy {
           });
           this.openThread(convo);
         },
+        error: () => {
+          this.loadingMessages.set(false);
+        },
       });
-    });
+    }, { allowSignalWrites: true });
   }
 
   ngOnDestroy(): void {
@@ -79,6 +83,7 @@ export class ChatWidgetComponent implements OnDestroy {
       this.messageService.loadConversations();
     } else {
       this.closeThread();
+      this.loadingMessages.set(false);
     }
   }
 
