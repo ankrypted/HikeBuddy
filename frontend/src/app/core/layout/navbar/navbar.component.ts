@@ -52,8 +52,13 @@ export class NavbarComponent {
 
   openSearch():  void { this.searchOpen.set(true);          }
   closeSearch(): void { this.searchOpen.set(false);         }
-  toggleMenu():  void { this.menuOpen.update(v => !v);      }
+  toggleMenu():  void { this.notificationService.closePanel(); this.menuOpen.update(v => !v); }
   closeMenu():   void { this.menuOpen.set(false);           }
+
+  toggleNotifPanel(): void {
+    this.menuOpen.set(false);
+    this.notificationService.togglePanel();
+  }
 
   @HostListener('document:keydown.escape')
   onEscape(): void {
