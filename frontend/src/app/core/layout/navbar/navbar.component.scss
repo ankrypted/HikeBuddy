@@ -176,13 +176,14 @@
   }
 
   .auth-buttons {
+    margin-left: 0;
     .btn-login,
     .btn-signup { display: none; }
   }
 
   .menu-btn { display: flex; }
 
-  .navbar { padding: 0 1.25rem; }
+  .navbar { padding: 0 1rem; gap: 0.5rem; }
 }
 
 // ── Notification bell ──────────────────────────────────────────────────────

@@ -573,9 +573,10 @@
 }
 
 @media (max-width: v.$bp-sm) {
-  .achievements-wrap { padding: calc(v.$nav-height + 1.5rem) 1rem 0; }
-  .achievement-badge { min-width: 110px; max-width: 110px; padding: 0.75rem 0.5rem; }
-  .feed-card { padding: 1rem 1.1rem; }
+  .achievements-wrap  { padding: calc(v.$nav-height + 1.5rem) 0 0; }
+  .achievements-strip { justify-content: flex-start; padding-left: 1rem; padding-right: 1rem; }
+  .achievement-badge  { min-width: 110px; max-width: 110px; padding: 0.75rem 0.5rem; flex-shrink: 0; }
+  .feed-card          { padding: 1rem 1.1rem; }
 }
 
 // ── Action bar ────────────────────────────────────────────────────────────────────
