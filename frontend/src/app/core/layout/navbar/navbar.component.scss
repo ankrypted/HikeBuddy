@@ -158,6 +158,9 @@
   color:   #fff !important;
 }
 
+// ─── Auth links inside hamburger menu (mobile only) ───────────────────
+.nav-auth-mobile { display: none; }
+
 // ─── Mobile ──────────────────────────────────────────────────────────
 @media (max-width: v.$bp-sm) {
   .nav-links {
@@ -173,6 +176,14 @@
     z-index:   50;
 
     &--open { display: flex; }
+  }
+
+  .nav-auth-mobile {
+    display:     flex;
+    gap:         0.6rem;
+    margin-top:  0.5rem;
+    padding-top: 0.75rem;
+    border-top:  1px solid rgba(255, 255, 255, 0.08);
   }
 
   .auth-buttons {

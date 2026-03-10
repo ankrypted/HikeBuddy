@@ -16,6 +16,12 @@
         >{{ link.label }}</a>
       </li>
     }
+    @if (!isLoggedIn()) {
+      <li class="nav-auth-mobile">
+        <a routerLink="/auth/login"    class="btn-login"  (click)="closeMenu()">Log In</a>
+        <a routerLink="/auth/register" class="btn-signup" (click)="closeMenu()">Sign Up</a>
+      </li>
+    }
   </ul>
 
   <!-- Search button -->
