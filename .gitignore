@@ -36,3 +36,6 @@ backend/*.jar
 backend/src/main/resources/application-local.properties
 backend/src/main/resources/application-secret*.properties
 docs/
+
+# ── Local deployment notes (private) ────────────────────────────────────────
+DEPLOYMENT_NOTES.md
