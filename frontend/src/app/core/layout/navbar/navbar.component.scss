@@ -195,6 +195,14 @@
   .menu-btn { display: flex; margin-left: auto; }
 
   .navbar { padding: 0 1rem; gap: 0.5rem; }
+
+  .notif-panel {
+    position: fixed;
+    top:      v.$nav-height;
+    left:     0.75rem;
+    right:    0.75rem;
+    width:    auto;
+  }
 }
 
 // ── Notification bell ──────────────────────────────────────────────────────
