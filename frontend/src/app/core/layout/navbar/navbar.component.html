@@ -24,15 +24,17 @@
     }
   </ul>
 
-  <!-- Search button -->
-  <button
-    mat-icon-button
-    class="search-btn"
-    aria-label="Search trails"
-    (click)="openSearch()"
-  >
-    <mat-icon>search</mat-icon>
-  </button>
+  <!-- Search button (logged-in only) -->
+  @if (isLoggedIn()) {
+    <button
+      mat-icon-button
+      class="search-btn"
+      aria-label="Search trails"
+      (click)="openSearch()"
+    >
+      <mat-icon>search</mat-icon>
+    </button>
+  }
 
   <!-- Auth buttons — top-right -->
   <div class="auth-buttons">

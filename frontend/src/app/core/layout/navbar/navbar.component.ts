@@ -47,7 +47,7 @@ export class NavbarComponent {
 
   logout(): void {
     this.authService.logout();
-    this.router.navigate(['/']);
+    this.router.navigateByUrl('/', { replaceUrl: true });
   }
 
   openSearch():  void { this.searchOpen.set(true);          }
