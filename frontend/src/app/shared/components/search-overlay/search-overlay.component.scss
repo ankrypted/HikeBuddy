@@ -51,8 +51,16 @@ input {
   &::placeholder { color: v.$text-muted; }
 }
 
-.search-clear,
+.search-clear {
+  position: fixed;
+  left: 80%;
+  color: v.$text-muted;
+  &:hover { color: #fff; }
+}
+
 .search-close {
+  position: fixed;
+  left: 90%;
   color: v.$text-muted;
   &:hover { color: #fff; }
 }
@@ -195,3 +203,19 @@ input {
 
   strong { color: rgba(255,255,255,0.75); }
 }
+
+// @media(max-width: 786px) {
+//   .search-container {
+//     position: relative;
+//   }
+//   .search-results {
+//     position: absolute;
+//     top: 100%;
+//     left: 0%;
+//     width: 100%;
+//     max-height: 60vh;
+//     z-index: 1000;
+//     overflow-y: auto;
+//   }
+
+// }

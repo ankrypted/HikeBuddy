@@ -1,6 +1,6 @@
 @if (isOpen) {
   <div class="search-overlay" (click)="onBackdropClick($event)">
-    <div class="search-container">
+    <div class="search-container" (click)="$event.stopPropagation()">
 
       <!-- Input bar -->
       <div class="search-box glass">
@@ -13,11 +13,11 @@
           (keydown.escape)="close()"
         />
         @if (query()) {
-          <button mat-icon-button class="search-clear" (click)="query.set(''); searchInput.value = ''" aria-label="Clear">
+          <button mat-icon-button class="search-clear" (click)="query.set(''); searchInput.value = ''; $event.stopPropagation();" aria-label="Clear">
             <mat-icon>close</mat-icon>
           </button>
         }
-        <button mat-icon-button class="search-close" (click)="close()" aria-label="Close search">
+        <button mat-icon-button class="search-close" (click)="close(); $event.stopPropagation();" aria-label="Close search">
           <mat-icon>keyboard_return</mat-icon>
         </button>
       </div>
