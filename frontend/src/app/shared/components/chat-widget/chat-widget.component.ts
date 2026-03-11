@@ -5,12 +5,13 @@ import {
 import { Subscription, interval } from 'rxjs';
 import { MessageService }   from '../../../core/services/message/message.service';
 import { ConversationDto, MessageDto } from '../../models/message.dto';
+import { Router, RouterLink } from '@angular/router'
 
 @Component({
   selector:        'hb-chat-widget',
   standalone:      true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports:         [],
+  imports:         [RouterLink],
   templateUrl:     './chat-widget.component.html',
   styleUrl:        './chat-widget.component.scss',
 })

@@ -66,7 +66,7 @@
             }
             @for (n of notificationService.notifications(); track n.id) {
               <div class="notif-item" [class.notif-item--unread]="!n.read" (click)="notificationService.markRead(n.id)">
-                <div class="notif-actor-avatar">
+                <div class="notif-actor-avatar" [routerLink]="['/users', n.actorUsername]" (click)="$event.stopPropagation()">
                   @if (n.actorAvatarUrl) {
                     <img [src]="n.actorAvatarUrl" [alt]="n.actorUsername" />
                   } @else {

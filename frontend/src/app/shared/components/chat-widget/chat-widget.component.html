@@ -60,9 +60,13 @@
         </button>
         <div class="cp-thread-title">
           @if (activeConvo()!.otherAvatarUrl) {
-            <img class="cp-avatar cp-avatar--sm cp-avatar--img" [src]="activeConvo()!.otherAvatarUrl" [alt]="activeConvo()!.otherUsername" />
+            <a [routerLink]="['/users', activeConvo()!.otherUsername]"> 
+              <img class="cp-avatar cp-avatar--sm cp-avatar--img" [src]="activeConvo()!.otherAvatarUrl" [alt]="activeConvo()!.otherUsername" />
+            </a>
           } @else {
-            <div class="cp-avatar cp-avatar--sm">{{ initials(activeConvo()!.otherUsername) }}</div>
+            <a [routerLink]="['/users', activeConvo()!.otherUsername]"> 
+              <div class="cp-avatar cp-avatar--sm" [routerLink]="['/users', activeConvo()!.otherUsername]">{{ initials(activeConvo()!.otherUsername) }}</div>
+            </a>
           }
           <span class="cp-title">{{ activeConvo()!.otherUsername }}</span>
         </div>

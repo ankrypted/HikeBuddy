@@ -32,7 +32,7 @@
       <div class="notifs-list">
         @for (n of items(); track n.id) {
           <div class="notif-row" [class.notif-row--unread]="!n.read" (click)="markRead(n.id)">
-            <div class="notif-avatar">
+            <div class="notif-avatar" [routerLink]="['/users', n.actorUsername]" (click)="$event.stopPropagation()">
               @if (n.actorAvatarUrl && !failedAvatars().has(n.actorUsername)) {
                 <img [src]="n.actorAvatarUrl" [alt]="n.actorUsername" (error)="onAvatarError(n.actorUsername)" />
               } @else {
