@@ -111,6 +111,8 @@
   }
 }
 
+
+
 // ─── Difficulty colour band ───────────────────────────────────────────────
 .fav-thumb {
   flex-shrink:      0;
@@ -234,11 +236,18 @@
 // ─── Responsive ──────────────────────────────────────────────────────────
 @media (max-width: v.$bp-md) {
   .fav-main  { padding: 1.5rem 1.25rem 3rem; }
-  .fav-thumb { width: 60px; }
+  .fav-thumb { width: 60px; flex-shrink: 0; }
   .fav-name  { font-size: 1.2rem; }
 }
 
 @media (max-width: v.$bp-sm) {
-  .fav-thumb  { display: none; }
+  // .fav-thumb  { display: none; }
+  .fav-thumb { width: 60px; flex-shrink: 0; }
   .fav-action { padding: 0 1rem; }
+}
+
+@media (max-width: 768px) {
+  .fav-row {
+    flex-direction: row;
+  }
 }
