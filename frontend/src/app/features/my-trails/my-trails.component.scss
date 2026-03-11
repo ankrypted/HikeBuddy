@@ -240,11 +240,12 @@
 // ─── Responsive ──────────────────────────────────────────────────────────
 @media (max-width: v.$bp-md) {
   .mt-main  { padding: 1.5rem 1.25rem 3rem; }
-  .mt-thumb { width: 60px; }
+  .mt-thumb { width: 60px; flex-shrink: 0;}
   .mt-name  { font-size: 1.2rem; }
 }
 
 @media (max-width: v.$bp-sm) {
-  .mt-thumb  { display: none; }
+  .mt-thumb  { width:60px; flex-shrink: 0}
   .mt-action { padding: 0 1rem; }
 }
+

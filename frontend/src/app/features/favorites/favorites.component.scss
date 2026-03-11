@@ -241,13 +241,7 @@
 }
 
 @media (max-width: v.$bp-sm) {
-  // .fav-thumb  { display: none; }
   .fav-thumb { width: 60px; flex-shrink: 0; }
   .fav-action { padding: 0 1rem; }
 }
 
-@media (max-width: 768px) {
-  .fav-row {
-    flex-direction: row;
-  }
-}
