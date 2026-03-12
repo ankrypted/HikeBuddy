@@ -30,6 +30,8 @@ public class ReviewService {
     private final TrailReviewRepository repo;
     private final UserRepository        userRepository;
 
+    private final ContentModerationService moderationService;
+
     public List<ReviewResponse> getReviewsForTrail(String trailId) {
         return repo.findByTrailIdOrderByCreatedAtDesc(trailId)
                    .stream()
@@ -62,6 +64,11 @@ public class ReviewService {
         // saveAndFlush forces the INSERT immediately so Hibernate populates the
         // @CreationTimestamp field before toResponse() reads r.getCreatedAt().
         // Plain save() defers the flush to transaction commit, leaving createdAt null.
+        
+    
+        if(moderationService.containsInappropriateContent(req.comment())) {
+            throw new RuntimeException("The review user has submitted contains flagged words!");
+        }
         review = repo.saveAndFlush(review);
         return toResponse(review, user);
     }
