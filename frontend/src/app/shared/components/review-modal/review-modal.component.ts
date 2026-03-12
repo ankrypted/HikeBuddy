@@ -56,6 +56,8 @@ export class ReviewModalComponent {
 
   onSubmit(): void {
     if (!this.canSubmit()) return;
+    // Check content appropriation before setting the reviewBody and return with a warning if not appropriate.
+
     this.submitting.set(true);
     this.submitted.emit({ rating: this.reviewRating(), comment: this.reviewBody().trim() });
   }
