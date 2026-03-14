@@ -73,6 +73,8 @@ export class AppComponent {
       error: (err: HttpErrorResponse) => {
         const msg = err.status === 409
           ? "You've already reviewed this trail."
+          : err.status === 422
+          ? (err.error?.message ?? 'Your review could not be posted. Please revise your content and try again.')
           : 'Something went wrong. Please try again.';
         this._reviewError.set(msg);
         this.toastService.show(msg, 'error');

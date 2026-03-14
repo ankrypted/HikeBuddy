@@ -551,6 +551,13 @@
     &:hover { background: rgba(126, 203, 63, 0.08); }
   }
   &--copied { color: v.$accent-green; svg { color: v.$accent-green; } }
+  &--delete {
+    margin-left: auto;
+    color: #f87171;
+    svg { color: #f87171; }
+    &:hover { background: rgba(248, 113, 113, 0.1); color: #fca5a5; }
+    &:disabled { opacity: 0.5; cursor: not-allowed; }
+  }
 }
 
 // ─── Review comment section ────────────────────────────────────────────
@@ -723,6 +730,12 @@
     opacity: 0.38;
     cursor:  not-allowed;
   }
+}
+
+.review-submit-error {
+  font-size: 0.8rem;
+  color:     #f87171;
+  margin:    0;
 }
 
 .form-hint {

@@ -6,5 +6,6 @@ public record ReviewResponse(
         String authorAvatarInitials,
         int rating,
         String comment,
-        String visitedOn
+        String visitedOn,
+        boolean isOwner
 ) {}

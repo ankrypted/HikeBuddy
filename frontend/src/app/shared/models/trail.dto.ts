@@ -55,6 +55,7 @@ export interface ReviewDto {
   rating:               number;   // 1–5
   comment:              string;
   visitedOn:            string;   // e.g. "August 2024"
+  isOwner:              boolean;
 }
 
 export interface UserReviewDto extends ReviewDto {

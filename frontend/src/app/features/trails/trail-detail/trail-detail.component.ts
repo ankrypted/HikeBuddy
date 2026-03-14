@@ -2,6 +2,7 @@ import {
   Component, Input, OnInit,
   ChangeDetectionStrategy, signal, computed, inject,
 } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Router, RouterLink }        from '@angular/router';
 import { NavbarComponent }           from '../../../core/layout/navbar/navbar.component';
 import { SceneBackgroundComponent }  from '../../../shared/components/scene-background/scene-background.component';
@@ -152,7 +153,9 @@ export class TrailDetailComponent implements OnInit {
   readonly hoverRating  = signal(0);
   readonly reviewBody   = signal('');
   readonly submitting   = signal(false);
-  readonly submitted    = signal(false);
+  readonly submitted        = signal(false);
+  readonly submitError      = signal<string | null>(null);
+  readonly deletingReviewId = signal<string | null>(null);
 
   readonly ratingLabel = computed(() => {
     const labels = ['', 'Poor', 'Fair', 'Good', 'Great', 'Excellent'];
@@ -253,11 +256,32 @@ export class TrailDetailComponent implements OnInit {
           this.reviewRating.set(0);
           this.reviewBody.set('');
           this.submitted.set(true);
+          this.submitError.set(null);
           this.submitting.set(false);
           setTimeout(() => this.submitted.set(false), 3500);
         },
-        error: () => this.submitting.set(false),
+        error: (err: HttpErrorResponse) => {
+          this.submitting.set(false);
+          const msg = err.status === 409
+            ? "You've already reviewed this trail."
+            : err.status === 422
+            ? (err.error?.message ?? 'Your review could not be posted. Please revise your content and try again.')
+            : 'Something went wrong. Please try again.';
+          this.submitError.set(msg);
+        },
       });
+  }
+
+  deleteReview(review: ReviewDto): void {
+    if (this.deletingReviewId()) return;
+    this.deletingReviewId.set(review.id);
+    this.trailService.deleteReview(this.slug, review.id).subscribe({
+      next: () => {
+        this.reviews.update(rs => rs.filter(r => r.id !== review.id));
+        this.deletingReviewId.set(null);
+      },
+      error: () => this.deletingReviewId.set(null),
+    });
   }
 
   // ── Helpers ─────────────────────────────────────────────────────────
