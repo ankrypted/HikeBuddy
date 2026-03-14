@@ -31,11 +31,27 @@ public class ReviewService {
     private final UserRepository           userRepository;
     private final ContentModerationService moderationService;
 
-    public List<ReviewResponse> getReviewsForTrail(String trailId) {
+    public List<ReviewResponse> getReviewsForTrail(String trailId, String currentUserEmail) {
+        UUID currentUserId = currentUserEmail != null
+                ? userRepository.findByEmail(currentUserEmail).map(User::getId).orElse(null)
+                : null;
         return repo.findByTrailIdOrderByCreatedAtDesc(trailId)
                    .stream()
-                   .map(r -> toResponse(r, resolveUser(r.getUserId())))
+                   .map(r -> toResponse(r, resolveUser(r.getUserId()), currentUserId))
                    .toList();
+    }
+
+    @Transactional
+    public void deleteReview(String email, UUID reviewId) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                        "Authenticated user not found: " + email));
+        TrailReview review = repo.findById(reviewId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Review not found"));
+        if (!review.getUserId().equals(user.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You can only delete your own reviews");
+        }
+        repo.delete(review);
     }
 
     @Transactional
@@ -70,7 +86,7 @@ public class ReviewService {
         // @CreationTimestamp field before toResponse() reads r.getCreatedAt().
         // Plain save() defers the flush to transaction commit, leaving createdAt null.
         review = repo.saveAndFlush(review);
-        return toResponse(review, user);
+        return toResponse(review, user, user.getId());
     }
 
     public List<UserReviewResponse> getMyReviews(String email) {
@@ -90,14 +106,15 @@ public class ReviewService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR));
     }
 
-    private ReviewResponse toResponse(TrailReview r, User user) {
+    private ReviewResponse toResponse(TrailReview r, User user, UUID currentUserId) {
         return new ReviewResponse(
                 r.getId().toString(),
                 user.getUsername(),
                 initials(user.getUsername()),
                 r.getRating(),
                 r.getComment(),
-                VISITED_ON_FMT.format(r.getCreatedAt())
+                VISITED_ON_FMT.format(r.getCreatedAt()),
+                r.getUserId().equals(currentUserId)
         );
     }
 

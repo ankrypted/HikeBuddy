@@ -153,8 +153,9 @@ export class TrailDetailComponent implements OnInit {
   readonly hoverRating  = signal(0);
   readonly reviewBody   = signal('');
   readonly submitting   = signal(false);
-  readonly submitted    = signal(false);
-  readonly submitError  = signal<string | null>(null);
+  readonly submitted        = signal(false);
+  readonly submitError      = signal<string | null>(null);
+  readonly deletingReviewId = signal<string | null>(null);
 
   readonly ratingLabel = computed(() => {
     const labels = ['', 'Poor', 'Fair', 'Good', 'Great', 'Excellent'];
@@ -269,6 +270,18 @@ export class TrailDetailComponent implements OnInit {
           this.submitError.set(msg);
         },
       });
+  }
+
+  deleteReview(review: ReviewDto): void {
+    if (this.deletingReviewId()) return;
+    this.deletingReviewId.set(review.id);
+    this.trailService.deleteReview(this.slug, review.id).subscribe({
+      next: () => {
+        this.reviews.update(rs => rs.filter(r => r.id !== review.id));
+        this.deletingReviewId.set(null);
+      },
+      error: () => this.deletingReviewId.set(null),
+    });
   }
 
   // ── Helpers ─────────────────────────────────────────────────────────

@@ -10,6 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/trails/{trailId}/reviews")
@@ -18,10 +19,13 @@ public class ReviewController {
 
     private final ReviewService service;
 
-    /** GET /api/v1/trails/{trailId}/reviews — public */
+    /** GET /api/v1/trails/{trailId}/reviews — public; isOwner populated when authenticated */
     @GetMapping
-    public List<ReviewResponse> getReviews(@PathVariable String trailId) {
-        return service.getReviewsForTrail(trailId);
+    public List<ReviewResponse> getReviews(
+            @PathVariable String trailId,
+            Authentication auth) {
+        String email = auth != null ? auth.getName() : null;
+        return service.getReviewsForTrail(trailId, email);
     }
 
     /** POST /api/v1/trails/{trailId}/reviews — authenticated */
@@ -33,5 +37,16 @@ public class ReviewController {
 
         ReviewResponse response = service.submitReview(auth.getName(), trailId, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    /** DELETE /api/v1/trails/{trailId}/reviews/{reviewId} — authenticated, owner only */
+    @DeleteMapping("/{reviewId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteReview(
+            @PathVariable String trailId,
+            @PathVariable UUID reviewId,
+            Authentication auth) {
+
+        service.deleteReview(auth.getName(), reviewId);
     }
 }

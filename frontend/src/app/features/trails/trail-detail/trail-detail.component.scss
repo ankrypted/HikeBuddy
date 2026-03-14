@@ -551,6 +551,13 @@
     &:hover { background: rgba(126, 203, 63, 0.08); }
   }
   &--copied { color: v.$accent-green; svg { color: v.$accent-green; } }
+  &--delete {
+    margin-left: auto;
+    color: #f87171;
+    svg { color: #f87171; }
+    &:hover { background: rgba(248, 113, 113, 0.1); color: #fca5a5; }
+    &:disabled { opacity: 0.5; cursor: not-allowed; }
+  }
 }
 
 // ─── Review comment section ────────────────────────────────────────────

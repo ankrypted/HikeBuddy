@@ -2030,4 +2030,8 @@ export class TrailService {
       { rating: dto.rating, comment: dto.body, trailName: dto.trailName, trailSlug: slug },
     );
   }
+
+  deleteReview(slug: string, reviewId: string): Observable<void> {
+    return this.http.delete<void>(`${this.base}/${slug}/reviews/${reviewId}`);
+  }
 }
