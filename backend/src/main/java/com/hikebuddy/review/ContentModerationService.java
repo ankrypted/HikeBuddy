@@ -1,158 +1,169 @@
 package com.hikebuddy.review;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClient;
 
 import java.util.List;
-import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
- * Uses Claude (Haiku) to semantically moderate trail review content.
- * Fail-open by design — if the API is unreachable or returns an unexpected
- * response the review is allowed through and the error is logged.
+ * Rule-based content moderation for trail reviews.
+ * No external API — runs in-process. Checks for profanity, spam,
+ * hate speech, and personal information exposure.
  */
 @Slf4j
 @Service
 public class ContentModerationService {
 
-    private static final String MODEL = "claude-haiku-4-5-20251001";
-
-    private static final String SYSTEM_PROMPT = """
-            You are a content moderation system for a hiking trail review platform.
-            Analyse the review and respond with ONLY valid JSON — no markdown, no extra text.
-            """;
-
-    private static final String USER_PROMPT_TEMPLATE = """
-            Moderate this hiking trail review.
-            Respond ONLY with JSON in this exact format:
-            {"approved": true, "category": "clean", "reason": "brief explanation"}
-
-            Categories (pick one):
-              clean        – genuine, on-topic trail feedback (approve)
-              profanity    – obscene or vulgar language (reject)
-              hate_speech  – discriminatory or hateful content (reject)
-              spam         – promotional links, repeated text, or gibberish (reject)
-              harassment   – personal attacks on other users or trail staff (reject)
-              off_topic    – entirely unrelated to hiking or the trail (reject)
-              personal_info – exposes real names, phone numbers, emails, etc. (reject)
-
-            Approve honest criticism — even very negative reviews are fine if they are genuine.
-
-            Trail:  %s
-            Rating: %d / 5
-            Review: "%s"
-            """;
-
-    private final RestClient restClient;
-    private final ObjectMapper objectMapper;
     private final boolean enabled;
 
-    @Autowired
     public ContentModerationService(
-            @Value("${anthropic.api-key:}") String apiKey,
-            @Value("${anthropic.moderation.enabled:true}") boolean enabled,
-            ObjectMapper objectMapper) {
-
-        this.objectMapper = objectMapper;
-        boolean hasKey = apiKey != null && !apiKey.isBlank();
-        this.enabled = enabled && hasKey;
-
-        if (enabled && !hasKey) {
-            log.warn("Content moderation is enabled but ANTHROPIC_API_KEY is not configured — moderation will be skipped");
-        }
-
-        this.restClient = hasKey
-                ? RestClient.builder()
-                        .baseUrl("https://api.anthropic.com")
-                        .defaultHeader("x-api-key", apiKey)
-                        .defaultHeader("anthropic-version", "2023-06-01")
-                        .build()
-                : null;
-    }
-
-    /** Package-private — used by tests to inject a RestClient backed by MockRestServiceServer. */
-    ContentModerationService(boolean enabled, ObjectMapper objectMapper, RestClient restClient) {
+            @Value("${moderation.enabled:true}") boolean enabled) {
         this.enabled = enabled;
-        this.objectMapper = objectMapper;
-        this.restClient = restClient;
     }
 
-    /**
-     * Moderates a review comment. Always returns a result — never throws.
-     * On API failure the review is approved (fail-open).
-     */
+    // ── Profanity ─────────────────────────────────────────────────────────────
+    // Patterns cover common obfuscations: leet speak (4→a, 3→e, 1→i, 0→o),
+    // symbol substitutions (@→a, $→s, !→i), and asterisk censoring (f**k).
+
+    private static final List<Pattern> PROFANITY_PATTERNS = List.of(
+        // fuck / f**k / f4ck / fvck / fu*k etc.
+        compile("f[u*@4uú][c*ck][k]"),
+        compile("fuck(?:ing|er|ed|s|face|wit|head|tard|wad|nut)?"),
+        // shit / sh!t / sh1t / shyt
+        compile("sh[i*1!y][t](?:ty|ter|ting|bag|head|hole|faced)?"),
+        // bitch / b*tch / b1tch
+        compile("b[i*1!][t][c][h](?:es|ing|y)?"),
+        // asshole / a**hole / @sshole
+        compile("[@a][s$][s$](?:[h][o0][l1][e]|[h]at)?"),
+        compile("[@a][s$][s$](?:es|ing|hole)?"),
+        // cunt
+        compile("c[u*][n][t](?:s|ing)?"),
+        // cock
+        compile("\\bc[o0][c][k](?:s|sucker|head)?\\b"),
+        // dick
+        compile("\\bd[i1][c][k](?:s|head|face)?\\b"),
+        // whore / wh0re
+        compile("wh[o0][r][e](?:s|d|monger)?"),
+        // slut
+        compile("sl[u][t](?:s|ty)?"),
+        // bastard
+        compile("b[a@][s$][t][a@][r][d](?:s|ly)?"),
+        // prick
+        compile("pr[i1]ck(?:s|ly)?"),
+        // twat
+        compile("tw[a@][t](?:s)?"),
+        // wank
+        compile("w[a@]nk(?:er|ers|ing|s)?"),
+        // Hate speech — slurs
+        compile("n[i1*!][g$][g$][ae][r]?(?:s)?"),
+        compile("f[a4@][g$]{1,2}(?:[o0][t]|s|gy|got)?"),
+        compile("r[e3][t][a@][r][d](?:ed|s)?"),
+        compile("\\bsp[i1]c(?:s)?\\b"),
+        compile("\\bch[i1]nk(?:s)?\\b"),
+        compile("\\bk[i1]k[e3](?:s)?\\b"),
+        compile("\\btr[a4]nn[yi](?:es|s)?\\b")
+    );
+
+    // ── Spam ──────────────────────────────────────────────────────────────────
+
+    private static final Pattern URL_PATTERN = compile(
+        "https?://|www\\.|\\.(?:com|net|org|io)\\b");
+
+    private static final Pattern PROMO_PATTERN = compile(
+        "\\b(?:buy|cheap|discount|deal|sale|offer|promo|coupon|free\\s+shipping|"
+        + "click\\s+here|order\\s+now|limited\\s+time|\\d+%\\s*off)\\b");
+
+    // 5+ identical characters in a row: "aaaaaaa", "!!!!!!"
+    private static final Pattern REPEATED_CHARS = Pattern.compile("(.)\\1{4,}");
+
+    // Same word repeated 3+ times: "buy buy buy"
+    private static final Pattern REPEATED_WORDS =
+        Pattern.compile("\\b(\\w{3,})(?:\\W+\\1){2,}\\b", Pattern.CASE_INSENSITIVE);
+
+    // ── Personal info ─────────────────────────────────────────────────────────
+
+    private static final Pattern EMAIL_PATTERN =
+        Pattern.compile("[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}");
+
+    // Phone: 7-15 digit sequences with common separators
+    private static final Pattern PHONE_PATTERN =
+        Pattern.compile("(?:\\+?\\d[\\s\\-.()]?){7,15}\\d");
+
+    // ── Public API ────────────────────────────────────────────────────────────
+
     public ModerationResult moderate(String comment, int rating, String trailName) {
         if (!enabled) {
             return ModerationResult.pass();
         }
-        try {
-            Map<String, Object> body = buildRequestBody(comment, rating, trailName);
-            String responseText = callApi(body);
-            return parseResult(responseText);
-        } catch (Exception e) {
-            log.warn("Content moderation API call failed (fail-open): {}", e.getMessage());
-            return ModerationResult.pass();
+
+        String normalized = normalize(comment);
+
+        // Personal info — checked first (privacy priority)
+        if (EMAIL_PATTERN.matcher(comment).find()) {
+            return reject("personal_info", "Review contains an email address");
         }
+        if (PHONE_PATTERN.matcher(comment).find()) {
+            return reject("personal_info", "Review contains a phone number");
+        }
+
+        // Profanity / hate speech
+        for (Pattern p : PROFANITY_PATTERNS) {
+            if (p.matcher(normalized).find()) {
+                String category = isHateSpeechPattern(p) ? "hate_speech" : "profanity";
+                log.debug("Moderation blocked — category={}, pattern={}", category, p.pattern());
+                return reject(category, "Review contains inappropriate language");
+            }
+        }
+
+        // Spam
+        if (URL_PATTERN.matcher(comment).find()) {
+            return reject("spam", "Review contains a URL or promotional link");
+        }
+        if (PROMO_PATTERN.matcher(normalized).find()) {
+            return reject("spam", "Review contains promotional content");
+        }
+        if (REPEATED_CHARS.matcher(comment).find()) {
+            return reject("spam", "Review contains excessive repeated characters");
+        }
+        if (REPEATED_WORDS.matcher(comment).find()) {
+            return reject("spam", "Review contains repeated words");
+        }
+
+        log.debug("Moderation passed for comment (length={})", comment.length());
+        return ModerationResult.pass();
     }
 
     // ── Private helpers ───────────────────────────────────────────────────────
 
-    private Map<String, Object> buildRequestBody(String comment, int rating, String trailName) {
-        String trail = trailName != null && !trailName.isBlank() ? trailName : "Unknown Trail";
-        String userPrompt = USER_PROMPT_TEMPLATE.formatted(trail, rating, comment);
-
-        return Map.of(
-                "model", MODEL,
-                "max_tokens", 256,
-                "system", SYSTEM_PROMPT,
-                "messages", List.of(Map.of("role", "user", "content", userPrompt))
-        );
+    /**
+     * Normalises leet-speak and common symbol substitutions so that
+     * "f4ck", "sh!t", "@sshole" etc. are matched by the same patterns.
+     */
+    private static String normalize(String text) {
+        return text
+            .replace('4', 'a').replace('@', 'a')
+            .replace('3', 'e')
+            .replace('1', 'i').replace('!', 'i')
+            .replace('0', 'o')
+            .replace('5', 's').replace('$', 's')
+            .replace('7', 't')
+            .replace('+', 't')
+            .toLowerCase();
     }
 
-    @SuppressWarnings("unchecked")
-    private String callApi(Map<String, Object> body) {
-        Map<String, Object> response = restClient.post()
-                .uri("/v1/messages")
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(body)
-                .retrieve()
-                .body(Map.class);
-
-        if (response == null) {
-            throw new IllegalStateException("Empty response from Anthropic API");
-        }
-
-        List<Map<String, Object>> content = (List<Map<String, Object>>) response.get("content");
-        if (content == null || content.isEmpty()) {
-            throw new IllegalStateException("No content in Anthropic API response");
-        }
-
-        Object text = content.get(0).get("text");
-        if (text == null) {
-            throw new IllegalStateException("No text in Anthropic API response content block");
-        }
-        return text.toString();
+    /** The last N patterns in PROFANITY_PATTERNS are hate-speech slurs. */
+    private static boolean isHateSpeechPattern(Pattern p) {
+        int idx = PROFANITY_PATTERNS.indexOf(p);
+        return idx >= PROFANITY_PATTERNS.size() - 7; // last 7 are slurs
     }
 
-    @SuppressWarnings("unchecked")
-    private ModerationResult parseResult(String json) throws Exception {
-        // Strip markdown code fences if the model added them despite instructions
-        String clean = json.strip();
-        if (clean.startsWith("```")) {
-            clean = clean.replaceAll("(?s)^```[a-z]*\\s*", "").replaceAll("```\\s*$", "").strip();
-        }
+    private static ModerationResult reject(String category, String reason) {
+        return new ModerationResult(false, category, reason);
+    }
 
-        Map<String, Object> parsed = objectMapper.readValue(clean, Map.class);
-        boolean approved = Boolean.TRUE.equals(parsed.get("approved"));
-        String category  = String.valueOf(parsed.getOrDefault("category", "unknown"));
-        String reason    = String.valueOf(parsed.getOrDefault("reason", ""));
-
-        log.debug("Moderation result — approved={}, category={}, reason={}", approved, category, reason);
-        return new ModerationResult(approved, category, reason);
+    private static Pattern compile(String regex) {
+        return Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
     }
 }
