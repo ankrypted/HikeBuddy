@@ -27,8 +27,9 @@ public class ReviewService {
             DateTimeFormatter.ofPattern("MMMM yyyy", Locale.ENGLISH)
                              .withZone(ZoneId.of("UTC"));
 
-    private final TrailReviewRepository repo;
-    private final UserRepository        userRepository;
+    private final TrailReviewRepository    repo;
+    private final UserRepository           userRepository;
+    private final ContentModerationService moderationService;
 
     public List<ReviewResponse> getReviewsForTrail(String trailId) {
         return repo.findByTrailIdOrderByCreatedAtDesc(trailId)
@@ -48,6 +49,12 @@ public class ReviewService {
 
         if (repo.existsByUserIdAndTrailId(user.getId(), trailId)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "You have already reviewed this trail");
+        }
+
+        ModerationResult moderation = moderationService.moderate(req.comment(), req.rating(), req.trailName());
+        if (!moderation.approved()) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY,
+                    "Review was not approved: " + moderation.reason());
         }
 
         TrailReview review = TrailReview.builder()
