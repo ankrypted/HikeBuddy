@@ -228,6 +228,10 @@
                 (input)="onBodyInput($event)"
               ></textarea>
 
+              @if (submitError()) {
+                <p class="review-submit-error">{{ submitError() }}</p>
+              }
+
               <!-- Submit row -->
               <div class="form-footer">
                 <button

@@ -2,6 +2,7 @@ package com.hikebuddy.review;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -51,6 +52,7 @@ public class ContentModerationService {
     private final ObjectMapper objectMapper;
     private final boolean enabled;
 
+    @Autowired
     public ContentModerationService(
             @Value("${anthropic.api-key:}") String apiKey,
             @Value("${anthropic.moderation.enabled:true}") boolean enabled,
