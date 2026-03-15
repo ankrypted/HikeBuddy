@@ -55,7 +55,8 @@ export class NotificationsComponent implements OnInit {
 
   readonly suggestedHikers = computed(() => {
     const subs = this.userService.subscriptions();
-    return this.allUsers().filter(p => !subs.has(p.username)).slice(0, 3);
+    const me   = this.authService.currentUser()?.username;
+    return this.allUsers().filter(p => !subs.has(p.username) && p.username !== me).slice(0, 3);
   });
 
   readonly pages = computed(() =>
