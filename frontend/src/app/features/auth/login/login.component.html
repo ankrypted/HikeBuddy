@@ -6,6 +6,13 @@
   <main class="auth-main">
     <div class="auth-card glass">
 
+      <!-- Session expired notice -->
+      @if (sessionExpired()) {
+        <div class="session-expired-banner" role="alert">
+          Your session has expired. Please sign in again.
+        </div>
+      }
+
       <!-- Header -->
       <div class="auth-header">
         <h1 class="auth-title">Welcome Back</h1>
