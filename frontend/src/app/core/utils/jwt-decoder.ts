@@ -23,3 +23,13 @@ export function decodeJwtPayload(token: string): JwtPayload {
   );
   return JSON.parse(json) as JwtPayload;
 }
+
+/** Returns true if the token's exp claim is in the past (or the token is malformed). */
+export function isTokenExpired(token: string): boolean {
+  try {
+    const { exp } = decodeJwtPayload(token);
+    return Date.now() >= exp * 1000;
+  } catch {
+    return true;
+  }
+}

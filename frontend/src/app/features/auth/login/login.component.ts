@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink }          from '@angular/router';
+import { ActivatedRoute, Router, RouterLink }  from '@angular/router';
 import { NavbarComponent }             from '../../../core/layout/navbar/navbar.component';
 import { SceneBackgroundComponent }    from '../../../shared/components/scene-background/scene-background.component';
 import { AuthService }                 from '../../../core/services/auth/auth.service';
@@ -18,10 +18,12 @@ export class LoginComponent {
   private readonly fb          = inject(FormBuilder);
   private readonly authService = inject(AuthService);
   private readonly router      = inject(Router);
+  private readonly route       = inject(ActivatedRoute);
 
-  readonly loading      = signal(false);
-  readonly serverError  = signal<string | null>(null);
-  readonly showPassword = signal(false);
+  readonly loading        = signal(false);
+  readonly serverError    = signal<string | null>(null);
+  readonly showPassword   = signal(false);
+  readonly sessionExpired = signal(this.route.snapshot.queryParamMap.get('sessionExpired') === 'true');
 
   readonly form = this.fb.group({
     email:    ['', [Validators.required, Validators.email]],
