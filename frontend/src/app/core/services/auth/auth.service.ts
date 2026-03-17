@@ -49,9 +49,7 @@ export class AuthService {
   }
 
   register(dto: RegisterRequestDto) {
-    return this.http.post<AuthResponseDto>(`${this.base}/register`, dto).pipe(
-      tap(res => this.handleAuth(res)),
-    );
+    return this.http.post<{ message: string }>(`${this.base}/register`, dto);
   }
 
   /** Called after a successful Google OAuth redirect with the JWT from the URL. */

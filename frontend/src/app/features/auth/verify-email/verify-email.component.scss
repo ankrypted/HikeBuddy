@@ -1,0 +1,105 @@
+@use 'styles/variables' as v;
+
+.auth-wrapper {
+  position: relative;
+  min-height: 100vh;
+  background: v.$bg-primary;
+  display: flex;
+  flex-direction: column;
+}
+
+.auth-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: calc(v.$nav-height + 2rem) 1rem 3rem;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 440px;
+  padding: 2.5rem 2rem;
+  border-radius: v.$card-radius;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  text-align: center;
+}
+
+.icon-wrap {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    width: 32px;
+    height: 32px;
+  }
+
+  &.loading {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  &.success {
+    background: rgba(126, 203, 63, 0.12);
+    border: 1px solid rgba(126, 203, 63, 0.3);
+    color: v.$accent;
+  }
+
+  &.error {
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #ef4444;
+  }
+}
+
+.spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid rgba(255, 255, 255, 0.15);
+  border-top-color: v.$accent;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.auth-header {
+  text-align: center;
+}
+
+.auth-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: v.$text-primary;
+  margin: 0 0 0.5rem;
+}
+
+.auth-subtitle {
+  color: v.$text-secondary;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.btn-primary {
+  display: inline-block;
+  background: v.$accent;
+  color: #0d1b2a;
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 0.75rem 2rem;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: opacity 0.2s;
+
+  &:hover { opacity: 0.9; }
+}

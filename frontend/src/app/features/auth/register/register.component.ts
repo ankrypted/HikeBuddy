@@ -52,7 +52,7 @@ export class RegisterComponent {
       email:    this.f['email'].value!,
       password: this.f['password'].value!,
     }).subscribe({
-      next:  () => this.router.navigate(['/feed']),
+      next:  () => this.router.navigate(['/auth/verify-email-sent']),
       error: (err) => {
         this.serverError.set(err?.error?.message ?? 'Registration failed. Please try again.');
         this.loading.set(false);

@@ -53,6 +53,11 @@ public class User {
     @Builder.Default
     private Set<UserRole> roles = new HashSet<>(Set.of(UserRole.ROLE_USER));
 
+    /** false until the user clicks the verification link in their email (LOCAL accounts only). */
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean enabled = true;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
