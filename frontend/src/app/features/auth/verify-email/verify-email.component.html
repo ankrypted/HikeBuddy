@@ -1,0 +1,49 @@
+<hb-scene-background aria-hidden="true" />
+
+<div class="auth-wrapper">
+  <hb-navbar />
+
+  <main class="auth-main">
+    <div class="auth-card glass">
+
+      @if (state() === 'loading') {
+        <div class="icon-wrap loading" aria-label="Verifying…">
+          <span class="spinner"></span>
+        </div>
+        <div class="auth-header">
+          <h1 class="auth-title">Verifying your email…</h1>
+          <p class="auth-subtitle">Please wait a moment.</p>
+        </div>
+      }
+
+      @if (state() === 'success') {
+        <div class="icon-wrap success" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="auth-header">
+          <h1 class="auth-title">Email verified!</h1>
+          <p class="auth-subtitle">{{ message() }}</p>
+        </div>
+        <a routerLink="/auth/login" class="btn-primary">Sign in to HikeBuddy</a>
+      }
+
+      @if (state() === 'error') {
+        <div class="icon-wrap error" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 18L18 6M6 6l12 12" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="auth-header">
+          <h1 class="auth-title">Verification failed</h1>
+          <p class="auth-subtitle">{{ message() }}</p>
+        </div>
+        <a routerLink="/auth/register" class="btn-primary">Register again</a>
+      }
+
+    </div>
+  </main>
+</div>

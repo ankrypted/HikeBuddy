@@ -14,6 +14,18 @@ export const AUTH_ROUTES: Routes = [
     title: 'Create Account — HikeBuddy',
   },
   {
+    path: 'verify-email-sent',
+    loadComponent: () =>
+      import('./verify-email-sent/verify-email-sent.component').then(m => m.VerifyEmailSentComponent),
+    title: 'Check Your Email — HikeBuddy',
+  },
+  {
+    path: 'verify-email',
+    loadComponent: () =>
+      import('./verify-email/verify-email.component').then(m => m.VerifyEmailComponent),
+    title: 'Verify Email — HikeBuddy',
+  },
+  {
     path: 'callback',
     loadComponent: () =>
       import('./callback/auth-callback.component').then(m => m.AuthCallbackComponent),

@@ -1,0 +1,97 @@
+@use 'styles/variables' as v;
+
+.auth-wrapper {
+  position: relative;
+  min-height: 100vh;
+  background: v.$bg-primary;
+  display: flex;
+  flex-direction: column;
+}
+
+.auth-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: calc(v.$nav-height + 2rem) 1rem 3rem;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 440px;
+  padding: 2.5rem 2rem;
+  border-radius: v.$card-radius;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  text-align: center;
+}
+
+.icon-wrap {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(126, 203, 63, 0.12);
+  border: 1px solid rgba(126, 203, 63, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: v.$accent;
+
+  svg {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+.auth-header {
+  text-align: center;
+}
+
+.auth-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: v.$text-primary;
+  margin: 0 0 0.5rem;
+}
+
+.auth-subtitle {
+  color: v.$text-secondary;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.info-box {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 0.875rem 1rem;
+  width: 100%;
+
+  p {
+    color: v.$text-secondary;
+    font-size: 0.875rem;
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  strong {
+    color: v.$text-primary;
+  }
+}
+
+.auth-footer {
+  font-size: 0.875rem;
+  color: v.$text-secondary;
+  margin: 0;
+}
+
+.auth-link {
+  color: v.$accent;
+  text-decoration: none;
+  font-weight: 500;
+
+  &:hover { text-decoration: underline; }
+}
