@@ -2,6 +2,7 @@ package com.hikebuddy.auth.controller;
 
 import com.hikebuddy.auth.dto.AuthResponseDto;
 import com.hikebuddy.auth.dto.LoginRequestDto;
+import com.hikebuddy.auth.dto.MessageResponseDto;
 import com.hikebuddy.auth.dto.RegisterRequestDto;
 import com.hikebuddy.auth.service.AuthService;
 import jakarta.validation.Valid;
@@ -18,8 +19,13 @@ public class AuthController {
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public AuthResponseDto register(@Valid @RequestBody RegisterRequestDto dto) {
+    public MessageResponseDto register(@Valid @RequestBody RegisterRequestDto dto) {
         return authService.register(dto);
+    }
+
+    @GetMapping("/verify-email")
+    public MessageResponseDto verifyEmail(@RequestParam String token) {
+        return authService.verifyEmail(token);
     }
 
     @PostMapping("/login")
