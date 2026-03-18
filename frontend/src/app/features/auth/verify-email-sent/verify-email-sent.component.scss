@@ -37,7 +37,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: v.$accent;
+  color: v.$accent-green;
 
   svg {
     width: 32px;
@@ -57,7 +57,7 @@
 }
 
 .auth-subtitle {
-  color: v.$text-secondary;
+  color: v.$text-muted;
   font-size: 0.95rem;
   line-height: 1.6;
   margin: 0;
@@ -71,7 +71,7 @@
   width: 100%;
 
   p {
-    color: v.$text-secondary;
+    color: v.$text-muted;
     font-size: 0.875rem;
     margin: 0;
     line-height: 1.5;
@@ -84,12 +84,12 @@
 
 .auth-footer {
   font-size: 0.875rem;
-  color: v.$text-secondary;
+  color: v.$text-muted;
   margin: 0;
 }
 
 .auth-link {
-  color: v.$accent;
+  color: v.$accent-green;
   text-decoration: none;
   font-weight: 500;
 
