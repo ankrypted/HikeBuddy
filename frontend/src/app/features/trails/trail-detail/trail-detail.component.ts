@@ -149,6 +149,30 @@ export class TrailDetailComponent implements OnInit {
   }
 
   // ── Review form state ───────────────────────────────────────────────
+  // ── Gallery & lightbox ──────────────────────────────────────────────
+  readonly galleryUrls = computed(() => {
+    const t = this.trail();
+    if (!t) return [];
+    if (t.media.length > 0) return t.media.slice(0, 5).map(m => m.url);
+    return Array.from({ length: 5 }, (_, i) =>
+      `https://picsum.photos/seed/${t.slug}-${i + 1}/1200/800`
+    );
+  });
+
+  readonly lightboxIndex = signal<number | null>(null);
+
+  openLightbox(i: number): void { this.lightboxIndex.set(i); }
+  closeLightbox(): void         { this.lightboxIndex.set(null); }
+  prevPhoto(): void {
+    const i = this.lightboxIndex(), n = this.galleryUrls().length;
+    if (i !== null) this.lightboxIndex.set((i - 1 + n) % n);
+  }
+  nextPhoto(): void {
+    const i = this.lightboxIndex(), n = this.galleryUrls().length;
+    if (i !== null) this.lightboxIndex.set((i + 1) % n);
+  }
+
+  // ── Review form state ───────────────────────────────────────────────
   readonly reviewRating = signal(0);
   readonly hoverRating  = signal(0);
   readonly reviewBody   = signal('');
