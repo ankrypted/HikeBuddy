@@ -4,13 +4,13 @@
 .mt-wrapper {
   min-height: calc(100vh - v.$nav-height);
   background: linear-gradient(180deg,
-    rgba(5, 13, 25, 0.72) 0%,
-    rgba(5, 13, 25, 0.92) 30%,
+    rgba(5, 13, 25, 0.82) 0%,
+    rgba(5, 13, 25, 0.93) 30%,
     rgba(5, 13, 25, 0.97) 65%
   );
 
   @media (max-width: v.$bp-md) {
-    background: rgba(5, 13, 25, 0.92);
+    background: rgba(5, 13, 25, 0.95);
   }
 }
 
@@ -34,11 +34,13 @@
   line-height:    1.1;
   letter-spacing: -0.02em;
   margin-bottom:  0.4rem;
+  text-shadow:    0 2px 12px rgba(0, 0, 0, 0.6);
 }
 
 .mt-subtitle {
-  font-size: 0.95rem;
-  color:     v.$text-muted;
+  font-size:   0.95rem;
+  color:       v.$text-muted;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.8);
 }
 
 // ─── Empty state ─────────────────────────────────────────────────────────
