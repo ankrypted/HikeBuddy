@@ -151,6 +151,10 @@ export class ChatWidgetComponent implements OnDestroy {
     return username.replace(/[^a-zA-Z]/g, '').slice(0, 2).toUpperCase() || '?';
   }
 
+  formatTime(iso: string): string {
+    return new Date(iso).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+  }
+
   updateDraft(event: Event): void {
     this.draft.set((event.target as HTMLInputElement).value);
   }

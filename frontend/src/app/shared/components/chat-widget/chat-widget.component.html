@@ -88,7 +88,7 @@
         @for (msg of messages(); track msg.id) {
           <div class="cp-msg" [class.cp-msg--mine]="msg.mine">
             <span class="cp-msg-body">{{ msg.body }}</span>
-            <span class="cp-msg-time">{{ msg.sentAt }}</span>
+            <span class="cp-msg-time">{{ formatTime(msg.sentAt) }}</span>
           </div>
         }
       </div>
