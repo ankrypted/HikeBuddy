@@ -7,8 +7,6 @@ $sidebar-min: 64px;
 .shell-body {
   display:    flex;
   min-height: calc(100vh - v.$nav-height);
-  position:   relative;
-  z-index:    1;
 }
 
 // ─── Mobile backdrop ─────────────────────────────────────────────────────
@@ -210,7 +208,7 @@ $sidebar-min: 64px;
     position:                fixed;
     top:                     1.2rem;
     left:                    0.75rem;
-    z-index:                 98;
+    z-index:                 15;
     width:                   32px;
     height:                  32px;
     background:              rgba(17, 34, 51, 0.88);
