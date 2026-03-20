@@ -11,9 +11,9 @@
       "description": "JWT token expiration time in milliseconds."
     },
     {
-      "name": "app.frontend-url",
-      "type": "java.lang.String",
-      "description": "Base URL of the frontend application. Used for CORS and OAuth2 redirects."
+      "name": "app.frontend-urls",
+      "type": "java.util.List<java.lang.String>",
+      "description": "Comma-separated list of allowed frontend origins. Used for CORS. Set via FRONTEND_URLS environment variable in production."
     },
     {
       "name": "aws.s3.bucket",
