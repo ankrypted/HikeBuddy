@@ -1,6 +1,7 @@
 package com.hikebuddy.completedtrail;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -16,4 +17,8 @@ public interface UserCompletedTrailRepository extends JpaRepository<UserComplete
 
     @Query("SELECT COUNT(c) FROM UserCompletedTrail c WHERE c.id.userId = :userId")
     long countByUserId(@Param("userId") UUID userId);
+
+    @Modifying
+    @Query("DELETE FROM UserCompletedTrail c WHERE c.id.userId = :userId")
+    void deleteByIdUserId(@Param("userId") UUID userId);
 }

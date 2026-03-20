@@ -1,6 +1,7 @@
 package com.hikebuddy.savedtrail;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -17,4 +18,8 @@ public interface UserSavedTrailRepository extends JpaRepository<UserSavedTrail, 
 
     @Query("SELECT COUNT(s) FROM UserSavedTrail s WHERE s.id.userId = :userId")
     long countByUserId(@Param("userId") UUID userId);
+
+    @Modifying
+    @Query("DELETE FROM UserSavedTrail s WHERE s.id.userId = :userId")
+    void deleteByIdUserId(@Param("userId") UUID userId);
 }

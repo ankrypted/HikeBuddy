@@ -12,4 +12,8 @@ public interface UserSubscriptionRepository extends JpaRepository<UserSubscripti
     List<UUID> findFolloweeIdsByFollowerId(UUID followerId);
 
     long countByIdFolloweeId(UUID followeeId);
+
+    void deleteByIdFollowerId(UUID followerId);
+
+    void deleteByIdFolloweeId(UUID followeeId);
 }
