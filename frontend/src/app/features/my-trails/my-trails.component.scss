@@ -3,15 +3,6 @@
 // ─── Page wrapper ────────────────────────────────────────────────────────
 .mt-wrapper {
   min-height: calc(100vh - v.$nav-height);
-  background: linear-gradient(180deg,
-    rgba(5, 13, 25, 0.82) 0%,
-    rgba(5, 13, 25, 0.93) 30%,
-    rgba(5, 13, 25, 0.97) 65%
-  );
-
-  @media (max-width: v.$bp-md) {
-    background: rgba(5, 13, 25, 0.95);
-  }
 }
 
 // ─── Content container ───────────────────────────────────────────────────

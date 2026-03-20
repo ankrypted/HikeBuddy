@@ -182,8 +182,16 @@ $sidebar-min: 64px;
 .shell-content {
   flex:       1;
   min-width:  0;
-  background: transparent;
   position:   relative;
+  background: linear-gradient(180deg,
+    rgba(5, 13, 25, 0.82) 0%,
+    rgba(5, 13, 25, 0.93) 30%,
+    rgba(5, 13, 25, 0.97) 65%
+  );
+
+  @media (max-width: v.$bp-md) {
+    background: rgba(5, 13, 25, 0.95);
+  }
 }
 
 // ─── Mobile hamburger (fixed button, shown only on mobile) ────────────────
