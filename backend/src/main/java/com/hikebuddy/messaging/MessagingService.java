@@ -12,6 +12,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
 
@@ -144,7 +145,7 @@ public class MessagingService {
                 m.getId().toString(),
                 m.getSenderUsername(),
                 m.getBody(),
-                ts.toString(),   // ISO-8601 UTC — browser formats in user's local timezone
+                ts.truncatedTo(ChronoUnit.MILLIS).toString(),   // ISO-8601 ms precision — browser formats in user's local timezone
                 m.getSenderUsername().equals(myUsername));
     }
 
