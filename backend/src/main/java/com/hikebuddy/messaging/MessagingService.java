@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
-import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
@@ -19,10 +19,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class MessagingService {
 
-    private static final DateTimeFormatter TIME_FMT =
-            DateTimeFormatter.ofPattern("h:mm a").withZone(ZoneId.systemDefault());
     private static final DateTimeFormatter DATE_FMT =
-            DateTimeFormatter.ofPattern("MMM d").withZone(ZoneId.systemDefault());
+            DateTimeFormatter.ofPattern("MMM d").withZone(ZoneOffset.UTC);
 
     private final ConversationRepository convRepo;
     private final MessageRepository      messageRepo;
@@ -146,7 +144,7 @@ public class MessagingService {
                 m.getId().toString(),
                 m.getSenderUsername(),
                 m.getBody(),
-                TIME_FMT.format(ts),
+                ts.toString(),   // ISO-8601 UTC — browser formats in user's local timezone
                 m.getSenderUsername().equals(myUsername));
     }
 
