@@ -116,20 +116,23 @@
   margin-left: auto;
 }
 
+// mat-select trigger styled to match the old <select> look
 .filter-select {
   background:    rgba(255, 255, 255, 0.06);
   border:        1px solid rgba(255, 255, 255, 0.13);
   border-radius: 8px;
-  color:         v.$text-muted;
-  font-size:     0.82rem;
-  padding:       0.34rem 0.6rem;
+  padding:       0.3rem 0.6rem;
   cursor:        pointer;
-  outline:       none;
+  font-size:     0.82rem;
+  min-width:     110px;
+  transition:    border-color 0.2s;
+
+  // mat-select internal elements
+  .mat-mdc-select-trigger { gap: 0.3rem; }
+  .mat-mdc-select-value   { color: v.$text-muted; font-size: 0.82rem; }
+  .mat-mdc-select-arrow   { color: v.$text-muted; }
 
   &:hover  { border-color: rgba(255, 255, 255, 0.24); }
-  &:focus  { border-color: rgba(126, 203, 63, 0.50); }
-
-  option { background: v.$bg-primary; color: #fff; }
 }
 
 // ─── Responsive ───────────────────────────────────────────────────────────

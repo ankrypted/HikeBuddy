@@ -43,33 +43,35 @@
     </div>
 
     <div class="select-group">
-      <select
+      <mat-select
         class="filter-select"
         [value]="region()"
-        (change)="setRegion($any($event.target).value)"
+        (selectionChange)="setRegion($event.value)"
         aria-label="Filter by region"
+        panelClass="hb-select-panel"
       >
-        <option value="">All regions</option>
+        <mat-option value="">All regions</mat-option>
         @for (group of regionsByState(); track group[0]) {
-          <optgroup [label]="group[0]">
+          <mat-optgroup [label]="group[0]">
             @for (r of group[1]; track r.id) {
-              <option [value]="r.name">{{ r.name }}</option>
+              <mat-option [value]="r.name">{{ r.name }}</mat-option>
             }
-          </optgroup>
+          </mat-optgroup>
         }
-      </select>
+      </mat-select>
 
-      <select
+      <mat-select
         class="filter-select"
         [value]="sort()"
-        (change)="setSort($any($event.target).value)"
+        (selectionChange)="setSort($event.value)"
         aria-label="Sort trails"
+        panelClass="hb-select-panel"
       >
-        <option value="rating">Top Rated</option>
-        <option value="dist-asc">Shortest First</option>
-        <option value="dist-desc">Longest First</option>
-        <option value="dur-asc">Quickest First</option>
-      </select>
+        <mat-option value="rating">Top Rated</mat-option>
+        <mat-option value="dist-asc">Shortest First</mat-option>
+        <mat-option value="dist-desc">Longest First</mat-option>
+        <mat-option value="dur-asc">Quickest First</mat-option>
+      </mat-select>
     </div>
 
   </div>
