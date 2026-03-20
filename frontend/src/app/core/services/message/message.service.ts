@@ -24,7 +24,7 @@ export class MessageService {
   loadConversations(): void {
     if (!this.authService.isLoggedIn()) return;
     this.http.get<ConversationDto[]>(`${this.base}/conversations`)
-      .subscribe(list => this.conversations.set(list));
+      .subscribe({ next: list => this.conversations.set(list), error: () => {} });
   }
 
   getMessages(conversationId: string): Observable<MessageDto[]> {
