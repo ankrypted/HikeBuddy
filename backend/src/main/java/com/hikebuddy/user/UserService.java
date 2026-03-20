@@ -1,6 +1,7 @@
 package com.hikebuddy.user;
 
 import com.hikebuddy.completedtrail.UserCompletedTrailRepository;
+import com.hikebuddy.notification.NotificationRepository;
 import com.hikebuddy.notification.NotificationService;
 import com.hikebuddy.subscription.UserSubscription;
 import com.hikebuddy.subscription.UserSubscriptionId;
@@ -45,6 +46,7 @@ public class UserService {
     private final TrailReviewRepository reviewRepository;
     private final UserSavedTrailRepository savedTrailRepository;
     private final UserSubscriptionRepository subscriptionRepository;
+    private final NotificationRepository notificationRepository;
     private final NotificationService notificationService;
     private final ConversationRepository conversationRepository;
     private final MessageRepository messageRepository;
@@ -208,6 +210,24 @@ public class UserService {
                 subscriptionRepository.countByIdFolloweeId(user.getId()),
                 trailIds,
                 activity);
+    }
+
+    @Transactional
+    public void deleteAccount(String email) {
+        User user = findByEmail(email);
+        UUID userId = user.getId();
+        String username = user.getUsername();
+
+        // Messages before conversations (FK constraint)
+        messageRepository.deleteAllByConversationParticipant(username);
+        conversationRepository.deleteAllByParticipant(username);
+        completedTrailRepository.deleteByIdUserId(userId);
+        savedTrailRepository.deleteByIdUserId(userId);
+        reviewRepository.deleteByUserId(userId);
+        subscriptionRepository.deleteByIdFollowerId(userId);
+        subscriptionRepository.deleteByIdFolloweeId(userId);
+        notificationRepository.deleteByRecipientId(userId);
+        userRepository.delete(user);
     }
 
     // ── Helpers ──────────────────────────────────────────────────────────────

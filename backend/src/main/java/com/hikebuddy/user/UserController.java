@@ -67,6 +67,12 @@ public class UserController {
         userService.updatePassword(principal.getUsername(), dto);
     }
 
+    @DeleteMapping("/me")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteAccount(@AuthenticationPrincipal UserDetails principal) {
+        userService.deleteAccount(principal.getUsername());
+    }
+
     @GetMapping("/public")
     public List<PublicUserDto> getPublicUsers() {
         return userService.getPublicUsers();
