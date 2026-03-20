@@ -1,5 +1,7 @@
 import { Component, ChangeDetectionStrategy, input, output, signal, computed } from '@angular/core';
-import { DifficultyLevel } from '../../models/trail.dto';
+import { MatSelectModule }  from '@angular/material/select';
+import { MatOptionModule }  from '@angular/material/core';
+import { DifficultyLevel }  from '../../models/trail.dto';
 import { RegionSummaryDto } from '../../models/region.dto';
 
 export interface TrailFilterState {
@@ -13,6 +15,7 @@ export interface TrailFilterState {
   selector:         'hb-trail-filters',
   standalone:       true,
   changeDetection:  ChangeDetectionStrategy.OnPush,
+  imports:          [MatSelectModule, MatOptionModule],
   templateUrl:      './trail-filters.component.html',
   styleUrl:         './trail-filters.component.scss',
 })
