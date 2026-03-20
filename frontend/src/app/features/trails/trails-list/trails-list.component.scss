@@ -235,6 +235,8 @@
 }
 
 @media (max-width: v.$bp-sm) {
-  .trail-thumb  { display: none; }
-  .trail-action { padding: 0 1rem; }
+  .trail-thumb  { width: 44px; }
+  .trail-action { padding: 0 0.75rem; }
+  .trail-body   { padding: 1rem 0; }
+  .trail-name   { font-size: 1.05rem; }
 }
