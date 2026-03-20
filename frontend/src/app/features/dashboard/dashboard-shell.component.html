@@ -71,7 +71,7 @@
   } <!-- end @if (!onOverview()) -->
 
   <!-- ─── Main content ──────────────────────────────────────────────── -->
-  <main class="shell-content">
+  <main class="shell-content" [class.shell-content--overlay]="!onOverview()">
 
     <!-- Hamburger button — mobile only, shown only on child pages -->
     @if (!onOverview()) {
