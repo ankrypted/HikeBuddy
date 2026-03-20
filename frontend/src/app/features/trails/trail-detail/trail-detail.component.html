@@ -184,9 +184,9 @@
       </section>
 
       <!-- ── Photo Gallery ─────────────────────────────────────────── -->
-      @if (galleryUrls().length) {
-        <section class="gallery-section">
-          <h2 class="gallery-heading">Photo Gallery</h2>
+      <section class="gallery-section">
+        <h2 class="gallery-heading">Photo Gallery</h2>
+        @if (galleryUrls().length) {
           <div class="gallery-grid">
             <button class="gallery-hero" type="button" (click)="openLightbox(0)">
               <img [src]="galleryUrls()[0]" [alt]="trail()!.name + ' photo 1'" loading="lazy" />
@@ -199,26 +199,34 @@
               }
             </div>
           </div>
-          <p class="gallery-credit">Landscape photography via <a href="https://unsplash.com" target="_blank" rel="noopener noreferrer">Unsplash</a></p>
-        </section>
-      }
 
-      <!-- ── Lightbox ───────────────────────────────────────────────── -->
-      @if (lightboxIndex() !== null) {
-        <div class="lightbox-overlay" (click)="closeLightbox()">
-          <button class="lightbox-close" type="button" (click)="closeLightbox()">
-            <svg viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
-          </button>
-          <button class="lightbox-nav lightbox-prev" type="button" (click)="$event.stopPropagation(); prevPhoto()">
-            <svg viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>
-          <img class="lightbox-img" [src]="galleryUrls()[lightboxIndex()!]" [alt]="trail()!.name" (click)="$event.stopPropagation()" />
-          <button class="lightbox-nav lightbox-next" type="button" (click)="$event.stopPropagation(); nextPhoto()">
-            <svg viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>
-          <span class="lightbox-counter">{{ (lightboxIndex() ?? 0) + 1 }} / {{ galleryUrls().length }}</span>
-        </div>
-      }
+          <!-- ── Lightbox ─────────────────────────────────────────────── -->
+          @if (lightboxIndex() !== null) {
+            <div class="lightbox-overlay" (click)="closeLightbox()">
+              <button class="lightbox-close" type="button" (click)="closeLightbox()">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+              </button>
+              <button class="lightbox-nav lightbox-prev" type="button" (click)="$event.stopPropagation(); prevPhoto()">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <img class="lightbox-img" [src]="galleryUrls()[lightboxIndex()!]" [alt]="trail()!.name" (click)="$event.stopPropagation()" />
+              <button class="lightbox-nav lightbox-next" type="button" (click)="$event.stopPropagation(); nextPhoto()">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <span class="lightbox-counter">{{ (lightboxIndex() ?? 0) + 1 }} / {{ galleryUrls().length }}</span>
+            </div>
+          }
+        } @else {
+          <div class="gallery-empty">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.5"/>
+              <circle cx="8.5" cy="8.5" r="1.5" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M21 15l-5-5L5 21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <p>No public photos yet — be the first to share your view from this trail!</p>
+          </div>
+        }
+      </section>
 
       <!-- ── Reviews ──────────────────────────────────────────────── -->
       <section class="reviews-section">

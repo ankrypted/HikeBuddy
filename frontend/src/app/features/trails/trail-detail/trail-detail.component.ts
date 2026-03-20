@@ -153,10 +153,7 @@ export class TrailDetailComponent implements OnInit {
   readonly galleryUrls = computed(() => {
     const t = this.trail();
     if (!t) return [];
-    if (t.media.length > 0) return t.media.slice(0, 5).map(m => m.url);
-    return Array.from({ length: 5 }, (_, i) =>
-      `https://picsum.photos/seed/${t.slug}-${i + 1}/1200/800`
-    );
+    return t.media.slice(0, 5).map(m => m.url);
   });
 
   readonly lightboxIndex = signal<number | null>(null);
