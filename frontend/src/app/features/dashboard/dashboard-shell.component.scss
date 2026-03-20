@@ -7,6 +7,8 @@ $sidebar-min: 64px;
 .shell-body {
   display:    flex;
   min-height: calc(100vh - v.$nav-height);
+  position:   relative;
+  z-index:    1;
 }
 
 // ─── Mobile backdrop ─────────────────────────────────────────────────────
@@ -178,16 +180,23 @@ $sidebar-min: 64px;
   flex-shrink: 0;
 }
 
+// ─── Full-viewport tint (sits above hb-hikers-bg, below everything else) ──
+.page-overlay {
+  position:   fixed;
+  inset:      0;
+  z-index:    0;
+  background: rgba(5, 13, 25, 0.35);
+  pointer-events: none;
+
+  &--heavy { background: rgba(5, 13, 25, 0.82); }
+}
+
 // ─── Main content area ────────────────────────────────────────────────────
 .shell-content {
   flex:       1;
   min-width:  0;
   position:   relative;
-  background: rgba(5, 13, 25, 0.35);
-
-  &--overlay {
-    background: rgba(5, 13, 25, 0.82);
-  }
+  background: transparent;
 }
 
 // ─── Mobile hamburger (fixed button, shown only on mobile) ────────────────
