@@ -316,6 +316,34 @@
   &:disabled             { opacity: .45; cursor: not-allowed; }
 }
 
+// ── Danger zone ────────────────────────────────────────────────────────────
+
+.danger-zone {
+  border-color: rgba(255, 80, 80, 0.25);
+  background:   rgba(255, 60, 60, 0.04);
+}
+
+.danger-title { color: #ff6b6b; }
+
+.btn-delete {
+  align-self:    flex-start;
+  background:    transparent;
+  color:         #ff6b6b;
+  font-size:     .88rem;
+  font-weight:   700;
+  border:        1px solid rgba(255, 107, 107, 0.5);
+  border-radius: 8px;
+  padding:       .6rem 1.4rem;
+  cursor:        pointer;
+  transition:    background .2s, border-color .2s, color .2s;
+
+  &:hover:not(:disabled) {
+    background:   rgba(255, 107, 107, 0.12);
+    border-color: #ff6b6b;
+  }
+  &:disabled { opacity: .45; cursor: not-allowed; }
+}
+
 // ── Responsive ─────────────────────────────────────────────────────────────
 
 @media (max-width: v.$bp-sm) {

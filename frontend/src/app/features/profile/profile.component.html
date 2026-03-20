@@ -196,6 +196,18 @@
         </section>
       }
 
+      <!-- ── Danger Zone ────────────────────────────────────────────── -->
+      <section class="profile-card danger-zone">
+        <h2 class="card-title danger-title">Danger Zone</h2>
+        <p class="card-sub">Once you delete your account, all your data will be permanently removed. This action cannot be undone.</p>
+        <button
+          class="btn-delete"
+          type="button"
+          [disabled]="deleting()"
+          (click)="deleteAccount()"
+        >{{ deleting() ? 'Deleting…' : 'Delete My Account' }}</button>
+      </section>
+
     }
 
   </main>

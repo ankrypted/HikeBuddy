@@ -4,6 +4,7 @@ import {
 } from '@angular/core';
 import { DatePipe }         from '@angular/common';
 import { Subscription }     from 'rxjs';
+import { Router }           from '@angular/router';
 import { AuthService }      from '../../core/services/auth/auth.service';
 import { ProfileService }   from '../../core/services/profile/profile.service';
 import { ToastService }     from '../../core/services/toast/toast.service';
@@ -20,6 +21,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   protected readonly authService    = inject(AuthService);
   protected readonly profileService = inject(ProfileService);
   private   readonly toastService   = inject(ToastService);
+  private   readonly router         = inject(Router);
 
   readonly profile = this.profileService.profile;
   readonly loading = this.profileService.loading;
@@ -49,6 +51,9 @@ export class ProfileComponent implements OnInit, OnDestroy {
   readonly confirmPassword = signal('');
   readonly passwordSaving  = signal(false);
   readonly passwordError   = signal<string | null>(null);
+
+  // ── Delete account ───────────────────────────────────────────────────────
+  readonly deleting = signal(false);
 
   private profileInitialized = false;
 
@@ -178,6 +183,25 @@ export class ProfileComponent implements OnInit, OnDestroy {
       error: () => {
         this.toastService.show('Could not update avatar. Please try again.', 'error');
         this.avatarSaving.set(false);
+      },
+    });
+  }
+
+  deleteAccount(): void {
+    const confirmed = window.confirm(
+      'Are you sure you want to delete your account? This will permanently remove all your data and cannot be undone.'
+    );
+    if (!confirmed) return;
+
+    this.deleting.set(true);
+    this.profileService.deleteAccount().subscribe({
+      next: () => {
+        this.authService.logout();
+        this.router.navigate(['/']);
+      },
+      error: () => {
+        this.toastService.show('Could not delete account. Please try again.', 'error');
+        this.deleting.set(false);
       },
     });
   }
