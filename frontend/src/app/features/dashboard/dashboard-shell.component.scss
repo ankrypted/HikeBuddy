@@ -183,21 +183,10 @@ $sidebar-min: 64px;
   flex:       1;
   min-width:  0;
   position:   relative;
-  background: linear-gradient(180deg,
-    rgba(5, 13, 25, 0.28) 0%,
-    rgba(5, 13, 25, 0.50) 60%
-  );
+  background: rgba(5, 13, 25, 0.35);
 
   &--overlay {
-    background: linear-gradient(180deg,
-      rgba(5, 13, 25, 0.70) 0%,
-      rgba(5, 13, 25, 0.85) 30%,
-      rgba(5, 13, 25, 0.93) 65%
-    );
-
-    @media (max-width: v.$bp-md) {
-      background: rgba(5, 13, 25, 0.88);
-    }
+    background: rgba(5, 13, 25, 0.82);
   }
 }
 
