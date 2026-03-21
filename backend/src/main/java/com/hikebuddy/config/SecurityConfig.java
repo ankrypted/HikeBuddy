@@ -61,6 +61,7 @@ public class SecurityConfig {
                         // That internal forward has a cleared security context, so /error
                         // must be public or the client receives 401 instead of the real status.
                         .requestMatchers("/error").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/health").permitAll()
                         // Public GET trails/regions — split into individual calls to avoid
                         // a Spring Security 6.4 MvcRequestMatcher multi-pattern edge case
                         // where a GET-restricted rule on /api/v1/trails/** could inadvertently
