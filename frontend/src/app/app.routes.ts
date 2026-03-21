@@ -17,6 +17,12 @@ export const routes: Routes = [
     title: 'Trails — HikeBuddy',
   },
   {
+    path: 'map',
+    loadComponent: () =>
+      import('./features/map/map.component').then(m => m.MapComponent),
+    title: 'Trails Map — HikeBuddy',
+  },
+  {
     path: 'gallery',
     loadComponent: () =>
       import('./features/gallery/gallery.component').then(m => m.GalleryComponent),

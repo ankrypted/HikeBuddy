@@ -1,0 +1,79 @@
+<div class="map-page">
+
+  <!-- ── Header ───────────────────────────────────────────────── -->
+  <div class="map-header">
+    <div class="map-header__text">
+      <h1 class="map-title">Trails Map</h1>
+      <p class="map-subtitle">
+        @if (locating()) {
+          Detecting your location…
+        } @else if (userCoords()) {
+          Showing trails near you
+        } @else {
+          Browse all {{ pins().length }} trails across India
+        }
+      </p>
+    </div>
+
+    <div class="map-header__actions">
+      @if (userCoords()) {
+        <button class="map-btn map-btn--locate" (click)="locateMe()" title="Re-centre on my location">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M12 2v3m0 14v3M2 12h3m14 0h3"/>
+          </svg>
+          My location
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- ── Main content ──────────────────────────────────────────── -->
+  <div class="map-body">
+
+    <!-- Sidebar -->
+    <aside class="map-sidebar">
+      <h2 class="sidebar-title">
+        {{ userCoords() ? 'Nearest Trails' : 'Featured Trails' }}
+      </h2>
+
+      <ul class="sidebar-list">
+        @for (pin of nearbyPins(); track pin.slug) {
+          <li class="sidebar-item">
+            <a class="sidebar-item__link" [routerLink]="['/trails', pin.slug]">
+              <div class="sidebar-item__top">
+                <span class="sidebar-item__name">{{ pin.name }}</span>
+                <span
+                  class="sidebar-item__badge"
+                  [class]="'sidebar-item__badge--' + pin.difficulty.toLowerCase()"
+                >{{ pin.difficulty }}</span>
+              </div>
+              <div class="sidebar-item__meta">
+                {{ pin.distanceKm }} km &nbsp;·&nbsp; ⭐ {{ pin.averageRating.toFixed(1) }}
+              </div>
+            </a>
+          </li>
+        }
+      </ul>
+
+      <!-- Legend -->
+      <div class="map-legend">
+        <span class="map-legend__title">Difficulty</span>
+        @for (item of legend; track item.label) {
+          <div class="map-legend__item">
+            <span class="map-legend__dot" [style.background]="item.color"></span>
+            {{ item.label }}
+          </div>
+        }
+        <div class="map-legend__item">
+          <span class="map-legend__dot map-legend__dot--user"></span>
+          You
+        </div>
+      </div>
+    </aside>
+
+    <!-- Map container -->
+    <div class="map-container" #mapEl></div>
+
+  </div>
+</div>
