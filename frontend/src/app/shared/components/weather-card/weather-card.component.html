@@ -8,32 +8,53 @@
   </div>
 } @else {
   <div class="weather-card">
-    <div class="weather-icon">{{ weather().icon }}</div>
 
-    <div class="weather-main">
-      <div class="weather-temp">{{ weather().temperatureC }}°C</div>
-      <div class="weather-condition">{{ weather().condition }}</div>
-      <div class="weather-feels">Feels like {{ weather().apparentC }}°C</div>
+    <!-- ── Current conditions ─────────────────────────────────── -->
+    <div class="weather-current">
+      <div class="weather-icon">{{ weather().icon }}</div>
+
+      <div class="weather-main">
+        <div class="weather-temp">{{ weather().temperatureC }}°C</div>
+        <div class="weather-condition">{{ weather().condition }}</div>
+        <div class="weather-feels">Feels like {{ weather().apparentC }}°C</div>
+      </div>
+
+      <div class="weather-details">
+        <div class="weather-stat">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M12 2a4 4 0 0 1 4 4c0 3-4 8-4 8S8 9 8 6a4 4 0 0 1 4-4z"/>
+            <circle cx="12" cy="6" r="1.5" fill="currentColor" stroke="none"/>
+          </svg>
+          <span>{{ weather().humidity }}% humidity</span>
+        </div>
+        <div class="weather-stat">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"/>
+          </svg>
+          <span>{{ weather().windSpeedKph }} km/h wind</span>
+        </div>
+      </div>
     </div>
 
-    <div class="weather-details">
-      <div class="weather-stat">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <path d="M12 2a4 4 0 0 1 4 4c0 3-4 8-4 8S8 9 8 6a4 4 0 0 1 4-4z"/>
-          <circle cx="12" cy="6" r="1.5" fill="currentColor" stroke="none"/>
-        </svg>
-        <span>{{ weather().humidity }}% humidity</span>
+    <!-- ── 7-day forecast strip ───────────────────────────────── -->
+    @if (weather().forecast.length) {
+      <div class="forecast-strip">
+        @for (day of weather().forecast; track day.date) {
+          <div class="forecast-day">
+            <span class="forecast-label">{{ day.date }}</span>
+            <span class="forecast-icon">{{ day.icon }}</span>
+            <span class="forecast-range">{{ day.maxC }}° <span class="forecast-min">{{ day.minC }}°</span></span>
+            @if (day.rainChance > 0) {
+              <span class="forecast-rain">{{ day.rainChance }}%</span>
+            }
+          </div>
+        }
       </div>
-      <div class="weather-stat">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"/>
-        </svg>
-        <span>{{ weather().windSpeedKph }} km/h wind</span>
-      </div>
-    </div>
+    }
 
     <div class="weather-source">
       Live · <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a>
     </div>
+
   </div>
 }
