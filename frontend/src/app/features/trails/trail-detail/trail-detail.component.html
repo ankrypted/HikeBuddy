@@ -96,6 +96,14 @@
         }
       </section>
 
+      <!-- ── Current Weather ───────────────────────────────────────── -->
+      @if (weatherLoading() || weather()) {
+        <hb-weather-card
+          [loading]="weatherLoading()"
+          [weather]="weather()!"
+        />
+      }
+
       <!-- ── Trek Essentials & Prerequisites ──────────────────────── -->
       <section class="info-section glass">
         <div class="info-cols">

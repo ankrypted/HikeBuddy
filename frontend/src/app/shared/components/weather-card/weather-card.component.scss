@@ -1,0 +1,109 @@
+@use 'styles/variables' as v;
+
+.weather-card {
+  display:        flex;
+  align-items:    center;
+  gap:            1rem;
+  padding:        1rem 1.2rem;
+  background:     rgba(255, 255, 255, 0.04);
+  border:         1px solid rgba(255, 255, 255, 0.10);
+  border-radius:  14px;
+  backdrop-filter: blur(8px);
+  flex-wrap:      wrap;
+
+  &--loading {
+    gap: 0.8rem;
+  }
+}
+
+// ─── Icon ─────────────────────────────────────────────────────────────────
+.weather-icon {
+  font-size:   2.6rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+// ─── Main temp + condition ─────────────────────────────────────────────────
+.weather-main {
+  display:        flex;
+  flex-direction: column;
+  gap:            0.1rem;
+  min-width:      90px;
+}
+
+.weather-temp {
+  font-size:   1.7rem;
+  font-weight: 700;
+  color:       #fff;
+  line-height: 1;
+}
+
+.weather-condition {
+  font-size:  0.82rem;
+  font-weight: 600;
+  color:      rgba(255, 255, 255, 0.80);
+  margin-top: 0.15rem;
+}
+
+.weather-feels {
+  font-size: 0.75rem;
+  color:     v.$text-muted;
+}
+
+// ─── Stats row ────────────────────────────────────────────────────────────
+.weather-details {
+  display:        flex;
+  flex-direction: column;
+  gap:            0.35rem;
+  margin-left:    auto;
+}
+
+.weather-stat {
+  display:     flex;
+  align-items: center;
+  gap:         0.35rem;
+  font-size:   0.78rem;
+  color:       v.$text-muted;
+
+  svg {
+    width:       14px;
+    height:      14px;
+    flex-shrink: 0;
+    color:       rgba(255, 255, 255, 0.35);
+  }
+}
+
+// ─── Source attribution ───────────────────────────────────────────────────
+.weather-source {
+  width:     100%;
+  font-size: 0.68rem;
+  color:     rgba(255, 255, 255, 0.25);
+  margin-top: -0.4rem;
+
+  a {
+    color: inherit;
+    text-decoration: underline;
+    &:hover { color: rgba(255, 255, 255, 0.50); }
+  }
+}
+
+// ─── Loading skeletons ────────────────────────────────────────────────────
+.skeleton {
+  background:    rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  animation:     pulse 1.5s ease-in-out infinite;
+
+  &--icon   { width: 48px; height: 48px; border-radius: 8px; flex-shrink: 0; }
+  &--temp   { width: 80px; height: 28px; margin-bottom: 0.3rem; }
+  &--label  { width: 100px; height: 14px; }
+}
+
+.skeleton-text {
+  display:        flex;
+  flex-direction: column;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1;    }
+  50%       { opacity: 0.4; }
+}
