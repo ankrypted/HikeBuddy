@@ -3,7 +3,7 @@ import { HttpClient, HttpParams }      from '@angular/common/http';
 import { Observable, of, map, catchError } from 'rxjs';
 import { environment }                 from '../../../../environments/environment';
 import {
-  TrailSummaryDto, TrailDetailDto, TrailFilterDto, ReviewDto, UserReviewDto,
+  TrailSummaryDto, TrailDetailDto, TrailFilterDto, TrailMapPinDto, ReviewDto, UserReviewDto,
 } from '../../../shared/models/trail.dto';
 import { PageResponseDto }             from '../../../shared/models/pagination.dto';
 
@@ -1971,6 +1971,20 @@ export class TrailService {
     // Swap for real HTTP call when backend is ready:
     // return this.http.get<TrailSummaryDto[]>(this.base);
     return of(MOCK_ALL_TRAILS);
+  }
+
+  getMapPins(): Observable<TrailMapPinDto[]> {
+    const pins = Object.values(MOCK_TRAIL_DETAILS).map(t => ({
+      id:             t.id,
+      name:           t.name,
+      slug:           t.slug,
+      difficulty:     t.difficulty,
+      distanceKm:     t.distanceKm,
+      averageRating:  t.averageRating,
+      startLatitude:  t.startLatitude,
+      startLongitude: t.startLongitude,
+    }));
+    return of(pins);
   }
 
   getTrails(filter: TrailFilterDto): Observable<PageResponseDto<TrailSummaryDto>> {

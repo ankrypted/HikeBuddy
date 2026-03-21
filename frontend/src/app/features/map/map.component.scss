@@ -1,0 +1,210 @@
+@use 'styles/variables' as v;
+
+// ─── Page shell ──────────────────────────────────────────────────────────────
+.map-page {
+  display:        flex;
+  flex-direction: column;
+  height:         calc(100vh - v.$nav-height);
+  overflow:       hidden;
+  background:     v.$bg-primary;
+}
+
+// ─── Header ──────────────────────────────────────────────────────────────────
+.map-header {
+  display:         flex;
+  align-items:     center;
+  justify-content: space-between;
+  padding:         0.9rem 1.5rem;
+  border-bottom:   1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink:     0;
+  gap:             1rem;
+}
+
+.map-title {
+  font-size:   1.3rem;
+  font-weight: 700;
+  color:       v.$text-primary;
+  margin:      0;
+}
+
+.map-subtitle {
+  font-size: 0.82rem;
+  color:     v.$text-muted;
+  margin:    0.15rem 0 0;
+}
+
+.map-header__actions { display: flex; gap: 0.6rem; }
+
+.map-btn {
+  display:       flex;
+  align-items:   center;
+  gap:           0.4rem;
+  padding:       0.4rem 0.9rem;
+  border:        1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  background:    rgba(255, 255, 255, 0.06);
+  color:         v.$text-primary;
+  font-size:     0.82rem;
+  font-weight:   600;
+  cursor:        pointer;
+  transition:    background 0.15s, border-color 0.15s;
+
+  &:hover { background: rgba(255, 255, 255, 0.11); border-color: rgba(255, 255, 255, 0.25); }
+
+  svg { width: 16px; height: 16px; }
+
+  &--locate svg { color: #60a5fa; }
+}
+
+// ─── Body layout ─────────────────────────────────────────────────────────────
+.map-body {
+  display: flex;
+  flex:    1;
+  overflow: hidden;
+}
+
+// ─── Sidebar ─────────────────────────────────────────────────────────────────
+.map-sidebar {
+  width:            280px;
+  flex-shrink:      0;
+  display:          flex;
+  flex-direction:   column;
+  gap:              0.6rem;
+  padding:          1rem;
+  border-right:     1px solid rgba(255, 255, 255, 0.08);
+  overflow-y:       auto;
+  background:       rgba(255, 255, 255, 0.02);
+
+  @media (max-width: v.$bp-sm) { display: none; }
+}
+
+.sidebar-title {
+  font-size:   0.75rem;
+  font-weight: 700;
+  color:       v.$text-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin:      0 0 0.2rem;
+}
+
+.sidebar-list {
+  list-style: none;
+  margin:     0;
+  padding:    0;
+  display:    flex;
+  flex-direction: column;
+  gap:        0.3rem;
+}
+
+.sidebar-item__link {
+  display:       block;
+  padding:       0.5rem 0.65rem;
+  border-radius: 8px;
+  background:    rgba(255, 255, 255, 0.03);
+  border:        1px solid rgba(255, 255, 255, 0.06);
+  text-decoration: none;
+  transition:    background 0.15s;
+
+  &:hover { background: rgba(255, 255, 255, 0.08); }
+}
+
+.sidebar-item__top {
+  display:     flex;
+  align-items: center;
+  gap:         0.4rem;
+  flex-wrap:   wrap;
+}
+
+.sidebar-item__name {
+  font-size:   0.82rem;
+  font-weight: 600;
+  color:       v.$text-primary;
+  flex:        1;
+  min-width:   0;
+  white-space: nowrap;
+  overflow:    hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar-item__meta {
+  font-size:  0.72rem;
+  color:      v.$text-muted;
+  margin-top: 0.2rem;
+}
+
+// Difficulty badges
+%badge-base {
+  font-size:     0.62rem;
+  font-weight:   700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding:       0.1rem 0.4rem;
+  border-radius: 4px;
+  white-space:   nowrap;
+  flex-shrink:   0;
+}
+.sidebar-item__badge {
+  @extend %badge-base;
+  &--easy     { background: rgba(126, 203, 63, 0.20); color: #7ecb3f; }
+  &--moderate { background: rgba(245, 158, 11, 0.20); color: #f59e0b; }
+  &--hard     { background: rgba(239, 68,  68, 0.20); color: #ef4444; }
+  &--expert   { background: rgba(168, 85, 247, 0.20); color: #a855f7; }
+}
+
+// ─── Legend ──────────────────────────────────────────────────────────────────
+.map-legend {
+  margin-top:  auto;
+  padding-top: 0.8rem;
+  border-top:  1px solid rgba(255, 255, 255, 0.07);
+  display:     flex;
+  flex-direction: column;
+  gap:         0.35rem;
+}
+
+.map-legend__title {
+  font-size:   0.7rem;
+  font-weight: 700;
+  color:       v.$text-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.map-legend__item {
+  display:     flex;
+  align-items: center;
+  gap:         0.5rem;
+  font-size:   0.78rem;
+  color:       v.$text-muted;
+}
+
+.map-legend__dot {
+  width:         10px;
+  height:        10px;
+  border-radius: 50%;
+  flex-shrink:   0;
+  border:        1.5px solid rgba(13, 27, 42, 0.6);
+
+  &--user { background: #60a5fa; border-color: #fff; }
+}
+
+// ─── Leaflet map ─────────────────────────────────────────────────────────────
+.map-container {
+  flex: 1;
+
+  // Override leaflet controls to fit the dark theme
+  :global(.leaflet-control-zoom a) {
+    background: rgba(17, 34, 51, 0.95) !important;
+    color: #fff !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
+
+    &:hover { background: rgba(17, 34, 51, 1) !important; }
+  }
+
+  :global(.leaflet-control-attribution) {
+    background: rgba(13, 27, 42, 0.75) !important;
+    color: rgba(255, 255, 255, 0.45) !important;
+    font-size: 10px !important;
+
+    a { color: rgba(255, 255, 255, 0.65) !important; }
+  }
+}

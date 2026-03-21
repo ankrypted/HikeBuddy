@@ -39,6 +39,17 @@ export interface TrailDetailDto extends TrailSummaryDto {
   ageGuidelines:      { minAge?: number; maxAge?: number; notes: string[] };
 }
 
+export interface TrailMapPinDto {
+  id:             string;
+  name:           string;
+  slug:           string;
+  difficulty:     DifficultyLevel;
+  distanceKm:     number;
+  averageRating:  number;
+  startLatitude:  number;
+  startLongitude: number;
+}
+
 export interface TrailFilterDto extends Partial<PageRequestDto> {
   regionId?: string;
   difficulty?: DifficultyLevel;
