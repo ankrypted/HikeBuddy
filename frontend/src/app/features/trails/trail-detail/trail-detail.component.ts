@@ -15,12 +15,14 @@ import { TrailDetailDto, TrailSummaryDto, ReviewDto } from '../../../shared/mode
 import { InteractionSummaryDto }     from '../../../shared/models/feed-interaction.dto';
 import { INSIDE_SHELL }              from '../../../shared/tokens/shell.token';
 import { GeolocationService }        from '../../../core/services/geolocation/geolocation.service';
+import { WeatherService, WeatherData } from '../../../core/services/weather/weather.service';
+import { WeatherCardComponent }     from '../../../shared/components/weather-card/weather-card.component';
 
 @Component({
   selector:         'hb-trail-detail',
   standalone:       true,
   changeDetection:  ChangeDetectionStrategy.OnPush,
-  imports:          [NavbarComponent, SceneBackgroundComponent, RouterLink],
+  imports:          [NavbarComponent, SceneBackgroundComponent, RouterLink, WeatherCardComponent],
   templateUrl:      './trail-detail.component.html',
   styleUrl:         './trail-detail.component.scss',
 })
@@ -34,6 +36,7 @@ export class TrailDetailComponent implements OnInit {
   private readonly interactionService  = inject(FeedInteractionService);
   private readonly router              = inject(Router);
   private readonly geoService          = inject(GeolocationService);
+  private readonly weatherService      = inject(WeatherService);
 
   readonly insideShell = inject(INSIDE_SHELL);
 
@@ -43,6 +46,8 @@ export class TrailDetailComponent implements OnInit {
   readonly loading         = signal(true);
   readonly error           = signal(false);
   readonly userCoords      = signal<{ lat: number; lon: number } | null>(null);
+  readonly weather         = signal<WeatherData | null>(null);
+  readonly weatherLoading  = signal(false);
 
   readonly distanceFromUser = computed(() => {
     const t = this.trail();
@@ -199,6 +204,11 @@ export class TrailDetailComponent implements OnInit {
         if (t) {
           this.trailService.getSimilarTrails(t).subscribe({
             next: recs => this.recommendations.set(recs),
+          });
+          this.weatherLoading.set(true);
+          this.weatherService.getWeather(t.startLatitude, t.startLongitude).subscribe({
+            next:  w  => { this.weather.set(w);    this.weatherLoading.set(false); },
+            error: () => {                          this.weatherLoading.set(false); },
           });
         }
       },
