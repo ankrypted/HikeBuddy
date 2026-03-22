@@ -1,0 +1,131 @@
+<div class="compose-overlay" (click)="onOverlayClick($event)">
+  <div class="compose-sheet" role="dialog" aria-modal="true" aria-label="Share your hike">
+
+    <!-- Header -->
+    <div class="cs-header">
+      <h2 class="cs-title">Share your hike</h2>
+      <button class="cs-close" type="button" (click)="close.emit()" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 6L6 18M6 6l12 12" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Author identity -->
+    <div class="cs-author">
+      <div class="cs-avatar">
+        @if (currentUser()?.avatarUrl && !avatarFailed()) {
+          <img [src]="currentUser()!.avatarUrl!" [alt]="currentUser()!.username"
+               (error)="avatarFailed.set(true)" />
+        } @else {
+          {{ initials(currentUser()?.username) }}
+        }
+      </div>
+      <div class="cs-author-info">
+        <span class="cs-author-name">{{ currentUser()?.username ?? 'You' }}</span>
+        <span class="cs-author-sub">Posting a trail condition report</span>
+      </div>
+    </div>
+
+    <!-- Trail search -->
+    <div class="cs-field">
+      <label class="cs-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M2 20h20M12 4L4 20h16L12 4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Trail
+      </label>
+      <div class="cs-trail-wrap">
+        <input
+          class="cs-input"
+          type="text"
+          placeholder="Search trails…"
+          [value]="trailQuery()"
+          (input)="onSearch($event)"
+          autocomplete="off"
+        />
+        @if (selectedTrail()) {
+          <button class="cs-trail-clear" type="button" (click)="clearTrail()" aria-label="Clear trail">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 6L6 18M6 6l12 12" stroke-linecap="round"/>
+            </svg>
+          </button>
+        }
+        @if (filteredTrails().length) {
+          <ul class="cs-dropdown" role="listbox">
+            @for (trail of filteredTrails(); track trail.id) {
+              <li class="cs-dropdown-item" role="option"
+                  (click)="selectTrail(trail)"
+                  (keydown.enter)="selectTrail(trail)"
+                  tabindex="0">
+                <span class="cs-dropdown-name">{{ trail.name }}</span>
+                <span class="cs-dropdown-chip cs-dropdown-chip--{{ trail.difficulty.toLowerCase() }}">
+                  {{ trail.difficulty }}
+                </span>
+              </li>
+            }
+          </ul>
+        }
+      </div>
+    </div>
+
+    <!-- Condition pills -->
+    <div class="cs-field">
+      <label class="cs-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Trail condition
+      </label>
+      <div class="cs-pills">
+        @for (opt of conditions; track opt.value) {
+          <button
+            class="cs-pill"
+            type="button"
+            [class.cs-pill--selected]="condition() === opt.value"
+            [style.--pill-color]="opt.color"
+            (click)="setCondition(opt.value)"
+          >
+            <span class="cs-pill-dot" [style.background]="opt.color"></span>
+            {{ opt.label }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- Caption -->
+    <div class="cs-field">
+      <label class="cs-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+                stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Caption <span class="cs-label-optional">(optional)</span>
+      </label>
+      <textarea
+        class="cs-textarea"
+        rows="3"
+        placeholder="How was it? Any tips for fellow hikers?"
+        [value]="caption()"
+        (input)="onCaption($event)"
+        maxlength="300"
+      ></textarea>
+      <span class="cs-char-count">{{ caption().length }} / 300</span>
+    </div>
+
+    <!-- Submit -->
+    <button
+      class="cs-submit"
+      type="button"
+      [disabled]="!canSubmit()"
+      (click)="submit()"
+    >
+      @if (submitting()) {
+        Sharing…
+      } @else {
+        Share condition
+      }
+    </button>
+
+  </div>
+</div>

@@ -4,16 +4,20 @@ import {
 import { RouterLink }                from '@angular/router';
 import { NavbarComponent }           from '../../core/layout/navbar/navbar.component';
 import { SceneBackgroundComponent }  from '../../shared/components/scene-background/scene-background.component';
+import { ComposePostComponent }      from './compose-post/compose-post.component';
 import { AuthService }               from '../../core/services/auth/auth.service';
 import { UserService }               from '../../core/services/user/user.service';
 import { TrailService }              from '../../core/services/trail/trail.service';
 import { FavoritesService }          from '../../core/services/favorites/favorites.service';
 import { CompletedTrailsService }    from '../../core/services/completed-trails/completed-trails.service';
 import { FeedInteractionService }    from '../../core/services/feed-interaction/feed-interaction.service';
+import { HikePostService }           from '../../core/services/hike-post/hike-post.service';
 import { combineLatest }              from 'rxjs';
 import { ActivityEvent, PublicUserDto } from '../../shared/models/public-user.dto';
 import { TrailSummaryDto }           from '../../shared/models/trail.dto';
 import { InteractionSummaryDto }     from '../../shared/models/feed-interaction.dto';
+import { HikePostDto }               from '../../shared/models/hike-post.dto';
+import { CONDITION_OPTIONS }         from './compose-post/compose-post.component';
 
 export interface FeedEvent extends ActivityEvent {
   username:  string;
@@ -34,7 +38,7 @@ export interface Achievement {
   selector:        'hb-feed',
   standalone:      true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports:         [NavbarComponent, SceneBackgroundComponent, RouterLink],
+  imports:         [NavbarComponent, SceneBackgroundComponent, RouterLink, ComposePostComponent],
   templateUrl:     './feed.component.html',
   styleUrl:        './feed.component.scss',
 })
@@ -45,6 +49,12 @@ export class FeedComponent implements OnInit {
   private readonly favoritesService    = inject(FavoritesService);
   private readonly completedService    = inject(CompletedTrailsService);
   private readonly interactionService  = inject(FeedInteractionService);
+  private readonly hikePostService     = inject(HikePostService);
+
+  // ── Hike posts (condition reports) ───────────────────────────────────────
+  readonly posts         = this.hikePostService.posts;
+  readonly composeOpen   = signal(false);
+  readonly conditionMeta = CONDITION_OPTIONS;
 
   readonly feedItems          = signal<FeedEvent[]>([]);
   readonly loading            = signal(true);
@@ -228,6 +238,22 @@ export class FeedComponent implements OnInit {
 
   onAvatarError(username: string): void {
     this.failedAvatars.update(s => new Set([...s, username]));
+  }
+
+  // ── Compose post ─────────────────────────────────────────────────────────
+  openCompose():  void { this.composeOpen.set(true);  }
+  closeCompose(): void { this.composeOpen.set(false); }
+
+  onPosted(post: HikePostDto): void {
+    this.hikePostService.add(post);
+  }
+
+  conditionColor(condition: string): string {
+    return this.conditionMeta.find(c => c.value === condition)?.color ?? '#7ecb3f';
+  }
+
+  conditionLabel(condition: string): string {
+    return this.conditionMeta.find(c => c.value === condition)?.label ?? condition;
   }
 
   // ── Helpers ──────────────────────────────────────────────────────────────

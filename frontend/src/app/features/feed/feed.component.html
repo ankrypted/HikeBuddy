@@ -74,6 +74,54 @@
 
     <main class="feed-main">
 
+    <!-- ── Community condition reports ───────────────────────────────── -->
+    @if (posts().length) {
+      <section class="posts-section">
+        <h2 class="posts-heading">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Trail Conditions
+        </h2>
+
+        <div class="posts-list">
+          @for (post of posts(); track post.id) {
+            <article class="feed-card feed-card--post glass">
+
+              <div class="fc-header">
+                <div class="fc-user">
+                  <div class="fc-avatar">{{ initials(post.author.username) }}</div>
+                  <span class="fc-username">{{ post.author.username }}</span>
+                </div>
+                <time class="fc-time">{{ formatDate(post.timestamp) }}</time>
+              </div>
+
+              <div class="fc-post-trail">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M2 20h20M12 4L4 20h16L12 4"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <a class="fc-trail" [routerLink]="['/trails', post.trailSlug]">{{ post.trailName }}</a>
+                <span class="fc-condition-badge"
+                      [style.background]="conditionColor(post.condition) + '22'"
+                      [style.color]="conditionColor(post.condition)"
+                      [style.border-color]="conditionColor(post.condition) + '55'">
+                  <span class="fc-condition-dot" [style.background]="conditionColor(post.condition)"></span>
+                  {{ conditionLabel(post.condition) }}
+                </span>
+              </div>
+
+              @if (post.caption) {
+                <p class="fc-post-caption">{{ post.caption }}</p>
+              }
+
+            </article>
+          }
+        </div>
+      </section>
+    }
+
     <header class="feed-header">
       <h1 class="feed-title">
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -272,4 +320,20 @@
     </aside>
 
   </div>
+
+  <!-- ── Floating compose button ──────────────────────────────────── -->
+  <button class="fab-compose" type="button" (click)="openCompose()" aria-label="Share a hike">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <path d="M12 5v14M5 12h14" stroke-linecap="round"/>
+    </svg>
+  </button>
+
+  <!-- ── Compose modal ────────────────────────────────────────────── -->
+  @if (composeOpen()) {
+    <hb-compose-post
+      (close)="closeCompose()"
+      (posted)="onPosted($event)"
+    />
+  }
+
 </div>
