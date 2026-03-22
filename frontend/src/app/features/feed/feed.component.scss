@@ -635,8 +635,8 @@
 // ─── Floating compose button (FAB) ───────────────────────────────────────────
 .fab-compose {
   position:        fixed;
-  bottom:          5.5rem;   // sits above the chat widget at 1.75rem
-  right:           1.75rem;
+  bottom:          2rem;
+  left:            1.75rem;
   z-index:         101;
   width:           52px;
   height:          52px;
@@ -662,7 +662,7 @@
 
   @media (max-width: v.$bp-sm) {
     bottom: 1.25rem;
-    right:  1.25rem;
+    left:   1.25rem;
     width:  48px;
     height: 48px;
   }
