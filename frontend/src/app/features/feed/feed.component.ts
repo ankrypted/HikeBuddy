@@ -2,6 +2,7 @@ import {
   Component, OnInit, signal, inject, ChangeDetectionStrategy, computed, effect,
 } from '@angular/core';
 import { RouterLink }                from '@angular/router';
+import { TitleCasePipe }            from '@angular/common';
 import { NavbarComponent }           from '../../core/layout/navbar/navbar.component';
 import { SceneBackgroundComponent }  from '../../shared/components/scene-background/scene-background.component';
 import { ComposePostComponent }      from './compose-post/compose-post.component';
@@ -37,7 +38,7 @@ export interface Achievement {
   selector:        'hb-feed',
   standalone:      true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports:         [NavbarComponent, SceneBackgroundComponent, RouterLink, ComposePostComponent],
+  imports:         [NavbarComponent, SceneBackgroundComponent, RouterLink, ComposePostComponent, TitleCasePipe],
   templateUrl:     './feed.component.html',
   styleUrl:        './feed.component.scss',
 })

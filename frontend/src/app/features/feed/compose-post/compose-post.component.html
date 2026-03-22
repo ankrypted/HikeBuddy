@@ -1,9 +1,22 @@
 <div class="compose-overlay" (click)="onOverlayClick($event)">
-  <div class="compose-sheet" role="dialog" aria-modal="true" aria-label="Create a post">
+  <div class="compose-sheet" role="dialog" aria-modal="true" aria-label="Share trail experience">
 
     <!-- Header -->
     <div class="cs-header">
-      <h2 class="cs-title">Create a post</h2>
+      <div class="cs-header-left">
+        <div class="cs-avatar">
+          @if (currentUser()?.avatarUrl && !avatarFailed()) {
+            <img [src]="currentUser()!.avatarUrl!" [alt]="currentUser()!.username"
+                 (error)="avatarFailed.set(true)" />
+          } @else {
+            {{ initials(currentUser()?.username) }}
+          }
+        </div>
+        <div>
+          <p class="cs-author-name">{{ currentUser()?.username ?? 'You' }}</p>
+          <p class="cs-author-sub">Sharing a trail experience</p>
+        </div>
+      </div>
       <button class="cs-close" type="button" (click)="close.emit()" aria-label="Close">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M18 6L6 18M6 6l12 12" stroke-linecap="round"/>
@@ -11,51 +24,19 @@
       </button>
     </div>
 
-    <!-- Author -->
-    <div class="cs-author">
-      <div class="cs-avatar">
-        @if (currentUser()?.avatarUrl && !avatarFailed()) {
-          <img [src]="currentUser()!.avatarUrl!" [alt]="currentUser()!.username"
-               (error)="avatarFailed.set(true)" />
-        } @else {
-          {{ initials(currentUser()?.username) }}
-        }
-      </div>
-      <div class="cs-author-info">
-        <span class="cs-author-name">{{ currentUser()?.username ?? 'You' }}</span>
-        <span class="cs-author-sub">Visible to your subscribers</span>
-      </div>
-    </div>
-
-    <!-- Content -->
-    <textarea
-      class="cs-textarea"
-      rows="4"
-      placeholder="Share a hike, tip, or experience…"
-      [value]="content()"
-      (input)="onContent($event)"
-      maxlength="500"
-      autofocus
-    ></textarea>
-    <span class="cs-char-count">{{ content().length }} / 500</span>
-
-    <!-- Optional trail tag -->
-    <div class="cs-trail-section">
-      <span class="cs-trail-label">Tag a trail (optional)</span>
+    <!-- ① Trail -->
+    <div class="cs-field">
+      <label class="cs-label">
+        <span class="cs-step">1</span> Which trail did you hike? <span class="cs-required">*</span>
+      </label>
       <div class="cs-trail-wrap">
         <svg class="cs-trail-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M2 20h20M12 4L4 20h16L12 4" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
-        <input
-          class="cs-trail-input"
-          type="text"
-          placeholder="Search trails…"
-          [value]="trailQuery()"
-          (input)="onSearch($event)"
-          autocomplete="off"
-        />
+        <input class="cs-trail-input" type="text" placeholder="Search trails…"
+               [value]="trailQuery()" (input)="onSearch($event)" autocomplete="off" />
         @if (selectedTrail()) {
-          <button class="cs-trail-clear" type="button" (click)="clearTrail()" aria-label="Remove trail tag">
+          <button class="cs-trail-clear" type="button" (click)="clearTrail()" aria-label="Clear">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M18 6L6 18M6 6l12 12" stroke-linecap="round"/>
             </svg>
@@ -76,9 +57,76 @@
       </div>
     </div>
 
+    <!-- ② Overall experience -->
+    <div class="cs-field">
+      <label class="cs-label">
+        <span class="cs-step">2</span> How was the overall experience? <span class="cs-required">*</span>
+      </label>
+      <textarea class="cs-textarea" rows="3" maxlength="300"
+                placeholder="Describe the views, difficulty, highlights…"
+                [value]="experience()" (input)="onExperience($event)"></textarea>
+      <span class="cs-char-count">{{ experience().length }} / 300</span>
+    </div>
+
+    <!-- ③ Trail condition -->
+    <div class="cs-field">
+      <label class="cs-label">
+        <span class="cs-step">3</span> What was the trail condition? <span class="cs-required">*</span>
+      </label>
+      <div class="cs-pills">
+        @for (opt of conditions; track opt.value) {
+          <button class="cs-pill" type="button"
+                  [class.cs-pill--selected]="condition() === opt.value"
+                  [style.--pill-color]="opt.color"
+                  (click)="setCondition(opt.value)">
+            <span class="cs-pill-dot" [style.background]="opt.color"></span>
+            {{ opt.label }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- ④ Recommend -->
+    <div class="cs-field">
+      <label class="cs-label">
+        <span class="cs-step">4</span> Would you recommend this trail? <span class="cs-required">*</span>
+      </label>
+      <div class="cs-pills">
+        @for (opt of recommendations; track opt.value) {
+          <button class="cs-pill" type="button"
+                  [class.cs-pill--selected]="recommendation() === opt.value"
+                  [style.--pill-color]="opt.color"
+                  (click)="setRecommendation(opt.value)">
+            {{ opt.label }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- ⑤ Tip (optional) -->
+    <div class="cs-field">
+      <label class="cs-label">
+        <span class="cs-step">5</span> Top tip for fellow hikers
+        <span class="cs-optional">(optional)</span>
+      </label>
+      <input class="cs-input" type="text" maxlength="150"
+             placeholder="e.g. Start early, bring extra layers, avoid weekends…"
+             [value]="tip()" (input)="onTip($event)" />
+    </div>
+
+    <!-- Moderation error -->
+    @if (moderationError()) {
+      <div class="cs-error" role="alert">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/>
+        </svg>
+        {{ moderationError() }}
+      </div>
+    }
+
     <!-- Submit -->
     <button class="cs-submit" type="button" [disabled]="!canSubmit()" (click)="submit()">
-      @if (submitting()) { Posting… } @else { Post }
+      @if (submitting()) { Posting… } @else { Post to feed }
     </button>
 
   </div>

@@ -108,6 +108,7 @@
       <div class="feed-list">
         @for (post of posts(); track post.id) {
           <article class="feed-card feed-card--post glass">
+
             <div class="fc-header">
               <div class="fc-user">
                 <div class="fc-avatar">{{ initials(post.author.username) }}</div>
@@ -115,16 +116,38 @@
               </div>
               <time class="fc-time">{{ formatDate(post.timestamp) }}</time>
             </div>
-            <p class="fc-post-content">{{ post.content }}</p>
-            @if (post.trailName && post.trailSlug) {
-              <div class="fc-post-trail-tag">
+
+            <!-- Trail + badges row -->
+            <div class="fc-post-meta">
+              <a class="fc-trail" [routerLink]="['/trails', post.trailSlug]">
                 <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M2 20h20M12 4L4 20h16L12 4" stroke="currentColor" stroke-width="2"
                         stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
-                <a class="fc-trail" [routerLink]="['/trails', post.trailSlug]">{{ post.trailName }}</a>
+                {{ post.trailName }}
+              </a>
+              <span class="fc-post-badge fc-post-badge--{{ post.condition.toLowerCase() }}">
+                {{ post.condition | titlecase }}
+              </span>
+              <span class="fc-post-badge fc-post-badge--rec-{{ post.recommendation.toLowerCase() }}">
+                {{ post.recommendation === 'YES' ? '👍 Recommend' : post.recommendation === 'NO' ? '👎 Not recommend' : '🤷 Maybe' }}
+              </span>
+            </div>
+
+            <!-- Experience -->
+            <p class="fc-post-content">"{{ post.experience }}"</p>
+
+            <!-- Tip -->
+            @if (post.tip) {
+              <div class="fc-post-tip">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                  <path d="M12 8v4m0 4h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                <span>{{ post.tip }}</span>
               </div>
             }
+
           </article>
         }
         @for (item of feedItems(); track item.id) {
