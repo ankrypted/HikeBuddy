@@ -495,9 +495,14 @@
 }
 
 .fc-trail {
+  display:         inline-flex;
+  align-items:     center;
+  gap:             0.3rem;
   font-weight:     700;
   color:           #fff;
   text-decoration: none;
+
+  svg { width: 13px; height: 13px; flex-shrink: 0; }
 
   &:hover { color: v.$accent-green; }
 }
