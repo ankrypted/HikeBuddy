@@ -92,7 +92,7 @@
           <div class="feed-card-skeleton glass"></div>
         }
       </div>
-    } @else if (!feedItems().length) {
+    } @else if (!feedItems().length && !posts().length) {
       <div class="feed-empty glass">
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
