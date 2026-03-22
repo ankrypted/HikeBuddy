@@ -17,7 +17,6 @@ import { ActivityEvent, PublicUserDto } from '../../shared/models/public-user.dt
 import { TrailSummaryDto }           from '../../shared/models/trail.dto';
 import { InteractionSummaryDto }     from '../../shared/models/feed-interaction.dto';
 import { HikePostDto }               from '../../shared/models/hike-post.dto';
-import { CONDITION_OPTIONS }         from './compose-post/compose-post.component';
 
 export interface FeedEvent extends ActivityEvent {
   username:  string;
@@ -51,10 +50,8 @@ export class FeedComponent implements OnInit {
   private readonly interactionService  = inject(FeedInteractionService);
   private readonly hikePostService     = inject(HikePostService);
 
-  // ── Hike posts (condition reports) ───────────────────────────────────────
-  readonly posts         = this.hikePostService.posts;
-  readonly composeOpen   = signal(false);
-  readonly conditionMeta = CONDITION_OPTIONS;
+  readonly posts       = this.hikePostService.posts;
+  readonly composeOpen = signal(false);
 
   readonly feedItems          = signal<FeedEvent[]>([]);
   readonly loading            = signal(true);
@@ -246,14 +243,6 @@ export class FeedComponent implements OnInit {
 
   onPosted(post: HikePostDto): void {
     this.hikePostService.add(post);
-  }
-
-  conditionColor(condition: string): string {
-    return this.conditionMeta.find(c => c.value === condition)?.color ?? '#7ecb3f';
-  }
-
-  conditionLabel(condition: string): string {
-    return this.conditionMeta.find(c => c.value === condition)?.label ?? condition;
   }
 
   // ── Helpers ──────────────────────────────────────────────────────────────
