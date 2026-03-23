@@ -22,15 +22,18 @@
 }
 
 .hero-content {
-  max-width:    520px;
-  margin-bottom: 10rem;
+  position:  absolute;
+  top:       50%;
+  left:      2.5rem;
+  transform: translateY(-60%);
+  max-width: 520px;
 }
 
 .hero-eyebrow {
-  font-size:      0.78rem;
+  font-size:      1rem;
   font-weight:    700;
   letter-spacing: 0.18em;
-  color:          v.$text-muted;
+  // color:          v.$text-muted;
   margin-bottom:  0.6rem;
   text-transform: uppercase;
 }
@@ -44,10 +47,14 @@
 }
 
 .hero-subtitle {
-  font-size:  0.95rem;
-  color:      v.$text-muted;
+  font-size:  1.1rem;
+  // color:      v.$text-muted;
   line-height: 1.6;
   max-width:  420px;
+}
+
+hb-cta-card {
+  margin-top: 19rem;
 }
 
 // ─── Trail cards layout ───────────────────────────────────────────────

@@ -1,7 +1,8 @@
 @use 'styles/variables' as v;
 
 .hb-logo {
-  font-size:       2.8rem;
+  font-family:     'National Park', sans-serif;
+  font-size:       2.45rem;
   font-weight:     800;
   color:           #fff;
   text-decoration: none;
@@ -18,10 +19,30 @@
 }
 
 .hiker-svg {
-  width:  54px;
-  height: 70px;
+  width:  27px;
+  height: 35px;
 }
 
-.dot {
-  color: v.$accent-green;
+.logo-text {
+  position: relative;
+  display:  inline-block;
+}
+
+.logo-text-ghost {
+  visibility: hidden;
+  user-select: none;
+}
+
+.logo-text-typed {
+  position: absolute;
+  left:     0;
+  top:      0;
+  white-space: nowrap;
+}
+
+.logo-cursor {
+  color:     v.$accent-green;
+  animation: logo-cursor-blink 0.75s step-end infinite;
+  font-weight: 300;
+  margin-left: 1px;
 }
