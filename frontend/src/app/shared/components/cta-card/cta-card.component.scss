@@ -7,33 +7,33 @@
 .cta-card {
   display:        inline-flex;
   align-items:    center;
-  gap:            1.2rem;
-  padding:        1rem 1.2rem 1rem 1.4rem;
-  border-radius:  16px;
-  margin-bottom:  1.8rem;
+  gap:            1.6rem;
+  padding:        1.4rem 1.8rem 1.4rem 2rem;
+  border-radius:  20px;
+  margin-bottom:  3.5rem;
   width:          fit-content;
 }
 
 .cta-text {
   display:        flex;
   flex-direction: column;
-  gap:            2px;
+  gap:            4px;
 }
 
 .cta-title {
-  font-size:   1rem;
+  font-size:   1.25rem;
   font-weight: 700;
   color:       #fff;
 }
 
 .cta-sub {
-  font-size: 0.78rem;
+  font-size: 0.95rem;
   color:     v.$text-muted;
 }
 
 .cta-arrow {
-  width:           40px;
-  height:          40px;
+  width:           52px;
+  height:          52px;
   background:      v.$accent-green;
   border-radius:   50%;
   display:         flex;
@@ -49,5 +49,5 @@
     transform:  translateX(3px);
   }
 
-  mat-icon { font-size: 20px; width: 20px; height: 20px; }
+  mat-icon { font-size: 26px; width: 26px; height: 26px; }
 }
