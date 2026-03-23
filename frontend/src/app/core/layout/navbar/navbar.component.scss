@@ -19,7 +19,7 @@
   a {
     color:           v.$text-muted;
     text-decoration: none;
-    font-size:       1.15rem;
+    font-size:       1.25rem;
     font-weight:     500;
     transition:      color 0.2s;
 
@@ -40,9 +40,9 @@
 .btn-login {
   display:         inline-flex;
   align-items:     center;
-  padding:         0.6rem 1.4rem;
+  padding:         0.7rem 1.6rem;
   border-radius:   2rem;
-  font-size:       1rem;
+  font-size:       1.1rem;
   font-weight:     600;
   letter-spacing:  0.02em;
   text-decoration: none;
@@ -62,9 +62,9 @@
 .btn-signup {
   display:         inline-flex;
   align-items:     center;
-  padding:         0.6rem 1.4rem;
+  padding:         0.7rem 1.6rem;
   border-radius:   2rem;
-  font-size:       1rem;
+  font-size:       1.1rem;
   font-weight:     700;
   letter-spacing:  0.02em;
   text-decoration: none;
@@ -86,8 +86,8 @@
   display:          flex;
   align-items:      center;
   justify-content:  center;
-  width:            40px;
-  height:           40px;
+  width:            48px;
+  height:           48px;
   border-radius:    50%;
   background:       rgba(126, 203, 63, 0.12);
   border:           1px solid rgba(126, 203, 63, 0.35);
