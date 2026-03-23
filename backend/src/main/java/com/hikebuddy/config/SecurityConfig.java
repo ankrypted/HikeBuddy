@@ -70,6 +70,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/v1/regions/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/users/public").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/users/*/public").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/hike-posts/user/**").permitAll()
                         // Everything else requires auth
                         .anyRequest().authenticated()
                 )

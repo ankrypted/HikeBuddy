@@ -5,7 +5,8 @@ import {
 import { AuthService }       from '../../../core/services/auth/auth.service';
 import { TrailService }      from '../../../core/services/trail/trail.service';
 import { TrailSummaryDto }   from '../../../shared/models/trail.dto';
-import { HikePostDto, TrailCondition, Recommendation } from '../../../shared/models/hike-post.dto';
+import { TrailCondition, Recommendation } from '../../../shared/models/hike-post.dto';
+import { CreateHikePostRequest } from '../../../core/services/hike-post/hike-post.service';
 import { moderateContent }   from '../../../core/utils/content-moderation';
 
 export const CONDITIONS: { value: TrailCondition; label: string; color: string }[] = [
@@ -35,7 +36,7 @@ export class ComposePostComponent implements OnInit {
   private readonly trailService = inject(TrailService);
 
   @Output() close  = new EventEmitter<void>();
-  @Output() posted = new EventEmitter<HikePostDto>();
+  @Output() posted = new EventEmitter<CreateHikePostRequest>();
 
   readonly currentUser   = this.authService.currentUser;
   readonly conditions    = CONDITIONS;
@@ -129,23 +130,19 @@ export class ComposePostComponent implements OnInit {
       return;
     }
 
-    const user  = this.currentUser();
     const trail = this.selectedTrail()!;
     this.submitting.set(true);
 
-    const post: HikePostDto = {
-      id:             'post-' + Date.now(),
-      author:         { username: user?.username ?? 'you', avatarUrl: user?.avatarUrl ?? null },
+    const req: CreateHikePostRequest = {
       trailName:      trail.name,
       trailSlug:      trail.slug,
       experience:     this.experience().trim(),
       condition:      this.condition()!,
       recommendation: this.recommendation()!,
       tip:            this.tip().trim() || undefined,
-      timestamp:      new Date().toISOString(),
     };
 
-    this.posted.emit(post);
+    this.posted.emit(req);
     this.close.emit();
   }
 }
