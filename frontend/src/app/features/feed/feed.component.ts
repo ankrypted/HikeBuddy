@@ -12,12 +12,11 @@ import { TrailService }              from '../../core/services/trail/trail.servi
 import { FavoritesService }          from '../../core/services/favorites/favorites.service';
 import { CompletedTrailsService }    from '../../core/services/completed-trails/completed-trails.service';
 import { FeedInteractionService }    from '../../core/services/feed-interaction/feed-interaction.service';
-import { HikePostService }           from '../../core/services/hike-post/hike-post.service';
+import { HikePostService, CreateHikePostRequest } from '../../core/services/hike-post/hike-post.service';
 import { combineLatest }              from 'rxjs';
 import { ActivityEvent, PublicUserDto } from '../../shared/models/public-user.dto';
 import { TrailSummaryDto }           from '../../shared/models/trail.dto';
 import { InteractionSummaryDto }     from '../../shared/models/feed-interaction.dto';
-import { HikePostDto }               from '../../shared/models/hike-post.dto';
 
 export interface FeedEvent extends ActivityEvent {
   username:  string;
@@ -123,6 +122,7 @@ export class FeedComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.hikePostService.loadFeed();
     const username = this.authService.currentUser()?.username;
     if (username) {
       this.userService.getPublicProfile(username).subscribe(p => this.subscribersCount.set(p.subscribersCount));
@@ -242,8 +242,8 @@ export class FeedComponent implements OnInit {
   openCompose():  void { this.composeOpen.set(true);  }
   closeCompose(): void { this.composeOpen.set(false); }
 
-  onPosted(post: HikePostDto): void {
-    this.hikePostService.add(post);
+  onPosted(req: CreateHikePostRequest): void {
+    this.hikePostService.create(req).subscribe();
   }
 
   // ── Helpers ──────────────────────────────────────────────────────────────
