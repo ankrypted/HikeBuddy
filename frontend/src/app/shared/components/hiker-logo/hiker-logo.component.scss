@@ -1,14 +1,14 @@
 @use 'styles/variables' as v;
 
 .hb-logo {
-  font-size:       1.45rem;
+  font-size:       1.75rem;
   font-weight:     800;
   color:           #fff;
   text-decoration: none;
   letter-spacing:  -0.02em;
   display:         flex;
   align-items:     center;
-  gap:             0.45rem;
+  gap:             0.55rem;
 }
 
 .logo-hiker {
@@ -18,8 +18,8 @@
 }
 
 .hiker-svg {
-  width:  23px;
-  height: 30px;
+  width:  30px;
+  height: 39px;
 }
 
 .dot {
