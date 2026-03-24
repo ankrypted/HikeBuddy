@@ -1,12 +1,12 @@
 @use 'styles/variables' as v;
 
 .hb-logo {
-  font-family:     'National Park', sans-serif;
+  font-family:     'JetBrains Mono', monospace;
   font-size:       2.45rem;
   font-weight:     800;
   color:           #fff;
   text-decoration: none;
-  letter-spacing:  -0.02em;
+  letter-spacing:  -0.05em;
   display:         flex;
   align-items:     center;
   gap:             0.65rem;
