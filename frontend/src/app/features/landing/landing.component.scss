@@ -109,3 +109,23 @@ hb-cta-card {
 
   .trail-cards { gap: 0.75rem; }
 }
+
+@media (max-width: v.$bp-sm) {
+  .hero-content {
+    position:  static;
+    transform: none;
+    margin-top: -15rem;
+    order:     2;
+  }
+
+  hb-cta-card {
+    order: 1;
+    position: static;
+    margin-top: 4rem;
+  }
+
+  .trail-cards {
+    order: 3;
+  }
+
+}
