@@ -4,7 +4,7 @@
 .modal-backdrop {
   position:        fixed;
   inset:           0;
-  z-index:         200;
+  z-index:         1000;
   background:      rgba(5, 13, 25, 0.78);
   backdrop-filter: blur(4px);
   display:         flex;

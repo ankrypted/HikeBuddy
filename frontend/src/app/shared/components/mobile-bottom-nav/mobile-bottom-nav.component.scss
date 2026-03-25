@@ -1,0 +1,199 @@
+@use 'styles/variables' as v;
+
+.bottom-nav {
+  display:          none; // desktop: hidden
+}
+
+@media (max-width: v.$bp-sm) {
+  .bottom-nav {
+    display:          flex;
+    align-items:      stretch;
+    justify-content:  space-around;
+    position:         fixed;
+    bottom:           0;
+    left:             0;
+    right:            0;
+    height:           60px;
+    background:       rgba(10, 20, 30, 0.97);
+    border-top:       1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter:  blur(16px);
+    z-index:          9999;
+    padding-bottom:   env(safe-area-inset-bottom); // notch-safe on iOS
+  }
+}
+
+// ── Each button/link ─────────────────────────────────────────────────────────
+.bnav-btn {
+  display:         flex;
+  flex-direction:  column;
+  align-items:     center;
+  justify-content: center;
+  flex:            1;
+  gap:             3px;
+  background:      transparent;
+  border:          none;
+  cursor:          pointer;
+  color:           rgba(255, 255, 255, 0.45);
+  text-decoration: none;
+  font-size:       0.62rem;
+  font-weight:     500;
+  letter-spacing:  0.02em;
+  transition:      color 0.15s;
+
+  svg {
+    width:  22px;
+    height: 22px;
+  }
+
+  &:hover,
+  &--active {
+    color: v.$accent-green;
+  }
+}
+
+// ── Notification icon + badge ─────────────────────────────────────────────────
+.bnav-notif-icon {
+  position: relative;
+  display:  flex;
+}
+
+.bnav-badge {
+  position:        absolute;
+  top:             -4px;
+  right:           -6px;
+  background:      #ff6b6b;
+  color:           #fff;
+  font-size:       0.55rem;
+  font-weight:     800;
+  min-width:       14px;
+  height:          14px;
+  border-radius:   50%;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  padding:         0 2px;
+  line-height:     1;
+}
+
+// ── Notification panel ────────────────────────────────────────────────────────
+.bnav-notif-panel {
+  position:        fixed;
+  bottom:          60px;
+  left:            0;
+  right:           0;
+  max-height:      60vh;
+  overflow-y:      auto;
+  background:      rgba(13, 27, 42, 0.97);
+  border-top:      1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(16px);
+  z-index:         9998;
+}
+
+.bnav-notif-header {
+  display:         flex;
+  align-items:     center;
+  justify-content: space-between;
+  padding:         0.75rem 1rem 0.5rem;
+  border-bottom:   1px solid rgba(255, 255, 255, 0.07);
+}
+
+.bnav-notif-title {
+  font-size:   0.88rem;
+  font-weight: 700;
+  color:       #fff;
+}
+
+.bnav-mark-all {
+  background:  transparent;
+  border:      none;
+  cursor:      pointer;
+  font-size:   0.75rem;
+  color:       v.$accent-green;
+  font-weight: 600;
+  &:hover { text-decoration: underline; }
+}
+
+.bnav-notif-empty {
+  text-align: center;
+  color:      v.$text-muted;
+  font-size:  0.82rem;
+  padding:    1.2rem;
+}
+
+.bnav-notif-item {
+  display:     flex;
+  align-items: flex-start;
+  gap:         0.6rem;
+  padding:     0.55rem 1rem;
+  cursor:      default;
+  transition:  background 0.15s;
+
+  &:hover       { background: rgba(255, 255, 255, 0.04); }
+  &--unread     { background: rgba(126, 203, 63, 0.05); }
+}
+
+.bnav-notif-avatar {
+  flex-shrink:     0;
+  width:           32px;
+  height:          32px;
+  border-radius:   50%;
+  background:      rgba(126, 203, 63, 0.15);
+  border:          1px solid rgba(126, 203, 63, 0.3);
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  font-size:       0.62rem;
+  font-weight:     800;
+  color:           v.$accent-green;
+  position:        relative;
+  overflow:        hidden;
+  cursor:          pointer;
+
+  img {
+    position:   absolute;
+    inset:      0;
+    width:      100%;
+    height:     100%;
+    object-fit: cover;
+  }
+}
+
+.bnav-notif-content { flex: 1; min-width: 0; }
+
+.bnav-notif-message {
+  font-size:   0.8rem;
+  color:       rgba(255, 255, 255, 0.9);
+  line-height: 1.4;
+  margin:      0 0 0.15rem;
+  word-break:  break-word;
+}
+
+.bnav-notif-time {
+  font-size: 0.7rem;
+  color:     v.$text-muted;
+}
+
+.bnav-notif-dismiss {
+  background:  transparent;
+  border:      none;
+  cursor:      pointer;
+  color:       v.$text-muted;
+  font-size:   0.75rem;
+  padding:     0;
+  flex-shrink: 0;
+  line-height: 1;
+  &:hover { color: #fff; }
+}
+
+.bnav-notif-view-all {
+  display:         block;
+  text-align:      center;
+  padding:         0.6rem 1rem;
+  border-top:      1px solid rgba(255, 255, 255, 0.07);
+  font-size:       0.78rem;
+  font-weight:     600;
+  color:           v.$accent-green;
+  text-decoration: none;
+  transition:      background 0.15s;
+  &:hover { background: rgba(126, 203, 63, 0.07); }
+}

@@ -25,6 +25,10 @@ body {
   margin:       0;
 }
 
+@media (max-width: 640px) {
+  body, app-root { padding-bottom: calc(60px + env(safe-area-inset-bottom)); }
+}
+
 // ─── Trail-filter mat-select panel ────────────────────────────────────────
 .hb-select-panel {
   background:    rgba(13, 27, 42, 0.97) !important;

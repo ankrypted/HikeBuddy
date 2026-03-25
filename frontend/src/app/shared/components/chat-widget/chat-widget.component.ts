@@ -5,7 +5,7 @@ import {
 import { Subscription, interval } from 'rxjs';
 import { MessageService }   from '../../../core/services/message/message.service';
 import { ConversationDto, MessageDto } from '../../models/message.dto';
-import { Router, RouterLink } from '@angular/router'
+import { RouterLink } from '@angular/router'
 
 @Component({
   selector:        'hb-chat-widget',
@@ -48,6 +48,16 @@ export class ChatWidgetComponent implements OnDestroy {
         });
       }
     });
+
+    // React to requestOpenPanel() calls (e.g. from navbar / bottom nav).
+    // Only track openPanelRequest — NOT open() — to avoid the effect
+    // re-firing (and re-opening) when toggle() closes the panel.
+    effect(() => {
+      if (this.messageService.openPanelRequest() > 0) {
+        this.open.set(true);
+        this.messageService.loadConversations();
+      }
+    }, { allowSignalWrites: true });
 
     // React to openChatWith() calls from other pages
     effect(() => {
