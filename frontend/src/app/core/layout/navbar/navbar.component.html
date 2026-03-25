@@ -1,5 +1,16 @@
 <nav class="navbar">
 
+  <!-- Hamburger (mobile: left of logo) -->
+  <button
+    mat-icon-button
+    class="menu-btn"
+    aria-label="Toggle menu"
+    [attr.aria-expanded]="menuOpen()"
+    (click)="toggleMenu()"
+  >
+    <mat-icon>{{ menuOpen() ? 'close' : 'menu' }}</mat-icon>
+  </button>
+
   <!-- Logo -->
   <hb-hiker-logo />
 
@@ -33,6 +44,21 @@
       (click)="openSearch()"
     >
       <mat-icon>search</mat-icon>
+    </button>
+
+    <!-- Compose button -->
+    <button class="nav-icon-btn nav-compose-btn" aria-label="Share a hike" (click)="openCompose()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M12 5v14M5 12h14" stroke-linecap="round"/>
+      </svg>
+    </button>
+
+    <!-- Messages button -->
+    <button class="nav-icon-btn nav-messages-btn" aria-label="Messages" (click)="openMessages()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+              stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
     </button>
   }
 
@@ -121,16 +147,6 @@
     }
   </div>
 
-  <!-- Hamburger (mobile) -->
-  <button
-    mat-icon-button
-    class="menu-btn"
-    aria-label="Toggle menu"
-    [attr.aria-expanded]="menuOpen()"
-    (click)="toggleMenu()"
-  >
-    <mat-icon>{{ menuOpen() ? 'close' : 'menu' }}</mat-icon>
-  </button>
 
 </nav>
 

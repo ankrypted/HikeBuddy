@@ -18,6 +18,10 @@ export class MessageService {
   );
   /** Set by any component to make the chat widget open a specific conversation. */
   readonly pendingChatUser = signal<string | null>(null);
+  /** Incremented to request the chat panel to open (any value change triggers it). */
+  readonly openPanelRequest = signal(0);
+
+  requestOpenPanel(): void { this.openPanelRequest.update(n => n + 1); }
 
   private pollSub: Subscription | null = null;
 

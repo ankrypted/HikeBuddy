@@ -6,6 +6,10 @@
   position:   relative;
 }
 
+@media (max-width: v.$bp-sm) {
+  .feed-page { padding-bottom: calc(60px + 2rem) !important; }
+}
+
 // ─── Achievements strip ─────────────────────────────────────────────────
 .achievements-wrap {
   position:  relative;
@@ -666,7 +670,7 @@
   &:active { transform: scale(0.96); }
 
   @media (max-width: v.$bp-sm) {
-    bottom: 1.25rem;
+    bottom: calc(60px + 1.25rem);
     left:   1.25rem;
     width:  48px;
     height: 48px;

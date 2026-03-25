@@ -1,7 +1,7 @@
 import {
   Component, OnInit, signal, inject, ChangeDetectionStrategy, computed, effect,
 } from '@angular/core';
-import { RouterLink }                from '@angular/router';
+import { RouterLink, ActivatedRoute } from '@angular/router';
 import { TitleCasePipe }            from '@angular/common';
 import { NavbarComponent }           from '../../core/layout/navbar/navbar.component';
 import { SceneBackgroundComponent }  from '../../shared/components/scene-background/scene-background.component';
@@ -121,7 +121,12 @@ export class FeedComponent implements OnInit {
     });
   }
 
+  private readonly route = inject(ActivatedRoute);
+
   ngOnInit(): void {
+    if (this.route.snapshot.queryParamMap.get('compose') === '1') {
+      this.composeOpen.set(true);
+    }
     this.hikePostService.loadFeed();
     const username = this.authService.currentUser()?.username;
     if (username) {

@@ -6,7 +6,8 @@ import { TrailService }            from './core/services/trail/trail.service';
 import { ToastService }            from './core/services/toast/toast.service';
 import { ReviewModalComponent, ReviewSubmission } from './shared/components/review-modal/review-modal.component';
 import { ToastComponent }          from './shared/components/toast/toast.component';
-import { ChatWidgetComponent }     from './shared/components/chat-widget/chat-widget.component';
+import { ChatWidgetComponent }        from './shared/components/chat-widget/chat-widget.component';
+import { MobileBottomNavComponent }  from './shared/components/mobile-bottom-nav/mobile-bottom-nav.component';
 import { NotificationService }     from './core/services/notification/notification.service';
 import { MessageService }          from './core/services/message/message.service';
 import { AuthService }             from './core/services/auth/auth.service';
@@ -16,7 +17,7 @@ import { TrailSummaryDto }         from './shared/models/trail.dto';
   selector:        'app-root',
   standalone:      true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports:         [RouterOutlet, ReviewModalComponent, ToastComponent, ChatWidgetComponent],
+  imports:         [RouterOutlet, ReviewModalComponent, ToastComponent, ChatWidgetComponent, MobileBottomNavComponent],
   template: `
     <router-outlet />
     @if (completedTrailsService.pendingReviewTrail(); as trail) {
@@ -30,6 +31,7 @@ import { TrailSummaryDto }         from './shared/models/trail.dto';
     <hb-toast />
     @if (authService.isLoggedIn()) {
       <hb-chat-widget />
+      <hb-mobile-bottom-nav />
     }
   `,
   styles: [`:host { display: block; }`],

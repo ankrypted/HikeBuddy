@@ -1,5 +1,5 @@
 import {
-  Component, signal, ChangeDetectionStrategy, HostListener, inject, computed,
+  Component, signal, ChangeDetectionStrategy, HostListener, inject, computed, effect,
 } from '@angular/core';
 import { RouterLink, RouterLinkActive, Router, NavigationEnd } from '@angular/router';
 import { MatButtonModule }                   from '@angular/material/button';
@@ -12,6 +12,8 @@ import { HikerLogoComponent }                from '../../../shared/components/hi
 import { SearchOverlayComponent }            from '../../../shared/components/search-overlay/search-overlay.component';
 import { AuthService }                       from '../../services/auth/auth.service';
 import { NotificationService }               from '../../services/notification/notification.service';
+import { MessageService }                    from '../../services/message/message.service';
+import { SearchService }                     from '../../services/search/search.service';
 
 @Component({
   selector: 'hb-navbar',
@@ -26,9 +28,11 @@ import { NotificationService }               from '../../services/notification/n
   styleUrl:    './navbar.component.scss',
 })
 export class NavbarComponent {
-  private readonly authService = inject(AuthService);
-  private readonly router      = inject(Router);
-  readonly notificationService = inject(NotificationService);
+  private readonly authService    = inject(AuthService);
+  private readonly router         = inject(Router);
+  private readonly messageService = inject(MessageService);
+  private readonly searchService  = inject(SearchService);
+  readonly notificationService    = inject(NotificationService);
 
   private readonly currentUrl = toSignal(
     this.router.events.pipe(
@@ -42,6 +46,12 @@ export class NavbarComponent {
   readonly currentUser  = this.authService.currentUser;
   readonly onDashboard  = computed(() => this.currentUrl()?.startsWith('/dashboard') ?? false);
   readonly searchOpen   = signal(false);
+
+  constructor() {
+    effect(() => {
+      if (this.searchService.openRequest() > 0) this.searchOpen.set(true);
+    }, { allowSignalWrites: true });
+  }
   readonly menuOpen        = signal(false);
   readonly navAvatarFailed = signal(false);
 
@@ -50,8 +60,10 @@ export class NavbarComponent {
     this.router.navigateByUrl('/', { replaceUrl: true });
   }
 
-  openSearch():  void { this.searchOpen.set(true);          }
-  closeSearch(): void { this.searchOpen.set(false);         }
+  openSearch():   void { this.searchOpen.set(true);                    }
+  closeSearch():  void { this.searchOpen.set(false);                   }
+  openCompose():  void { this.router.navigate(['/feed'], { queryParams: { compose: '1' } }); }
+  openMessages(): void { this.messageService.requestOpenPanel();       }
   toggleMenu():  void { this.notificationService.closePanel(); this.menuOpen.update(v => !v); }
   closeMenu():   void { this.menuOpen.set(false);           }
 
