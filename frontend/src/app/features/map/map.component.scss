@@ -7,6 +7,7 @@
   height:         calc(100vh - v.$nav-height);
   overflow:       hidden;
   background:     v.$bg-primary;
+  isolation:      isolate; // contain Leaflet's z-index stack so navbar overlays paint above it
 }
 
 // ─── Header ──────────────────────────────────────────────────────────────────
