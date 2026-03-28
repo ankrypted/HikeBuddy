@@ -29,13 +29,13 @@
     <span>Search</span>
   </button>
 
-  <!-- Messages -->
-  <button class="bnav-btn" aria-label="Messages" (click)="openMessages()">
+  <!-- Rooms -->
+  <a class="bnav-btn" routerLink="/rooms" routerLinkActive="bnav-btn--active" aria-label="Rooms">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
     </svg>
-    <span>Messages</span>
-  </button>
+    <span>Rooms</span>
+  </a>
 
   <!-- Activity / Notifications -->
   <button class="bnav-btn bnav-notif" aria-label="Notifications" (click)="toggleNotifPanel(); $event.stopPropagation()">
