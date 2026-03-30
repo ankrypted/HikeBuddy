@@ -9,6 +9,8 @@ public record HikePostResponse(
         String condition,
         String recommendation,
         String tip,
+        String postType,
+        String roomId,
         String timestamp
 ) {
     public record Author(String username, String avatarUrl) {}

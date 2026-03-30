@@ -11,6 +11,9 @@ public interface UserSubscriptionRepository extends JpaRepository<UserSubscripti
     @Query("SELECT s.id.followeeId FROM UserSubscription s WHERE s.id.followerId = :followerId")
     List<UUID> findFolloweeIdsByFollowerId(UUID followerId);
 
+    @Query("SELECT s.id.followerId FROM UserSubscription s WHERE s.id.followeeId = :followeeId")
+    List<UUID> findFollowerIdsByFolloweeId(UUID followeeId);
+
     long countByIdFolloweeId(UUID followeeId);
 
     void deleteByIdFollowerId(UUID followerId);
