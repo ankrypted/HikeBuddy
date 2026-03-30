@@ -10,5 +10,7 @@ export interface HikePostDto {
   condition:      TrailCondition;
   recommendation: Recommendation;
   tip?:           string;        // optional tip for fellow hikers
+  postType?:      'HIKE' | 'ROOM';
+  roomId?:        string;
   timestamp:      string;        // ISO-8601
 }

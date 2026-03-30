@@ -106,8 +106,8 @@ export const routes: Routes = [
   },
   {
     path: 'rooms',
-    loadComponent: () =>
-      import('./features/rooms/rooms.component').then(m => m.RoomsComponent),
+    loadChildren: () =>
+      import('./features/rooms/rooms.routes').then(m => m.ROOMS_ROUTES),
     title: 'Rooms — HikeBuddy',
   },
   // /notifications is now under the dashboard shell; redirect old URL

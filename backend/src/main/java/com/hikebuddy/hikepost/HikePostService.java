@@ -109,8 +109,27 @@ public class HikePostService {
                 p.getCondition(),
                 p.getRecommendation(),
                 p.getTip(),
+                p.getPostType(),
+                p.getRoomId() != null ? p.getRoomId().toString() : null,
                 p.getCreatedAt().toString()
         );
+    }
+
+    /** Called internally from RoomService — creates a feed post for a new room. */
+    @Transactional
+    public HikePost createForRoom(User creator, com.hikebuddy.room.Room room) {
+        HikePost post = HikePost.builder()
+                .userId(creator.getId())
+                .trailName(room.getTrailName())
+                .trailSlug(room.getTrailId())
+                .experience(creator.getUsername() + " is organising a group hike on "
+                        + room.getPlannedDate() + ". Join the room!")
+                .condition("GREAT")
+                .recommendation("YES")
+                .postType("ROOM")
+                .roomId(room.getId())
+                .build();
+        return repo.saveAndFlush(post);
     }
 
     private User requireUser(String email) {

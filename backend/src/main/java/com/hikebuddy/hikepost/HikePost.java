@@ -37,6 +37,13 @@ public class HikePost {
     @Column(columnDefinition = "TEXT")
     private String tip;
 
+    @Column(name = "post_type", nullable = false, length = 20)
+    @Builder.Default
+    private String postType = "HIKE";
+
+    @Column(name = "room_id")
+    private java.util.UUID roomId;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;

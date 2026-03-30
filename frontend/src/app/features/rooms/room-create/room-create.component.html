@@ -1,0 +1,70 @@
+<hb-navbar />
+<hb-scene-background />
+
+<div class="create-wrapper">
+  <main class="create-main">
+
+    <header class="create-header">
+      <a class="back-link" routerLink="/rooms">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+        Back to Rooms
+      </a>
+      <h1 class="create-title">Create a Room</h1>
+      <p class="create-subtitle">Plan a group hike and invite your followers</p>
+    </header>
+
+    <form class="create-form glass" (ngSubmit)="submit()" #f="ngForm">
+
+      <div class="form-group">
+        <label for="trail" class="form-label">Trail</label>
+        <select id="trail" class="form-select"
+                name="trail"
+                [(ngModel)]="trailId"
+                (ngModelChange)="onTrailChange($event)"
+                required>
+          <option value="" disabled>Select a trail…</option>
+          @for (trail of trails(); track trail.id) {
+            <option [value]="trail.slug">{{ trail.name }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="title" class="form-label">Room Title</label>
+        <input id="title" class="form-input"
+               type="text"
+               name="title"
+               [(ngModel)]="title"
+               placeholder="e.g. Roopkund Trek — Summer 2025"
+               maxlength="200"
+               required />
+      </div>
+
+      <div class="form-group">
+        <label for="date" class="form-label">Planned Hike Date</label>
+        <input id="date" class="form-input"
+               type="date"
+               name="plannedDate"
+               [(ngModel)]="plannedDate"
+               [min]="today"
+               required />
+      </div>
+
+      @if (error()) {
+        <p class="form-error">{{ error() }}</p>
+      }
+
+      <div class="form-actions">
+        <a class="btn-cancel" routerLink="/rooms">Cancel</a>
+        <button class="btn-submit" type="submit"
+                [disabled]="submitting() || !trailId || !plannedDate || !title.trim()">
+          @if (submitting()) { Creating… } @else { Create Room }
+        </button>
+      </div>
+
+    </form>
+  </main>
+</div>
