@@ -642,6 +642,44 @@
 }
 
 // ─── Floating compose button (FAB) ───────────────────────────────────────────
+.fab-rooms {
+  position:        fixed;
+  bottom:          5.75rem;
+  left:            1.75rem;
+  z-index:         101;
+  width:           46px;
+  height:          46px;
+  border-radius:   50%;
+  background:      rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(8px);
+  border:          1px solid rgba(255, 255, 255, 0.15);
+  color:           rgba(255, 255, 255, 0.85);
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  cursor:          pointer;
+  box-shadow:      0 4px 16px rgba(0, 0, 0, 0.35);
+  transition:      transform 0.15s, background 0.15s;
+  text-decoration: none;
+
+  svg { width: 20px; height: 20px; }
+
+  &:hover {
+    transform:  scale(1.08);
+    background: rgba(255, 255, 255, 0.14);
+    color:      #fff;
+  }
+
+  &:active { transform: scale(0.96); }
+
+  @media (max-width: v.$bp-sm) {
+    bottom: calc(60px + 4.75rem);
+    left:   1.25rem;
+    width:  42px;
+    height: 42px;
+  }
+}
+
 .fab-compose {
   position:        fixed;
   bottom:          2rem;
