@@ -650,24 +650,22 @@
   width:           46px;
   height:          46px;
   border-radius:   50%;
-  background:      rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(8px);
-  border:          1px solid rgba(255, 255, 255, 0.15);
-  color:           rgba(255, 255, 255, 0.85);
+  background:      v.$accent-green;
+  border:          none;
+  color:           #0d1b2a;
   display:         flex;
   align-items:     center;
   justify-content: center;
   cursor:          pointer;
-  box-shadow:      0 4px 16px rgba(0, 0, 0, 0.35);
-  transition:      transform 0.15s, background 0.15s;
+  box-shadow:      0 4px 20px rgba(126, 203, 63, 0.5);
+  transition:      transform 0.15s, box-shadow 0.15s;
   text-decoration: none;
 
   svg { width: 20px; height: 20px; }
 
   &:hover {
     transform:  scale(1.08);
-    background: rgba(255, 255, 255, 0.14);
-    color:      #fff;
+    box-shadow: 0 6px 28px rgba(126, 203, 63, 0.7);
   }
 
   &:active { transform: scale(0.96); }

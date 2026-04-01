@@ -31,6 +31,11 @@ public class RoomController {
         return roomService.getMyRooms(user.getUsername());
     }
 
+    @GetMapping("/open")
+    public List<RoomSummaryDto> openRooms() {
+        return roomService.getOpenRooms();
+    }
+
     @GetMapping("/trail/{slug}")
     public List<RoomSummaryDto> forTrail(@PathVariable String slug) {
         return roomService.getRoomsForTrail(slug);

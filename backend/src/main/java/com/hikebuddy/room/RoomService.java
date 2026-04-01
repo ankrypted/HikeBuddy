@@ -137,6 +137,13 @@ public class RoomService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
+    public List<RoomSummaryDto> getOpenRooms() {
+        return roomRepo.findByStatusOrderByPlannedDateAsc("OPEN").stream()
+                .map(r -> toSummary(r, resolveCreatorUsername(r)))
+                .toList();
+    }
+
     // ── Messages ──────────────────────────────────────────────────────────────
 
     @Transactional
