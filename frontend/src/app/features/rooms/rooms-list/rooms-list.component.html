@@ -4,95 +4,362 @@
 <div class="rooms-wrapper">
   <main class="rooms-main">
 
+    <!-- ── Hero header ──────────────────────────────────────────────────── -->
     <header class="rooms-header">
-      <div class="rooms-header-text">
+      <div>
         <h1 class="rooms-title">Rooms</h1>
         <p class="rooms-subtitle">Plan group hikes with fellow hikers</p>
       </div>
       @if (isLoggedIn()) {
-        <a class="btn-create" routerLink="/rooms/new">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        <button class="btn-plan" (click)="openStepper()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <line x1="12" y1="5" x2="12" y2="19"/>
             <line x1="5" y1="12" x2="19" y2="12"/>
           </svg>
-          Create Room
-        </a>
+          Plan a Hike
+        </button>
       }
     </header>
 
+    <!-- ── Auth prompt ───────────────────────────────────────────────────── -->
     @if (!isLoggedIn()) {
       <div class="auth-prompt glass">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
              stroke-linecap="round" stroke-linejoin="round" class="auth-icon" aria-hidden="true">
-          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+          <rect x="3" y="11" width="18" height="11" rx="2"/>
           <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
         </svg>
-        <h2 class="auth-title">Sign in to access Rooms</h2>
-        <p class="auth-sub">Create and join group rooms for upcoming trails, chat with fellow hikers, and coordinate meetups.</p>
+        <h2 class="auth-title">Sign in to create &amp; join Rooms</h2>
+        <p class="auth-sub">Browse open rooms below, or sign in to plan your own group hike.</p>
         <div class="auth-actions">
           <a class="btn-signin" routerLink="/auth/login">Sign In</a>
           <a class="btn-register" routerLink="/auth/register">Create Account</a>
         </div>
       </div>
-    } @else if (rooms().length === 0) {
-      <div class="empty-state">
-        <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-             stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-        </svg>
-        <p class="empty-title">No rooms yet</p>
-        <p class="empty-sub">Create a room to plan a group hike with people you follow.</p>
-        <a class="btn-create-empty" routerLink="/rooms/new">Create your first room</a>
-      </div>
-    } @else {
-      <ul class="room-list">
-        @for (room of rooms(); track room.id) {
-          <li class="room-card glass" [routerLink]="['/rooms', room.id]">
-            <div class="room-card-top">
-              <div class="room-trail-badge">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/>
-                  <line x1="8" y1="2" x2="8" y2="18"/>
-                  <line x1="16" y1="6" x2="16" y2="22"/>
-                </svg>
-                {{ room.trailName }}
-              </div>
-              <span class="room-status" [class.room-status--open]="room.status === 'OPEN'">
-                {{ room.status }}
-              </span>
-            </div>
+    }
 
-            <h2 class="room-title">{{ room.title }}</h2>
-
-            <div class="room-meta">
-              <span class="room-date">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                  <line x1="16" y1="2" x2="16" y2="6"/>
-                  <line x1="8" y1="2" x2="8" y2="6"/>
-                  <line x1="3" y1="10" x2="21" y2="10"/>
-                </svg>
-                {{ formatDate(room.plannedDate) }}
+    <!-- ── Upcoming hikes strip ───────────────────────────────────────────── -->
+    @if (upcomingRooms().length) {
+      <section class="upcoming-section">
+        <h2 class="section-heading">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="3" y="4" width="18" height="18" rx="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+          Upcoming Hikes
+        </h2>
+        <div class="upcoming-strip">
+          @for (room of upcomingRooms(); track room.id) {
+            <a class="upcoming-card glass" [routerLink]="['/rooms', room.id]">
+              <span class="uc-countdown" [class.uc-countdown--soon]="countdown(room.plannedDate) === 'Today!' || countdown(room.plannedDate) === 'Tomorrow'">
+                {{ countdown(room.plannedDate) }}
               </span>
-              <span class="room-members">
+              <span class="uc-trail">{{ room.trailName }}</span>
+              <span class="uc-title">{{ room.title }}</span>
+              <div class="uc-meta">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                      stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
                   <circle cx="9" cy="7" r="4"/>
                   <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
                 </svg>
-                {{ room.memberCount }} {{ room.memberCount === 1 ? 'member' : 'members' }}
-              </span>
-            </div>
+                {{ room.memberCount }}
+              </div>
+            </a>
+          }
+        </div>
+      </section>
+    }
 
-            <div class="room-creator">by {{ room.creatorUsername }}</div>
-          </li>
+    <!-- ── Tabs ───────────────────────────────────────────────────────────── -->
+    @if (isLoggedIn()) {
+      <div class="tabs-bar">
+        <button class="tab-btn" [class.tab-btn--active]="activeTab() === 'my'"
+                (click)="activeTab.set('my')">
+          My Rooms
+          @if (myRooms().length) {
+            <span class="tab-count">{{ myRooms().length }}</span>
+          }
+        </button>
+        <button class="tab-btn" [class.tab-btn--active]="activeTab() === 'open'"
+                (click)="activeTab.set('open')">
+          Open Rooms
+          @if (openRooms().length) {
+            <span class="tab-count">{{ openRooms().length }}</span>
+          }
+        </button>
+      </div>
+    }
+
+    <!-- ── My Rooms tab ───────────────────────────────────────────────────── -->
+    @if (!isLoggedIn() || activeTab() === 'my') {
+      @if (isLoggedIn() && myRooms().length === 0) {
+        <div class="empty-state">
+          <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="3" y="2" width="18" height="20" rx="1"/>
+            <path d="M15 2v20"/>
+            <circle cx="12.5" cy="12" r="1" fill="currentColor" stroke="none"/>
+          </svg>
+          <p class="empty-title">No rooms yet</p>
+          <p class="empty-sub">Plan your first group hike with the button above.</p>
+          <button class="btn-create-empty" (click)="openStepper()">Plan a Hike</button>
+        </div>
+      } @else if (isLoggedIn()) {
+        <ul class="room-list">
+          @for (room of myRooms(); track room.id) {
+            <li class="room-card glass" [routerLink]="['/rooms', room.id]">
+              <ng-container *ngTemplateOutlet="roomCardContent; context: { room }"/>
+            </li>
+          }
+        </ul>
+      }
+    }
+
+    <!-- ── Open Rooms tab (trail-first discovery) ─────────────────────────── -->
+    @if (activeTab() === 'open' || !isLoggedIn()) {
+      <section class="open-rooms-section">
+
+        <!-- Search bar -->
+        <div class="trail-search-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input class="trail-search-input"
+                 type="text"
+                 placeholder="Search by trail, room name or creator…"
+                 [value]="trailFilter()"
+                 (input)="trailFilter.set($any($event.target).value)" />
+          @if (trailFilter()) {
+            <button class="trail-search-clear" (click)="trailFilter.set('')" aria-label="Clear">&#x2715;</button>
+          }
+        </div>
+
+        @if (trailGroups().length === 0) {
+          <div class="empty-state">
+            <p class="empty-title">No open rooms found</p>
+            <p class="empty-sub">Be the first to plan a group hike!</p>
+            @if (isLoggedIn()) {
+              <button class="btn-create-empty" (click)="openStepper()">Plan a Hike</button>
+            }
+          </div>
+        } @else {
+          @for (group of trailGroups(); track group.trailName) {
+            <div class="trail-group">
+              <h3 class="trail-group-heading">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/>
+                  <line x1="8" y1="2" x2="8" y2="18"/>
+                  <line x1="16" y1="6" x2="16" y2="22"/>
+                </svg>
+                {{ group.trailName }}
+                <span class="trail-group-count">{{ group.rooms.length }} {{ group.rooms.length === 1 ? 'room' : 'rooms' }}</span>
+              </h3>
+              <ul class="room-list">
+                @for (room of group.rooms; track room.id) {
+                  <li class="room-card glass" [routerLink]="['/rooms', room.id]">
+                    <ng-container *ngTemplateOutlet="roomCardContent; context: { room }"/>
+                  </li>
+                }
+              </ul>
+            </div>
+          }
         }
-      </ul>
+      </section>
     }
 
   </main>
 </div>
+
+<!-- ── Shared room card template ──────────────────────────────────────────── -->
+<ng-template #roomCardContent let-room="room">
+  <div class="room-card-top">
+    <span class="room-status" [class.room-status--open]="room.status === 'OPEN'">
+      {{ room.status }}
+    </span>
+    <span class="room-countdown" [class.room-countdown--soon]="countdown(room.plannedDate) === 'Today!' || countdown(room.plannedDate) === 'Tomorrow'">
+      {{ countdown(room.plannedDate) }}
+    </span>
+  </div>
+  <h2 class="room-title">{{ room.title }}</h2>
+  <div class="room-meta">
+    <span class="room-date">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <rect x="3" y="4" width="18" height="18" rx="2"/>
+        <line x1="16" y1="2" x2="16" y2="6"/>
+        <line x1="8" y1="2" x2="8" y2="6"/>
+        <line x1="3" y1="10" x2="21" y2="10"/>
+      </svg>
+      {{ formatDate(room.plannedDate) }}
+    </span>
+    <span class="room-members">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+        <circle cx="9" cy="7" r="4"/>
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+      </svg>
+      {{ room.memberCount }} {{ room.memberCount === 1 ? 'member' : 'members' }}
+    </span>
+  </div>
+  <div class="room-creator">by {{ room.creatorUsername }}</div>
+</ng-template>
+
+<!-- ── Plan a Hike stepper modal ──────────────────────────────────────────── -->
+@if (stepperOpen()) {
+  <div class="stepper-backdrop" (click)="closeStepper()">
+    <div class="stepper-modal glass" (click)="$event.stopPropagation()">
+
+      <!-- Progress bar -->
+      <div class="stepper-progress">
+        <div class="sp-step" [class.sp-step--done]="step() >= 1" [class.sp-step--active]="step() === 1">
+          <div class="sp-dot">1</div>
+          <span>Trail</span>
+        </div>
+        <div class="sp-line" [class.sp-line--done]="step() >= 2"></div>
+        <div class="sp-step" [class.sp-step--done]="step() >= 2" [class.sp-step--active]="step() === 2">
+          <div class="sp-dot">2</div>
+          <span>Details</span>
+        </div>
+        <div class="sp-line" [class.sp-line--done]="step() >= 3"></div>
+        <div class="sp-step" [class.sp-step--done]="step() >= 3" [class.sp-step--active]="step() === 3">
+          <div class="sp-dot">3</div>
+          <span>Confirm</span>
+        </div>
+      </div>
+
+      <!-- Step 1: Pick a trail -->
+      @if (step() === 1) {
+        <div class="stepper-body">
+          <h2 class="stepper-heading">Where are you hiking?</h2>
+          <p class="stepper-sub">Search and select the trail for your group hike.</p>
+
+          <div class="trail-search-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="11" cy="11" r="8"/>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <input class="trail-search-input"
+                   type="text"
+                   placeholder="Search trails…"
+                   [value]="trailSearch()"
+                   (input)="trailSearch.set($any($event.target).value)"
+                   autofocus />
+          </div>
+
+          <ul class="trail-pick-list">
+            @for (trail of filteredTrails(); track trail.id) {
+              <li class="trail-pick-item" (click)="selectTrail(trail)">
+                <div class="tpi-info">
+                  <span class="tpi-name">{{ trail.name }}</span>
+                  <span class="tpi-meta">
+                    <span class="chip chip--{{ trail.difficulty.toLowerCase() }}">{{ trail.difficulty }}</span>
+                    <span class="tpi-region">{{ trail.region?.name }}</span>
+                  </span>
+                </div>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round" class="tpi-arrow" aria-hidden="true">
+                  <polyline points="9 18 15 12 9 6"/>
+                </svg>
+              </li>
+            }
+            @if (filteredTrails().length === 0) {
+              <li class="trail-pick-empty">No trails found for "{{ trailSearch() }}"</li>
+            }
+          </ul>
+        </div>
+      }
+
+      <!-- Step 2: Date + title -->
+      @if (step() === 2) {
+        <div class="stepper-body">
+          <h2 class="stepper-heading">When &amp; what?</h2>
+          <p class="stepper-sub">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round" class="step2-trail-icon" aria-hidden="true">
+              <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/>
+              <line x1="8" y1="2" x2="8" y2="18"/>
+              <line x1="16" y1="6" x2="16" y2="22"/>
+            </svg>
+            {{ selectedTrail?.name }}
+          </p>
+
+          <div class="form-group">
+            <label class="form-label">Planned Hike Date</label>
+            <input class="form-input" type="date" [(ngModel)]="plannedDate" [min]="today" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Room Title</label>
+            <input class="form-input" type="text" [(ngModel)]="roomTitle"
+                   placeholder="e.g. Roopkund Trek — Summer Group"
+                   maxlength="200" />
+          </div>
+
+          @if (stepError()) {
+            <p class="step-error">{{ stepError() }}</p>
+          }
+
+          <div class="stepper-actions">
+            <button class="btn-back" (click)="goBack()">Back</button>
+            <button class="btn-next" (click)="nextToConfirm()"
+                    [disabled]="!plannedDate || !roomTitle.trim()">
+              Next
+            </button>
+          </div>
+        </div>
+      }
+
+      <!-- Step 3: Confirm -->
+      @if (step() === 3) {
+        <div class="stepper-body">
+          <h2 class="stepper-heading">Ready to create?</h2>
+          <p class="stepper-sub">Review your room details before creating.</p>
+
+          <div class="confirm-card glass">
+            <div class="confirm-row">
+              <span class="confirm-label">Trail</span>
+              <span class="confirm-value">{{ selectedTrail?.name }}</span>
+            </div>
+            <div class="confirm-row">
+              <span class="confirm-label">Title</span>
+              <span class="confirm-value">{{ roomTitle }}</span>
+            </div>
+            <div class="confirm-row">
+              <span class="confirm-label">Date</span>
+              <span class="confirm-value">{{ formatDate(plannedDate) }}</span>
+            </div>
+            <div class="confirm-row">
+              <span class="confirm-label">Countdown</span>
+              <span class="confirm-value confirm-value--green">{{ countdown(plannedDate) }}</span>
+            </div>
+          </div>
+
+          <p class="confirm-note">A post will automatically be shared to the global feed.</p>
+
+          @if (stepError()) {
+            <p class="step-error">{{ stepError() }}</p>
+          }
+
+          <div class="stepper-actions">
+            <button class="btn-back" (click)="goBack()">Back</button>
+            <button class="btn-create" (click)="createRoom()" [disabled]="submitting()">
+              @if (submitting()) { Creating… } @else { Create Room }
+            </button>
+          </div>
+        </div>
+      }
+
+      <button class="stepper-close" (click)="closeStepper()" aria-label="Close">&#x2715;</button>
+    </div>
+  </div>
+}

@@ -13,6 +13,7 @@ export class RoomService {
   private readonly base = '/api/v1/rooms';
 
   readonly myRooms    = signal<RoomSummaryDto[]>([]);
+  readonly openRooms  = signal<RoomSummaryDto[]>([]);
   readonly activeRoom = signal<RoomDetailDto | null>(null);
   readonly messages   = signal<RoomMessageDto[]>([]);
   readonly updates    = signal<RoomUpdateDto[]>([]);
@@ -25,6 +26,11 @@ export class RoomService {
   loadMyRooms(): void {
     this.http.get<RoomSummaryDto[]>(`${this.base}/my`)
       .subscribe(rooms => this.myRooms.set(rooms));
+  }
+
+  loadOpenRooms(): void {
+    this.http.get<RoomSummaryDto[]>(`${this.base}/open`)
+      .subscribe(rooms => this.openRooms.set(rooms));
   }
 
   loadRoom(id: string): void {

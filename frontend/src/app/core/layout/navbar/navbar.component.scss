@@ -413,6 +413,39 @@
   &:hover { background: rgba(126, 203, 63, 0.07); }
 }
 
+// ─── Compose FAB (desktop only, bottom left) ─────────────────────────────────
+.fab-compose-global {
+  position:        fixed;
+  bottom:          2rem;
+  left:            1.75rem;
+  z-index:         101;
+  width:           52px;
+  height:          52px;
+  border-radius:   50%;
+  border:          none;
+  background:      v.$accent-green;
+  color:           #0d1b2a;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  cursor:          pointer;
+  box-shadow:      0 4px 20px rgba(126, 203, 63, 0.5);
+  transition:      transform 0.15s, box-shadow 0.15s;
+
+  svg { width: 22px; height: 22px; }
+
+  &:hover {
+    transform:  scale(1.08);
+    box-shadow: 0 6px 28px rgba(126, 203, 63, 0.7);
+  }
+
+  &:active { transform: scale(0.96); }
+
+  @media (max-width: v.$bp-sm) {
+    display: none;
+  }
+}
+
 // ─── Messages FAB (desktop only, bottom right) ───────────────────────────────
 .fab-messages {
   position:        fixed;

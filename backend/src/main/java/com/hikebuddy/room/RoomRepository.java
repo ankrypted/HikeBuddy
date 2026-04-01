@@ -20,4 +20,6 @@ public interface RoomRepository extends JpaRepository<Room, UUID> {
     List<Room> findByMember(@Param("userId") UUID userId);
 
     List<Room> findByTrailIdAndStatusOrderByPlannedDateAsc(String trailId, String status);
+
+    List<Room> findByStatusOrderByPlannedDateAsc(String status);
 }
