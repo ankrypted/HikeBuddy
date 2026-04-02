@@ -6,11 +6,12 @@ import {
   RoomSummaryDto, RoomDetailDto,
   RoomMessageDto, RoomUpdateDto, CreateRoomRequest,
 } from '../../../shared/models/room.dto';
+import { environment }                from '../../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class RoomService {
   private readonly http = inject(HttpClient);
-  private readonly base = '/api/v1/rooms';
+  private readonly base = `${environment.apiUrl}/rooms`;
 
   readonly myRooms    = signal<RoomSummaryDto[]>([]);
   readonly openRooms  = signal<RoomSummaryDto[]>([]);
