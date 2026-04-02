@@ -1,7 +1,7 @@
 import {
   ChangeDetectionStrategy, Component, computed, inject, Input, OnDestroy, OnInit, signal,
 } from '@angular/core';
-import { RouterLink }          from '@angular/router';
+import { Router, RouterLink }  from '@angular/router';
 import { FormsModule }         from '@angular/forms';
 import { NavbarComponent }     from '../../../core/layout/navbar/navbar.component';
 import { SceneBackgroundComponent } from '../../../shared/components/scene-background/scene-background.component';
@@ -21,6 +21,7 @@ export class RoomDetailComponent implements OnInit, OnDestroy {
 
   private readonly roomService  = inject(RoomService);
   private readonly authService  = inject(AuthService);
+  private readonly router       = inject(Router);
 
   readonly room        = this.roomService.activeRoom;
   readonly messages    = this.roomService.messages;
@@ -35,6 +36,11 @@ export class RoomDetailComponent implements OnInit, OnDestroy {
   // Update
   readonly updateDraft   = signal('');
   readonly postingUpdate = signal(false);
+
+  // Delete
+  readonly showDeleteConfirm = signal(false);
+  readonly deleting          = signal(false);
+  readonly deleteError       = signal<string | null>(null);
 
   // Invite
   readonly showInvite      = signal(false);
@@ -134,6 +140,22 @@ export class RoomDetailComponent implements OnInit, OnDestroy {
   }
 
   closeInvite(): void { this.showInvite.set(false); }
+
+  // ── Delete ────────────────────────────────────────────────────────────────
+
+  confirmDelete(): void { this.showDeleteConfirm.set(true); this.deleteError.set(null); }
+  cancelDelete():  void { this.showDeleteConfirm.set(false); }
+
+  deleteRoom(): void {
+    this.deleting.set(true);
+    this.roomService.deleteRoom(this.id).subscribe({
+      next:  () => this.router.navigate(['/rooms']),
+      error: err => {
+        this.deleteError.set(err.error?.message ?? 'Failed to delete room.');
+        this.deleting.set(false);
+      },
+    });
+  }
 
   // ── Helpers ───────────────────────────────────────────────────────────────
 

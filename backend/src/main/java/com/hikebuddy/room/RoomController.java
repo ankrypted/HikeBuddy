@@ -26,6 +26,13 @@ public class RoomController {
         return roomService.createRoom(user.getUsername(), req);
     }
 
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteRoom(@AuthenticationPrincipal UserDetails user,
+                           @PathVariable UUID id) {
+        roomService.deleteRoom(user.getUsername(), id);
+    }
+
     @GetMapping("/my")
     public List<RoomSummaryDto> myRooms(@AuthenticationPrincipal UserDetails user) {
         return roomService.getMyRooms(user.getUsername());
