@@ -44,6 +44,15 @@ export class RoomService {
     );
   }
 
+  deleteRoom(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.base}/${id}`).pipe(
+      tap(() => {
+        this.myRooms.update(list => list.filter(r => r.id !== id));
+        this.openRooms.update(list => list.filter(r => r.id !== id));
+      }),
+    );
+  }
+
   joinRoom(id: string): Observable<RoomDetailDto> {
     return this.http.post<RoomDetailDto>(`${this.base}/${id}/join`, {}).pipe(
       tap(room => {

@@ -60,6 +60,21 @@ public class RoomService {
         return toDetail(room, creator.getUsername());
     }
 
+    // ── Delete ────────────────────────────────────────────────────────────────
+
+    @Transactional
+    public void deleteRoom(String email, UUID roomId) {
+        User user = requireUser(email);
+        Room room = requireRoom(roomId);
+        if (!room.getCreatorId().equals(user.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the room creator can delete this room");
+        }
+        messageRepo.deleteByRoomId(roomId);
+        updateRepo.deleteByRoomId(roomId);
+        memberRepo.deleteByIdRoomId(roomId);
+        roomRepo.delete(room);
+    }
+
     // ── Join ──────────────────────────────────────────────────────────────────
 
     @Transactional

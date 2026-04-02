@@ -600,6 +600,113 @@
   &:hover:not(:disabled) { background: rgba(v.$accent-green, 0.22); }
 }
 
+// ── Creator actions row ───────────────────────────────────────────────────────
+.creator-actions {
+  display:   flex;
+  gap:       0.6rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.btn-delete-room {
+  display:     inline-flex;
+  align-items: center;
+  gap:         0.4rem;
+  padding:     0.55rem 1.1rem;
+  background:  rgba(220, 80, 80, 0.1);
+  border:      1px solid rgba(220, 80, 80, 0.3);
+  color:       #f08080;
+  font-weight: 600;
+  font-size:   0.88rem;
+  border-radius: 999px;
+  cursor:      pointer;
+  transition:  background 0.15s, border-color 0.15s;
+
+  svg { width: 14px; height: 14px; }
+
+  &:hover {
+    background:   rgba(220, 80, 80, 0.2);
+    border-color: rgba(220, 80, 80, 0.55);
+  }
+}
+
+// ── Delete confirmation modal ─────────────────────────────────────────────────
+.delete-backdrop {
+  position: fixed;
+  inset:    0;
+  z-index:  600;
+  display:  flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  padding:  1rem;
+}
+
+.delete-modal {
+  width:       100%;
+  max-width:   420px;
+  border-radius: v.$card-radius;
+  padding:     2rem;
+  display:     flex;
+  flex-direction: column;
+  gap:         1rem;
+}
+
+.delete-heading {
+  font-size:   1.3rem;
+  font-weight: 800;
+  margin:      0;
+  color:       #f08080;
+}
+
+.delete-sub {
+  color:     v.$text-muted;
+  font-size: 0.9rem;
+  margin:    0;
+  line-height: 1.5;
+}
+
+.delete-error {
+  color:     #f08080;
+  font-size: 0.83rem;
+  margin:    0;
+}
+
+.delete-actions {
+  display:         flex;
+  justify-content: flex-end;
+  gap:             0.75rem;
+  margin-top:      0.25rem;
+}
+
+.btn-cancel-delete {
+  padding:     0.55rem 1.2rem;
+  background:  transparent;
+  border:      1px solid rgba(255,255,255,0.15);
+  color:       v.$text-muted;
+  font-weight: 600;
+  font-size:   0.88rem;
+  border-radius: 999px;
+  cursor:      pointer;
+  transition:  border-color 0.15s, color 0.15s;
+  &:hover { border-color: rgba(255,255,255,0.3); color: #fff; }
+}
+
+.btn-confirm-delete {
+  padding:     0.55rem 1.3rem;
+  background:  rgba(220, 80, 80, 0.85);
+  border:      none;
+  color:       #fff;
+  font-weight: 700;
+  font-size:   0.9rem;
+  border-radius: 999px;
+  cursor:      pointer;
+  transition:  opacity 0.15s;
+  &:hover:not(:disabled) { opacity: 0.85; }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+}
+
 @media (max-width: v.$bp-sm) {
   .detail-wrapper { padding-bottom: calc(60px + 2rem); }
   .chat-messages { min-height: 220px; max-height: 320px; }

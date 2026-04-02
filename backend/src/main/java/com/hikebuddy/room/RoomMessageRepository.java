@@ -21,4 +21,6 @@ public interface RoomMessageRepository extends JpaRepository<RoomMessage, UUID> 
     List<RoomMessage> findRecent(@Param("roomId") UUID roomId);
 
     List<RoomMessage> findByRoomIdAndSentAtAfterOrderBySentAtAsc(UUID roomId, Instant since);
+
+    void deleteByRoomId(UUID roomId);
 }

@@ -13,6 +13,8 @@ public interface RoomUpdateRepository extends JpaRepository<RoomUpdate, UUID> {
 
     List<RoomUpdate> findByRoomIdOrderByCreatedAtDesc(UUID roomId);
 
+    void deleteByRoomId(UUID roomId);
+
     @Query(value = """
             SELECT u.* FROM room_updates u
             INNER JOIN rooms r ON r.id = u.room_id
