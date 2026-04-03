@@ -77,6 +77,11 @@
 
 // ── Notification panel ────────────────────────────────────────────────────────
 .bnav-notif-panel {
+  display: none; // hidden on desktop; shown inside the media query below
+}
+
+@media (max-width: v.$bp-sm) {
+.bnav-notif-panel {
   position:        fixed;
   bottom:          60px;
   left:            0;
@@ -197,3 +202,4 @@
   transition:      background 0.15s;
   &:hover { background: rgba(126, 203, 63, 0.07); }
 }
+} // end @media (max-width: v.$bp-sm)
