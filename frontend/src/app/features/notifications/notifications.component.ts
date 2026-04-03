@@ -13,6 +13,7 @@ import { FavoritesService }        from '../../core/services/favorites/favorites
 import { CompletedTrailsService }  from '../../core/services/completed-trails/completed-trails.service';
 import { PublicUserDto }           from '../../shared/models/public-user.dto';
 import { TrailSummaryDto }         from '../../shared/models/trail.dto';
+import { RoomService }             from '../../core/services/room/room.service';
 
 interface PagedResponse {
   content:       NotificationDto[];
@@ -37,7 +38,10 @@ export class NotificationsComponent implements OnInit {
   private readonly trailService     = inject(TrailService);
   private readonly favoritesService = inject(FavoritesService);
   private readonly completedService = inject(CompletedTrailsService);
+  private readonly roomService      = inject(RoomService);
   private readonly base             = `${environment.apiUrl}/notifications`;
+
+  readonly acceptingInvite = signal<Set<string>>(new Set());
 
   readonly items            = signal<NotificationDto[]>([]);
   readonly page             = signal(0);
@@ -111,6 +115,18 @@ export class NotificationsComponent implements OnInit {
     this.items.update(list => list.map(n => ({ ...n, read: true })));
   }
 
+  acceptInvite(n: NotificationDto): void {
+    this.acceptingInvite.update(s => new Set([...s, n.id]));
+    this.roomService.joinRoom(n.eventId).subscribe({
+      next:  () => { this.dismiss(n.id); this.acceptingInvite.update(s => { const ns = new Set(s); ns.delete(n.id); return ns; }); },
+      error: () => { this.acceptingInvite.update(s => { const ns = new Set(s); ns.delete(n.id); return ns; }); },
+    });
+  }
+
+  declineInvite(n: NotificationDto): void {
+    this.dismiss(n.id);
+  }
+
   onAvatarError(username: string): void {
     this.failedAvatars.update(s => new Set([...s, username]));
   }
@@ -134,6 +150,7 @@ export class NotificationsComponent implements OnInit {
   typeLabel(type: string): string {
     if (type === 'LIKE')         return '♥ liked';
     if (type === 'SUBSCRIPTION') return '👤 subscribed to you';
+    if (type === 'ROOM_INVITE')  return '🏕️ room invite';
     return '💬 commented';
   }
 }

@@ -255,6 +255,45 @@
   &:hover { color: #fff; }
 }
 
+// Invite accept/decline
+.invite-actions {
+  display:     flex;
+  align-items: center;
+  gap:         0.4rem;
+  flex-shrink: 0;
+}
+
+.btn-accept, .btn-decline {
+  width:           32px;
+  height:          32px;
+  border-radius:   50%;
+  border:          none;
+  cursor:          pointer;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  transition:      background 0.15s, transform 0.1s;
+
+  svg { width: 14px; height: 14px; }
+
+  &:active { transform: scale(0.92); }
+  &:disabled { opacity: 0.4; cursor: not-allowed; }
+}
+
+.btn-accept {
+  background: rgba(63, 185, 80, 0.15);
+  color:      #7edb5a;
+  border:     1px solid rgba(63, 185, 80, 0.35);
+  &:hover:not(:disabled) { background: rgba(63, 185, 80, 0.28); }
+}
+
+.btn-decline {
+  background: rgba(255, 90, 50, 0.12);
+  color:      #ff7a55;
+  border:     1px solid rgba(255, 90, 50, 0.3);
+  &:hover { background: rgba(255, 90, 50, 0.25); }
+}
+
 // Pagination
 .pagination { display: flex; justify-content: center; align-items: center; gap: 0.4rem; margin-top: 2rem; }
 
