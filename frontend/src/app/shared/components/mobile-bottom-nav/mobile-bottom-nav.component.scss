@@ -51,6 +51,21 @@
   }
 }
 
+// ── Compose button highlight ──────────────────────────────────────────────────
+@media (max-width: v.$bp-sm) {
+  .bnav-btn--compose {
+    svg {
+      background:    v.$accent-green;
+      color:         #0d1b2a;
+      border-radius: 50%;
+      padding:       4px;
+      width:         26px;
+      height:        26px;
+      stroke:        #0d1b2a;
+    }
+  }
+}
+
 // ── Notification icon + badge ─────────────────────────────────────────────────
 .bnav-notif-icon {
   position: relative;
