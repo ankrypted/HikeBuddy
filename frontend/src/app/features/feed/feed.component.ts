@@ -122,8 +122,9 @@ export class FeedComponent implements OnInit {
       this.loadFeed();
     });
     // Open compose modal when requested from anywhere (e.g. mobile bottom nav)
+    const seenCompose = this.composeService.openRequest();
     effect(() => {
-      if (this.composeService.openRequest() > 0) this.composeOpen.set(true);
+      if (this.composeService.openRequest() > seenCompose) this.composeOpen.set(true);
     }, { allowSignalWrites: true });
   }
 

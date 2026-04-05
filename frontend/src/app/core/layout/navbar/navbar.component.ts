@@ -48,8 +48,9 @@ export class NavbarComponent {
   readonly searchOpen   = signal(false);
 
   constructor() {
+    const seenRequest = this.searchService.openRequest();
     effect(() => {
-      if (this.searchService.openRequest() > 0) this.searchOpen.set(true);
+      if (this.searchService.openRequest() > seenRequest) this.searchOpen.set(true);
     }, { allowSignalWrites: true });
   }
   readonly menuOpen        = signal(false);
