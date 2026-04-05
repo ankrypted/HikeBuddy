@@ -1,19 +1,17 @@
 import {
   Component, OnInit, signal, inject, ChangeDetectionStrategy, computed, effect,
 } from '@angular/core';
-import { RouterLink, ActivatedRoute } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { TitleCasePipe }            from '@angular/common';
 import { NavbarComponent }           from '../../core/layout/navbar/navbar.component';
 import { SceneBackgroundComponent }  from '../../shared/components/scene-background/scene-background.component';
-import { ComposePostComponent }      from './compose-post/compose-post.component';
 import { AuthService }               from '../../core/services/auth/auth.service';
 import { UserService }               from '../../core/services/user/user.service';
 import { TrailService }              from '../../core/services/trail/trail.service';
 import { FavoritesService }          from '../../core/services/favorites/favorites.service';
 import { CompletedTrailsService }    from '../../core/services/completed-trails/completed-trails.service';
 import { FeedInteractionService }    from '../../core/services/feed-interaction/feed-interaction.service';
-import { HikePostService, CreateHikePostRequest } from '../../core/services/hike-post/hike-post.service';
-import { ComposeService }                         from '../../core/services/compose/compose.service';
+import { HikePostService } from '../../core/services/hike-post/hike-post.service';
 import { combineLatest }              from 'rxjs';
 import { ActivityEvent, PublicUserDto } from '../../shared/models/public-user.dto';
 import { TrailSummaryDto }           from '../../shared/models/trail.dto';
@@ -38,7 +36,7 @@ export interface Achievement {
   selector:        'hb-feed',
   standalone:      true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports:         [NavbarComponent, SceneBackgroundComponent, RouterLink, ComposePostComponent, TitleCasePipe],
+  imports:         [NavbarComponent, SceneBackgroundComponent, RouterLink, TitleCasePipe],
   templateUrl:     './feed.component.html',
   styleUrl:        './feed.component.scss',
 })
@@ -50,10 +48,8 @@ export class FeedComponent implements OnInit {
   private readonly completedService    = inject(CompletedTrailsService);
   private readonly interactionService  = inject(FeedInteractionService);
   private readonly hikePostService     = inject(HikePostService);
-  private readonly composeService      = inject(ComposeService);
 
   readonly posts       = this.hikePostService.posts;
-  readonly composeOpen = signal(false);
 
   readonly feedItems          = signal<FeedEvent[]>([]);
   readonly loading            = signal(true);
@@ -121,19 +117,10 @@ export class FeedComponent implements OnInit {
       this.userService.subscriptions();
       this.loadFeed();
     });
-    // Open compose modal when requested from anywhere (e.g. mobile bottom nav)
-    const seenCompose = this.composeService.openRequest();
-    effect(() => {
-      if (this.composeService.openRequest() > seenCompose) this.composeOpen.set(true);
-    }, { allowSignalWrites: true });
   }
 
-  private readonly route = inject(ActivatedRoute);
 
   ngOnInit(): void {
-    if (this.route.snapshot.queryParamMap.get('compose') === '1') {
-      this.composeOpen.set(true);
-    }
     this.hikePostService.loadFeed();
     const username = this.authService.currentUser()?.username;
     if (username) {
@@ -248,14 +235,6 @@ export class FeedComponent implements OnInit {
 
   onAvatarError(username: string): void {
     this.failedAvatars.update(s => new Set([...s, username]));
-  }
-
-  // ── Compose post ─────────────────────────────────────────────────────────
-  openCompose():  void { this.composeOpen.set(true);  }
-  closeCompose(): void { this.composeOpen.set(false); }
-
-  onPosted(req: CreateHikePostRequest): void {
-    this.hikePostService.create(req).subscribe();
   }
 
   // ── Helpers ──────────────────────────────────────────────────────────────

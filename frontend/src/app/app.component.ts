@@ -8,16 +8,19 @@ import { ReviewModalComponent, ReviewSubmission } from './shared/components/revi
 import { ToastComponent }          from './shared/components/toast/toast.component';
 import { ChatWidgetComponent }        from './shared/components/chat-widget/chat-widget.component';
 import { MobileBottomNavComponent }  from './shared/components/mobile-bottom-nav/mobile-bottom-nav.component';
+import { ComposePostComponent }    from './features/feed/compose-post/compose-post.component';
 import { NotificationService }     from './core/services/notification/notification.service';
 import { MessageService }          from './core/services/message/message.service';
 import { AuthService }             from './core/services/auth/auth.service';
+import { ComposeService }          from './core/services/compose/compose.service';
+import { HikePostService, CreateHikePostRequest } from './core/services/hike-post/hike-post.service';
 import { TrailSummaryDto }         from './shared/models/trail.dto';
 
 @Component({
   selector:        'app-root',
   standalone:      true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports:         [RouterOutlet, ReviewModalComponent, ToastComponent, ChatWidgetComponent, MobileBottomNavComponent],
+  imports:         [RouterOutlet, ReviewModalComponent, ToastComponent, ChatWidgetComponent, MobileBottomNavComponent, ComposePostComponent],
   template: `
     <router-outlet />
     @if (completedTrailsService.pendingReviewTrail(); as trail) {
@@ -32,6 +35,9 @@ import { TrailSummaryDto }         from './shared/models/trail.dto';
     @if (authService.isLoggedIn()) {
       <hb-chat-widget />
       <hb-mobile-bottom-nav />
+      @if (composeOpen()) {
+        <hb-compose-post (close)="composeOpen.set(false)" (posted)="onPosted($event)" />
+      }
     }
   `,
   styles: [`:host { display: block; }`],
@@ -43,9 +49,12 @@ export class AppComponent {
   private readonly notifService    = inject(NotificationService);
   private readonly messageService  = inject(MessageService);
   protected readonly authService   = inject(AuthService);
+  private readonly composeService  = inject(ComposeService);
+  private readonly hikePostService = inject(HikePostService);
 
   private readonly _reviewError = signal<string | null>(null);
   readonly reviewError = this._reviewError.asReadonly();
+  readonly composeOpen = signal(false);
 
   constructor() {
     // Load notifications whenever login state changes; poll while logged in
@@ -60,6 +69,14 @@ export class AppComponent {
         this.messageService.stopPolling();
       }
     });
+    const seenCompose = this.composeService.openRequest();
+    effect(() => {
+      if (this.composeService.openRequest() > seenCompose) this.composeOpen.set(true);
+    }, { allowSignalWrites: true });
+  }
+
+  onPosted(req: CreateHikePostRequest): void {
+    this.hikePostService.create(req).subscribe();
   }
 
   onReviewSubmitted(trail: TrailSummaryDto, submission: ReviewSubmission): void {

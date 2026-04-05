@@ -326,12 +326,5 @@
     </svg>
   </a>
 
-  <!-- ── Compose modal ────────────────────────────────────────────── -->
-  @if (composeOpen()) {
-    <hb-compose-post
-      (close)="closeCompose()"
-      (posted)="onPosted($event)"
-    />
-  }
 
 </div>

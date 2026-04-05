@@ -14,6 +14,7 @@ import { AuthService }                       from '../../services/auth/auth.serv
 import { NotificationService }               from '../../services/notification/notification.service';
 import { MessageService }                    from '../../services/message/message.service';
 import { SearchService }                     from '../../services/search/search.service';
+import { ComposeService }                    from '../../services/compose/compose.service';
 
 @Component({
   selector: 'hb-navbar',
@@ -32,6 +33,7 @@ export class NavbarComponent {
   private readonly router         = inject(Router);
   private readonly messageService = inject(MessageService);
   private readonly searchService  = inject(SearchService);
+  private readonly composeService = inject(ComposeService);
   readonly notificationService    = inject(NotificationService);
 
   private readonly currentUrl = toSignal(
@@ -63,7 +65,7 @@ export class NavbarComponent {
 
   openSearch():   void { this.searchOpen.set(true);                    }
   closeSearch():  void { this.searchOpen.set(false);                   }
-  openCompose():  void { this.router.navigate(['/feed'], { queryParams: { compose: '1' } }); }
+  openCompose():  void { this.composeService.requestOpen(); }
   openMessages(): void { this.messageService.requestOpenPanel();       }
   toggleMenu():  void { this.notificationService.closePanel(); this.menuOpen.update(v => !v); }
   closeMenu():   void { this.menuOpen.set(false);           }
