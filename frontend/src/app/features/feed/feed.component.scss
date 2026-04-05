@@ -671,7 +671,7 @@
   &:active { transform: scale(0.96); }
 
   @media (max-width: v.$bp-sm) {
-    bottom: calc(60px + 4.75rem);
+    bottom: calc(60px + 0.75rem);
     left:   1.25rem;
     width:  42px;
     height: 42px;
