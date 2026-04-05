@@ -4,7 +4,6 @@ import { SearchService }                                             from '../..
 import { MessageService }                                            from '../../../core/services/message/message.service';
 import { NotificationService }                                       from '../../../core/services/notification/notification.service';
 import { ComposeService }                                            from '../../../core/services/compose/compose.service';
-import { Router }                                                    from '@angular/router';
 
 @Component({
   selector:        'hb-mobile-bottom-nav',
