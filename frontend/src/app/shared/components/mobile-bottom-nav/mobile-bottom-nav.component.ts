@@ -1,8 +1,10 @@
 import { Component, ChangeDetectionStrategy, inject, HostListener } from '@angular/core';
-import { RouterLink, RouterLinkActive }                              from '@angular/router';
+import { RouterLink, RouterLinkActive, Router }                      from '@angular/router';
 import { SearchService }                                             from '../../../core/services/search/search.service';
 import { MessageService }                                            from '../../../core/services/message/message.service';
 import { NotificationService }                                       from '../../../core/services/notification/notification.service';
+import { ComposeService }                                            from '../../../core/services/compose/compose.service';
+import { Router }                                                    from '@angular/router';
 
 @Component({
   selector:        'hb-mobile-bottom-nav',
@@ -15,11 +17,16 @@ import { NotificationService }                                       from '../..
 export class MobileBottomNavComponent {
   private readonly searchService  = inject(SearchService);
   private readonly messageService = inject(MessageService);
+  private readonly composeService = inject(ComposeService);
+  private readonly router         = inject(Router);
   readonly notifService           = inject(NotificationService);
 
-  openSearch():         void { this.searchService.requestOpen();       }
-  openMessages():       void { this.messageService.requestOpenPanel(); }
-  toggleNotifPanel():   void { this.notifService.togglePanel();        }
+  openSearch():       void { this.searchService.requestOpen();       }
+  openMessages():     void { this.messageService.requestOpenPanel(); }
+  toggleNotifPanel(): void { this.notifService.togglePanel();        }
+  openCompose():      void {
+    this.router.navigate(['/feed']).then(() => this.composeService.requestOpen());
+  }
 
   @HostListener('document:keydown.escape')
   onEscape(): void { this.notifService.closePanel(); }

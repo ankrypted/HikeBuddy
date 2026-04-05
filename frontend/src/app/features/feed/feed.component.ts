@@ -13,6 +13,7 @@ import { FavoritesService }          from '../../core/services/favorites/favorit
 import { CompletedTrailsService }    from '../../core/services/completed-trails/completed-trails.service';
 import { FeedInteractionService }    from '../../core/services/feed-interaction/feed-interaction.service';
 import { HikePostService, CreateHikePostRequest } from '../../core/services/hike-post/hike-post.service';
+import { ComposeService }                         from '../../core/services/compose/compose.service';
 import { combineLatest }              from 'rxjs';
 import { ActivityEvent, PublicUserDto } from '../../shared/models/public-user.dto';
 import { TrailSummaryDto }           from '../../shared/models/trail.dto';
@@ -49,6 +50,7 @@ export class FeedComponent implements OnInit {
   private readonly completedService    = inject(CompletedTrailsService);
   private readonly interactionService  = inject(FeedInteractionService);
   private readonly hikePostService     = inject(HikePostService);
+  private readonly composeService      = inject(ComposeService);
 
   readonly posts       = this.hikePostService.posts;
   readonly composeOpen = signal(false);
@@ -119,6 +121,10 @@ export class FeedComponent implements OnInit {
       this.userService.subscriptions();
       this.loadFeed();
     });
+    // Open compose modal when requested from anywhere (e.g. mobile bottom nav)
+    effect(() => {
+      if (this.composeService.openRequest() > 0) this.composeOpen.set(true);
+    }, { allowSignalWrites: true });
   }
 
   private readonly route = inject(ActivatedRoute);
