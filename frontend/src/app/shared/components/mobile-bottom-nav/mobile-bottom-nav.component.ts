@@ -24,8 +24,11 @@ export class MobileBottomNavComponent {
   openSearch():       void { this.searchService.requestOpen();       }
   openMessages():     void { this.messageService.requestOpenPanel(); }
   toggleNotifPanel(): void { this.notifService.togglePanel();        }
-  openCompose():      void {
-    this.router.navigate(['/feed']).then(() => this.composeService.requestOpen());
+  openCompose(): void {
+    if (!this.router.url.startsWith('/feed')) {
+      this.router.navigate(['/feed']);
+    }
+    this.composeService.requestOpen();
   }
 
   @HostListener('document:keydown.escape')
