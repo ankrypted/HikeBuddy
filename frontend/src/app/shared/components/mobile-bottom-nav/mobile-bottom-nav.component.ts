@@ -1,5 +1,5 @@
-import { Component, ChangeDetectionStrategy, inject, HostListener, ElementRef } from '@angular/core';
-import { RouterLink, RouterLinkActive }                                          from '@angular/router';
+import { Component, ChangeDetectionStrategy, inject, HostListener } from '@angular/core';
+import { RouterLink, RouterLinkActive, Router }                      from '@angular/router';
 import { SearchService }                                             from '../../../core/services/search/search.service';
 import { MessageService }                                            from '../../../core/services/message/message.service';
 import { NotificationService }                                       from '../../../core/services/notification/notification.service';
@@ -17,23 +17,16 @@ export class MobileBottomNavComponent {
   private readonly searchService  = inject(SearchService);
   private readonly messageService = inject(MessageService);
   private readonly composeService = inject(ComposeService);
-  private readonly elRef          = inject(ElementRef);
+  private readonly router         = inject(Router);
   readonly notifService           = inject(NotificationService);
 
-  openSearch():       void { this.searchService.requestOpen();       }
-  openMessages():     void { this.messageService.requestOpenPanel(); }
-  toggleNotifPanel(): void { this.notifService.togglePanel();        }
-  openCompose():      void { this.composeService.requestOpen();      }
+  openSearch():    void { this.searchService.requestOpen();        }
+  openMessages():  void { this.messageService.requestOpenPanel();  }
+  openCompose():   void { this.composeService.requestOpen();       }
+  openActivity():  void { this.router.navigate(['/dashboard/notifications']); }
 
   @HostListener('document:keydown.escape')
   onEscape(): void { this.notifService.closePanel(); }
-
-  @HostListener('document:click', ['$event'])
-  onDocClick(event: Event): void {
-    if (!this.elRef.nativeElement.contains(event.target)) {
-      this.notifService.closePanel();
-    }
-  }
 
   timeAgo(iso: string): string {
     const diff = Date.now() - new Date(iso).getTime();
