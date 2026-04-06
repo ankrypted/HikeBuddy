@@ -32,4 +32,10 @@ export class HikePostService {
       tap(post => this._posts.update(list => [post, ...list])),
     );
   }
+
+  delete(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.base}/${id}`).pipe(
+      tap(() => this._posts.update(list => list.filter(p => p.id !== id))),
+    );
+  }
 }

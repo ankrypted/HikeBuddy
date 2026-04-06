@@ -42,6 +42,7 @@ export interface Achievement {
 })
 export class FeedComponent implements OnInit {
   private readonly authService         = inject(AuthService);
+  readonly currentUser                 = this.authService.currentUser;
   private readonly userService         = inject(UserService);
   private readonly trailService        = inject(TrailService);
   private readonly favoritesService    = inject(FavoritesService);
@@ -236,6 +237,8 @@ export class FeedComponent implements OnInit {
   onAvatarError(username: string): void {
     this.failedAvatars.update(s => new Set([...s, username]));
   }
+
+  deletePost(id: string): void { this.hikePostService.delete(id).subscribe(); }
 
   // ── Helpers ──────────────────────────────────────────────────────────────
   initials(username: string): string {

@@ -474,11 +474,39 @@
   text-overflow: ellipsis;
 }
 
+.fc-header-right {
+  display:     flex;
+  align-items: center;
+  gap:         0.5rem;
+  flex-shrink: 0;
+}
+
 .fc-time {
   font-size:  0.74rem;
   color:      v.$text-muted;
   white-space: nowrap;
-  flex-shrink: 0;
+}
+
+.fc-delete-btn {
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  width:           26px;
+  height:          26px;
+  border-radius:   50%;
+  border:          none;
+  background:      transparent;
+  color:           v.$text-muted;
+  cursor:          pointer;
+  padding:         0;
+  transition:      background 0.15s, color 0.15s;
+
+  svg { width: 13px; height: 13px; }
+
+  &:hover {
+    background: rgba(239, 68, 68, 0.12);
+    color:      #ef4444;
+  }
 }
 
 // Activity verb + trail name
