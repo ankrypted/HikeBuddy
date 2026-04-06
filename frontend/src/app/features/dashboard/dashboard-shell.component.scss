@@ -195,6 +195,10 @@ $sidebar-min: 64px;
   min-width:  0;
   position:   relative;
   background: transparent;
+
+  @media (max-width: v.$bp-sm) {
+    padding-bottom: 60px; // clear mobile bottom nav
+  }
 }
 
 // ─── Mobile hamburger (fixed button, shown only on mobile) ────────────────

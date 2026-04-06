@@ -317,6 +317,10 @@
 
 // Responsive
 @media (max-width: 700px) {
-  .notifs-page    { grid-template-columns: 1fr; }
+  .notifs-page {
+    grid-template-columns: 1fr;
+    padding:               1rem 1rem calc(60px + 1.5rem);
+    gap:                   1rem;
+  }
   .notifs-sidebar { position: static; display: none; }
 }
