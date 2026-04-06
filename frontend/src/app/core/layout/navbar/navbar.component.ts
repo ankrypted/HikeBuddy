@@ -1,5 +1,5 @@
 import {
-  Component, signal, ChangeDetectionStrategy, HostListener, inject, computed, effect,
+  Component, signal, ChangeDetectionStrategy, HostListener, inject, computed, effect, ElementRef,
 } from '@angular/core';
 import { RouterLink, RouterLinkActive, Router, NavigationEnd } from '@angular/router';
 import { MatButtonModule }                   from '@angular/material/button';
@@ -34,6 +34,7 @@ export class NavbarComponent {
   private readonly messageService = inject(MessageService);
   private readonly searchService  = inject(SearchService);
   private readonly composeService = inject(ComposeService);
+  private readonly elRef          = inject(ElementRef);
   readonly notificationService    = inject(NotificationService);
 
   private readonly currentUrl = toSignal(
@@ -82,9 +83,11 @@ export class NavbarComponent {
     this.notificationService.closePanel();
   }
 
-  @HostListener('document:click')
-  onDocumentClick(): void {
-    this.notificationService.closePanel();
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: Event): void {
+    if (!this.elRef.nativeElement.contains(event.target)) {
+      this.notificationService.closePanel();
+    }
   }
 
   onNavAvatarError(): void {
