@@ -210,7 +210,7 @@ $sidebar-min: 64px;
     align-items:             center;
     justify-content:         center;
     position:                fixed;
-    top:                     1.2rem;
+    top:                     calc(v.$nav-height + 0.75rem);
     left:                    0.75rem;
     z-index:                 15;
     width:                   32px;
