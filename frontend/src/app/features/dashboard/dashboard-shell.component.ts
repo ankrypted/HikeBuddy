@@ -34,7 +34,8 @@ export class DashboardShellComponent {
   );
 
   // True when on the /dashboard overview — sidebar is hidden there
-  readonly onOverview = computed(() => this.currentUrl() === '/dashboard');
+  readonly onOverview      = computed(() => this.currentUrl() === '/dashboard');
+  readonly onNotifications = computed(() => this.currentUrl()?.startsWith('/dashboard/notifications') ?? false);
 
   // Start collapsed on mobile so the overlay doesn't cover content on load
   readonly collapsed = signal(
