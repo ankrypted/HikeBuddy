@@ -1,9 +1,11 @@
 package com.hikebuddy.room;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -19,7 +21,10 @@ public interface RoomMemberRepository extends JpaRepository<RoomMember, RoomMemb
 
     void deleteByIdRoomId(UUID roomId);
 
-    void deleteByIdRoomIdAndIdUserId(UUID roomId, UUID userId);
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM RoomMember m WHERE m.id.roomId = :roomId AND m.id.userId = :userId")
+    void deleteByIdRoomIdAndIdUserId(@Param("roomId") UUID roomId, @Param("userId") UUID userId);
 
     @Query(value = """
             SELECT u.username, u.avatar_url
