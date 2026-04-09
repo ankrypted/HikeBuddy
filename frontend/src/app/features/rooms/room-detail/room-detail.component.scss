@@ -128,6 +128,26 @@
   &:hover { opacity: 0.85; }
 }
 
+.btn-leave {
+  align-self:    flex-start;
+  margin-top:    0.25rem;
+  display:       inline-flex;
+  align-items:   center;
+  gap:           0.4rem;
+  padding:       0.55rem 1.2rem;
+  background:    rgba(255, 90, 50, 0.1);
+  border:        1px solid rgba(255, 90, 50, 0.3);
+  color:         #ff7a55;
+  font-weight:   600;
+  border-radius: 999px;
+  cursor:        pointer;
+  font-size:     0.85rem;
+  transition:    background 0.15s;
+  svg { width: 15px; height: 15px; }
+  &:hover:not(:disabled) { background: rgba(255, 90, 50, 0.2); }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+}
+
 .btn-invite {
   align-self:  flex-start;
   margin-top:  0.25rem;

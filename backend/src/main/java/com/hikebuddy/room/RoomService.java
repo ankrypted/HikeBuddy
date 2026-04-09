@@ -93,6 +93,18 @@ public class RoomService {
         return toDetail(room, creatorUsername);
     }
 
+    // ── Leave ─────────────────────────────────────────────────────────────────
+
+    @Transactional
+    public void leaveRoom(String email, UUID roomId) {
+        User user = requireUser(email);
+        Room room = requireRoom(roomId);
+        if (room.getCreatorId().equals(user.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Room creator cannot leave — delete the room instead");
+        }
+        memberRepo.deleteByIdRoomIdAndIdUserId(roomId, user.getId());
+    }
+
     // ── Invite ────────────────────────────────────────────────────────────────
 
     @Transactional

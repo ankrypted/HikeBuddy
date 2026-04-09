@@ -65,6 +65,15 @@ export class RoomService {
     );
   }
 
+  leaveRoom(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.base}/${id}/members/me`).pipe(
+      tap(() => {
+        this.myRooms.update(list => list.filter(r => r.id !== id));
+        this.activeRoom.set(null);
+      }),
+    );
+  }
+
   inviteToRoom(id: string, username: string): Observable<void> {
     return this.http.post<void>(`${this.base}/${id}/invite`, { username });
   }
