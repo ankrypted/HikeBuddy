@@ -19,6 +19,8 @@ public interface RoomMemberRepository extends JpaRepository<RoomMember, RoomMemb
 
     void deleteByIdRoomId(UUID roomId);
 
+    void deleteByIdRoomIdAndIdUserId(UUID roomId, UUID userId);
+
     @Query(value = """
             SELECT u.username, u.avatar_url
             FROM room_members m

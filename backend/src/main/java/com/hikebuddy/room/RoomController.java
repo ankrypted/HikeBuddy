@@ -65,6 +65,13 @@ public class RoomController {
         return roomService.joinRoom(user.getUsername(), id);
     }
 
+    @DeleteMapping("/{id}/members/me")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void leaveRoom(@AuthenticationPrincipal UserDetails user,
+                          @PathVariable UUID id) {
+        roomService.leaveRoom(user.getUsername(), id);
+    }
+
     @PostMapping("/{id}/invite")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void invite(@AuthenticationPrincipal UserDetails user,

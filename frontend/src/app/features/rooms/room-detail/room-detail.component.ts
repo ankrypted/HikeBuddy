@@ -42,6 +42,9 @@ export class RoomDetailComponent implements OnInit, OnDestroy {
   readonly deleting          = signal(false);
   readonly deleteError       = signal<string | null>(null);
 
+  // Leave
+  readonly leaving           = signal(false);
+
   // Invite
   readonly showInvite      = signal(false);
   readonly followers        = signal<{ username: string; avatarUrl: string | null }[]>([]);
@@ -140,6 +143,17 @@ export class RoomDetailComponent implements OnInit, OnDestroy {
   }
 
   closeInvite(): void { this.showInvite.set(false); }
+
+  // ── Leave ────────────────────────────────────────────────────────────────
+
+  leaveRoom(): void {
+    if (this.leaving()) return;
+    this.leaving.set(true);
+    this.roomService.leaveRoom(this.id).subscribe({
+      next:  () => this.router.navigate(['/rooms']),
+      error: () => this.leaving.set(false),
+    });
+  }
 
   // ── Delete ────────────────────────────────────────────────────────────────
 
