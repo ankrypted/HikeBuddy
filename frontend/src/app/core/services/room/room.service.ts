@@ -65,6 +65,30 @@ export class RoomService {
     );
   }
 
+  requestJoin(id: string): Observable<void> {
+    return this.http.post<void>(`${this.base}/${id}/join-request`, {}).pipe(
+      tap(() => {
+        this.activeRoom.update(r => r ? { ...r, pendingRequestId: '__pending__' } : r);
+      }),
+    );
+  }
+
+  cancelJoinRequest(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.base}/${id}/join-request`).pipe(
+      tap(() => {
+        this.activeRoom.update(r => r ? { ...r, pendingRequestId: null } : r);
+      }),
+    );
+  }
+
+  approveJoinRequest(requestId: string): Observable<RoomDetailDto> {
+    return this.http.post<RoomDetailDto>(`${this.base}/join-requests/${requestId}/approve`, {});
+  }
+
+  declineJoinRequest(requestId: string): Observable<void> {
+    return this.http.post<void>(`${this.base}/join-requests/${requestId}/decline`, {});
+  }
+
   leaveRoom(id: string): Observable<void> {
     return this.http.delete<void>(`${this.base}/${id}/members/me`).pipe(
       tap(() => {

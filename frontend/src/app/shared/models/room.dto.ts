@@ -11,7 +11,8 @@ export interface RoomSummaryDto {
 }
 
 export interface RoomDetailDto extends RoomSummaryDto {
-  members: { username: string; avatarUrl: string | null }[];
+  members:          { username: string; avatarUrl: string | null }[];
+  pendingRequestId: string | null;
 }
 
 export interface RoomMessageDto {

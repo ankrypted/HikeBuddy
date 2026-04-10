@@ -12,7 +12,8 @@ public record RoomDetailDto(
         String creatorUsername,
         List<MemberDto> members,
         int memberCount,
-        String createdAt
+        String createdAt,
+        String pendingRequestId
 ) {
     public record MemberDto(String username, String avatarUrl) {}
 }

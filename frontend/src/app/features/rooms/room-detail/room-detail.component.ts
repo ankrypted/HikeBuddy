@@ -45,6 +45,10 @@ export class RoomDetailComponent implements OnInit, OnDestroy {
   // Leave
   readonly leaving           = signal(false);
 
+  // Join request
+  readonly requesting        = signal(false);
+  readonly cancelling        = signal(false);
+
   // Invite
   readonly showInvite      = signal(false);
   readonly followers        = signal<{ username: string; avatarUrl: string | null }[]>([]);
@@ -64,6 +68,8 @@ export class RoomDetailComponent implements OnInit, OnDestroy {
     this.room()?.creatorUsername === this.currentUser()?.username
   );
 
+  readonly hasPendingRequest = computed(() => !!this.room()?.pendingRequestId);
+
   ngOnInit(): void {
     this.roomService.resetChat();
     this.roomService.loadRoom(this.id);
@@ -78,6 +84,26 @@ export class RoomDetailComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.roomService.stopChatPolling();
     this.roomService.activeRoom.set(null);
+  }
+
+  // ── Join Request ──────────────────────────────────────────────────────────
+
+  requestJoin(): void {
+    if (this.requesting()) return;
+    this.requesting.set(true);
+    this.roomService.requestJoin(this.id).subscribe({
+      next:  () => this.requesting.set(false),
+      error: () => this.requesting.set(false),
+    });
+  }
+
+  cancelJoinRequest(): void {
+    if (this.cancelling()) return;
+    this.cancelling.set(true);
+    this.roomService.cancelJoinRequest(this.id).subscribe({
+      next:  () => this.cancelling.set(false),
+      error: () => this.cancelling.set(false),
+    });
   }
 
   // ── Join ──────────────────────────────────────────────────────────────────
