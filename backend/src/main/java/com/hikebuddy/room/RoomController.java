@@ -72,6 +72,33 @@ public class RoomController {
         roomService.leaveRoom(user.getUsername(), id);
     }
 
+    @PostMapping("/{id}/join-request")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void requestJoin(@AuthenticationPrincipal UserDetails user,
+                            @PathVariable UUID id) {
+        roomService.requestJoin(user.getUsername(), id);
+    }
+
+    @DeleteMapping("/{id}/join-request")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void cancelJoinRequest(@AuthenticationPrincipal UserDetails user,
+                                  @PathVariable UUID id) {
+        roomService.cancelJoinRequest(user.getUsername(), id);
+    }
+
+    @PostMapping("/join-requests/{requestId}/approve")
+    public RoomDetailDto approveJoinRequest(@AuthenticationPrincipal UserDetails user,
+                                            @PathVariable UUID requestId) {
+        return roomService.approveJoinRequest(user.getUsername(), requestId);
+    }
+
+    @PostMapping("/join-requests/{requestId}/decline")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void declineJoinRequest(@AuthenticationPrincipal UserDetails user,
+                                   @PathVariable UUID requestId) {
+        roomService.declineJoinRequest(user.getUsername(), requestId);
+    }
+
     @PostMapping("/{id}/invite")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void invite(@AuthenticationPrincipal UserDetails user,

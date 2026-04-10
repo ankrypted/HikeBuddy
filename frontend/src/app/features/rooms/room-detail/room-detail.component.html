@@ -77,7 +77,25 @@
           </div>
 
           @if (!isMember()) {
-            <button class="btn-join" (click)="join()">Join Room</button>
+            @if (hasPendingRequest()) {
+              <div class="pending-request-row">
+                <span class="pending-label">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                       stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="10"/>
+                    <polyline points="12 6 12 12 16 14"/>
+                  </svg>
+                  Request pending…
+                </span>
+                <button class="btn-cancel-request" (click)="cancelJoinRequest()" [disabled]="cancelling()">
+                  {{ cancelling() ? 'Cancelling…' : 'Cancel Request' }}
+                </button>
+              </div>
+            } @else {
+              <button class="btn-join" (click)="requestJoin()" [disabled]="requesting()">
+                {{ requesting() ? 'Sending…' : 'Request to Join' }}
+              </button>
+            }
           } @else if (!isCreator()) {
             <button class="btn-leave" (click)="leaveRoom()" [disabled]="leaving()">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"

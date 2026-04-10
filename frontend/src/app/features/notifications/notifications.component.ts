@@ -127,6 +127,19 @@ export class NotificationsComponent implements OnInit {
     this.dismiss(n.id);
   }
 
+  approveJoinRequest(n: NotificationDto): void {
+    this.acceptingInvite.update(s => new Set([...s, n.id]));
+    this.roomService.approveJoinRequest(n.eventId).subscribe({
+      next:  () => { this.dismiss(n.id); this.acceptingInvite.update(s => { const ns = new Set(s); ns.delete(n.id); return ns; }); },
+      error: () => { this.acceptingInvite.update(s => { const ns = new Set(s); ns.delete(n.id); return ns; }); },
+    });
+  }
+
+  declineJoinRequest(n: NotificationDto): void {
+    this.roomService.declineJoinRequest(n.eventId).subscribe();
+    this.dismiss(n.id);
+  }
+
   onAvatarError(username: string): void {
     this.failedAvatars.update(s => new Set([...s, username]));
   }
@@ -151,6 +164,7 @@ export class NotificationsComponent implements OnInit {
     if (type === 'LIKE')         return '♥ liked';
     if (type === 'SUBSCRIPTION') return '👤 subscribed to you';
     if (type === 'ROOM_INVITE')  return '🏕️ room invite';
+    if (type === 'JOIN_REQUEST') return '🚪 join request';
     return '💬 commented';
   }
 }

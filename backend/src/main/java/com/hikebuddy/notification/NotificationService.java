@@ -117,6 +117,9 @@ public class NotificationService {
                                 String actorUsername,
                                 String eventType,
                                 String trailName) {
+        if (type == Notification.NotificationType.JOIN_REQUEST) {
+            return actorUsername + " wants to join your room: " + trailName;
+        }
         String action = type == Notification.NotificationType.LIKE ? "liked" : "commented on";
         String verb = switch (eventType) {
             case "completed" -> "completion of";

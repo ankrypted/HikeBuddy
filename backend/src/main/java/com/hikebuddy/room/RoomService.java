@@ -24,14 +24,15 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class RoomService {
 
-    private final RoomRepository           roomRepo;
-    private final RoomMemberRepository     memberRepo;
-    private final RoomMessageRepository    messageRepo;
-    private final RoomUpdateRepository     updateRepo;
-    private final UserRepository           userRepo;
-    private final UserSubscriptionRepository subscriptionRepo;
-    private final HikePostService          hikePostService;
-    private final NotificationService      notificationService;
+    private final RoomRepository              roomRepo;
+    private final RoomMemberRepository        memberRepo;
+    private final RoomMessageRepository       messageRepo;
+    private final RoomUpdateRepository        updateRepo;
+    private final RoomJoinRequestRepository   joinRequestRepo;
+    private final UserRepository              userRepo;
+    private final UserSubscriptionRepository  subscriptionRepo;
+    private final HikePostService             hikePostService;
+    private final NotificationService         notificationService;
 
     // ── Create ────────────────────────────────────────────────────────────────
 
@@ -57,7 +58,7 @@ public class RoomService {
         room.setFeedPostId(post.getId());
         roomRepo.save(room);
 
-        return toDetail(room, creator.getUsername());
+        return toDetail(room, creator.getUsername(), null);
     }
 
     // ── Delete ────────────────────────────────────────────────────────────────
@@ -90,7 +91,7 @@ public class RoomService {
         }
         String creatorUsername = userRepo.findById(room.getCreatorId())
                 .map(User::getUsername).orElse("unknown");
-        return toDetail(room, creatorUsername);
+        return toDetail(room, creatorUsername, null);
     }
 
     // ── Leave ─────────────────────────────────────────────────────────────────
@@ -144,7 +145,17 @@ public class RoomService {
         Room room = requireRoom(roomId);
         String creatorUsername = userRepo.findById(room.getCreatorId())
                 .map(User::getUsername).orElse("unknown");
-        return toDetail(room, creatorUsername);
+        String pendingRequestId = null;
+        if (email != null) {
+            User user = userRepo.findByEmail(email).orElse(null);
+            if (user != null) {
+                pendingRequestId = joinRequestRepo
+                        .findByRoomIdAndRequesterIdAndStatus(roomId, user.getId(), "PENDING")
+                        .map(r -> r.getId().toString())
+                        .orElse(null);
+            }
+        }
+        return toDetail(room, creatorUsername, pendingRequestId);
     }
 
     @Transactional(readOnly = true)
@@ -239,6 +250,83 @@ public class RoomService {
                 .toList();
     }
 
+    // ── Join Requests ─────────────────────────────────────────────────────────
+
+    @Transactional
+    public void requestJoin(String email, UUID roomId) {
+        User requester = requireUser(email);
+        Room room      = requireRoom(roomId);
+
+        if (memberRepo.existsByIdRoomIdAndIdUserId(roomId, requester.getId())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Already a member");
+        }
+        if (joinRequestRepo.existsByRoomIdAndRequesterIdAndStatus(roomId, requester.getId(), "PENDING")) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Request already pending");
+        }
+
+        RoomJoinRequest req = RoomJoinRequest.builder()
+                .roomId(roomId)
+                .requesterId(requester.getId())
+                .status("PENDING")
+                .build();
+        joinRequestRepo.save(req);
+
+        User creator = userRepo.findById(room.getCreatorId()).orElse(null);
+        if (creator != null) {
+            notificationService.createNotification(
+                    creator.getUsername(),
+                    requester,
+                    Notification.NotificationType.JOIN_REQUEST,
+                    creator.getUsername(),
+                    req.getId().toString(),
+                    room.getTitle(),
+                    "join_request"
+            );
+        }
+    }
+
+    @Transactional
+    public void cancelJoinRequest(String email, UUID roomId) {
+        User requester = requireUser(email);
+        joinRequestRepo.deleteByRoomIdAndRequesterId(roomId, requester.getId());
+    }
+
+    @Transactional
+    public RoomDetailDto approveJoinRequest(String email, UUID requestId) {
+        User creator = requireUser(email);
+        RoomJoinRequest req = joinRequestRepo.findById(requestId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Request not found"));
+
+        Room room = requireRoom(req.getRoomId());
+        if (!room.getCreatorId().equals(creator.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the room creator can approve requests");
+        }
+
+        req.setStatus("APPROVED");
+        joinRequestRepo.save(req);
+
+        RoomMemberId memberId = new RoomMemberId(req.getRoomId(), req.getRequesterId());
+        if (!memberRepo.existsById(memberId)) {
+            memberRepo.save(new RoomMember(memberId, null));
+        }
+        return toDetail(room, creator.getUsername(), null);
+    }
+
+    @Transactional
+    public void declineJoinRequest(String email, UUID requestId) {
+        User creator = requireUser(email);
+        RoomJoinRequest req = joinRequestRepo.findById(requestId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Request not found"));
+
+        Room room = requireRoom(req.getRoomId());
+        if (!room.getCreatorId().equals(creator.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the room creator can decline requests");
+        }
+
+        req.setStatus("DECLINED");
+        joinRequestRepo.save(req);
+    }
+
     // ── Followers (for invite panel) ─────────────────────────────────────────
 
     @Transactional(readOnly = true)
@@ -273,7 +361,7 @@ public class RoomService {
         return userRepo.findById(r.getCreatorId()).map(User::getUsername).orElse("unknown");
     }
 
-    private RoomDetailDto toDetail(Room room, String creatorUsername) {
+    private RoomDetailDto toDetail(Room room, String creatorUsername, String pendingRequestId) {
         List<Object[]> rows = memberRepo.findMemberDetails(room.getId());
         List<RoomDetailDto.MemberDto> members = rows.stream()
                 .map(row -> new RoomDetailDto.MemberDto(
@@ -290,7 +378,8 @@ public class RoomService {
                 creatorUsername,
                 members,
                 members.size(),
-                room.getCreatedAt().toString()
+                room.getCreatedAt().toString(),
+                pendingRequestId
         );
     }
 

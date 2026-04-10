@@ -49,5 +49,5 @@ public class Notification {
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
-    public enum NotificationType { LIKE, COMMENT, SUBSCRIPTION, ROOM_INVITE }
+    public enum NotificationType { LIKE, COMMENT, SUBSCRIPTION, ROOM_INVITE, JOIN_REQUEST }
 }
