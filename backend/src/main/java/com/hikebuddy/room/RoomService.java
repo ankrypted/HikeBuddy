@@ -141,9 +141,7 @@ public class RoomService {
 
     @Transactional(readOnly = true)
     public RoomDetailDto getRoom(UUID roomId, String email) {
-        User user = requireUser(email);
         Room room = requireRoom(roomId);
-        assertMember(roomId, user.getId());
         String creatorUsername = userRepo.findById(room.getCreatorId())
                 .map(User::getUsername).orElse("unknown");
         return toDetail(room, creatorUsername);

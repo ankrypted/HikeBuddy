@@ -56,7 +56,7 @@ public class RoomController {
     @GetMapping("/{id}")
     public RoomDetailDto getRoom(@AuthenticationPrincipal UserDetails user,
                                  @PathVariable UUID id) {
-        return roomService.getRoom(id, user.getUsername());
+        return roomService.getRoom(id, user != null ? user.getUsername() : null);
     }
 
     @PostMapping("/{id}/join")

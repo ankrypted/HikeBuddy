@@ -74,6 +74,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/v1/rooms/open").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/rooms/trail/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/rooms/updates/trail/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/rooms/*").permitAll()
                         // Everything else requires auth
                         .anyRequest().authenticated()
                 )
