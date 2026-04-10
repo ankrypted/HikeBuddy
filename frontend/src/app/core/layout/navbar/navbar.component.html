@@ -96,8 +96,20 @@
                   <p class="notif-message">{{ n.message }}</p>
                   <span class="notif-time">{{ timeAgo(n.createdAt) }}</span>
                 </div>
-                <button class="notif-dismiss" (click)="notificationService.dismiss(n.id)"
-                        aria-label="Dismiss">&#x2715;</button>
+                @if (n.type === 'JOIN_REQUEST') {
+                  <div class="notif-actions" (click)="$event.stopPropagation()">
+                    <button class="notif-btn-accept" (click)="approveJoinRequest(n)" aria-label="Approve">✓</button>
+                    <button class="notif-btn-decline" (click)="declineJoinRequest(n)" aria-label="Decline">✕</button>
+                  </div>
+                } @else if (n.type === 'ROOM_INVITE') {
+                  <div class="notif-actions" (click)="$event.stopPropagation()">
+                    <button class="notif-btn-accept" (click)="acceptInvite(n)" aria-label="Accept">✓</button>
+                    <button class="notif-btn-decline" (click)="declineInvite(n)" aria-label="Decline">✕</button>
+                  </div>
+                } @else {
+                  <button class="notif-dismiss" (click)="notificationService.dismiss(n.id)"
+                          aria-label="Dismiss">&#x2715;</button>
+                }
               </div>
             }
             <a class="notif-view-all" routerLink="/dashboard/notifications"
