@@ -68,7 +68,11 @@ export class RoomService {
   leaveRoom(id: string): Observable<void> {
     return this.http.delete<void>(`${this.base}/${id}/members/me`).pipe(
       tap(() => {
+        const room = this.myRooms().find(r => r.id === id);
         this.myRooms.update(list => list.filter(r => r.id !== id));
+        if (room && !this.openRooms().find(r => r.id === id)) {
+          this.openRooms.update(list => [room, ...list]);
+        }
         this.activeRoom.set(null);
       }),
     );
