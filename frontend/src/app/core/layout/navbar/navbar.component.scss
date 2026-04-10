@@ -398,6 +398,39 @@
   &:hover { color: #fff; }
 }
 
+.notif-actions {
+  display:     flex;
+  gap:         0.3rem;
+  flex-shrink: 0;
+}
+
+.notif-btn-accept, .notif-btn-decline {
+  width:           26px;
+  height:          26px;
+  border-radius:   50%;
+  border:          none;
+  cursor:          pointer;
+  font-size:       0.75rem;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  transition:      background 0.15s;
+}
+
+.notif-btn-accept {
+  background: rgba(63, 185, 80, 0.15);
+  color:      #7edb5a;
+  border:     1px solid rgba(63, 185, 80, 0.35);
+  &:hover { background: rgba(63, 185, 80, 0.28); }
+}
+
+.notif-btn-decline {
+  background: rgba(255, 90, 50, 0.12);
+  color:      #ff7a55;
+  border:     1px solid rgba(255, 90, 50, 0.3);
+  &:hover { background: rgba(255, 90, 50, 0.25); }
+}
+
 .notif-view-all {
   display:         block;
   text-align:      center;

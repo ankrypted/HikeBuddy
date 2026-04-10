@@ -15,6 +15,8 @@ import { NotificationService }               from '../../services/notification/n
 import { MessageService }                    from '../../services/message/message.service';
 import { SearchService }                     from '../../services/search/search.service';
 import { ComposeService }                    from '../../services/compose/compose.service';
+import { RoomService }                       from '../../services/room/room.service';
+import { NotificationDto }                   from '../../../shared/models/notification.dto';
 
 @Component({
   selector: 'hb-navbar',
@@ -34,6 +36,7 @@ export class NavbarComponent {
   private readonly messageService = inject(MessageService);
   private readonly searchService  = inject(SearchService);
   private readonly composeService = inject(ComposeService);
+  private readonly roomService    = inject(RoomService);
   private readonly elRef          = inject(ElementRef);
   readonly notificationService    = inject(NotificationService);
 
@@ -88,6 +91,25 @@ export class NavbarComponent {
     if (!this.elRef.nativeElement.contains(event.target)) {
       this.notificationService.closePanel();
     }
+  }
+
+  approveJoinRequest(n: NotificationDto): void {
+    this.roomService.approveJoinRequest(n.eventId).subscribe();
+    this.notificationService.dismiss(n.id);
+  }
+
+  declineJoinRequest(n: NotificationDto): void {
+    this.roomService.declineJoinRequest(n.eventId).subscribe();
+    this.notificationService.dismiss(n.id);
+  }
+
+  acceptInvite(n: NotificationDto): void {
+    this.roomService.joinRoom(n.eventId).subscribe();
+    this.notificationService.dismiss(n.id);
+  }
+
+  declineInvite(n: NotificationDto): void {
+    this.notificationService.dismiss(n.id);
   }
 
   onNavAvatarError(): void {
