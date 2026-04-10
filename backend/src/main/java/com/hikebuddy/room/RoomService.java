@@ -323,8 +323,7 @@ public class RoomService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the room creator can decline requests");
         }
 
-        req.setStatus("DECLINED");
-        joinRequestRepo.save(req);
+        joinRequestRepo.delete(req);
     }
 
     // ── Followers (for invite panel) ─────────────────────────────────────────
