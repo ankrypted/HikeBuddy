@@ -264,12 +264,15 @@ public class RoomService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Request already pending");
         }
 
+        // Remove any stale declined row so the unique constraint doesn't block re-requests
+        joinRequestRepo.deleteByRoomIdAndRequesterId(roomId, requester.getId());
+
         RoomJoinRequest req = RoomJoinRequest.builder()
                 .roomId(roomId)
                 .requesterId(requester.getId())
                 .status("PENDING")
                 .build();
-        joinRequestRepo.save(req);
+        joinRequestRepo.saveAndFlush(req);
 
         User creator = userRepo.findById(room.getCreatorId()).orElse(null);
         if (creator != null) {
