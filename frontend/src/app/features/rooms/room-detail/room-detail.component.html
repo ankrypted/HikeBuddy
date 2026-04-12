@@ -167,7 +167,7 @@
           <!-- ── Chat tab ─────────────────────────────────────────────── -->
           @if (activeTab() === 'chat') {
             <div class="chat-panel glass">
-              <div class="chat-messages" id="chatMessages">
+              <div class="chat-messages" #chatMessages>
                 @if (messages().length === 0) {
                   <p class="chat-empty">No messages yet. Say hello!</p>
                 }

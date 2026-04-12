@@ -1,5 +1,6 @@
 import {
-  ChangeDetectionStrategy, Component, computed, inject, Input, OnDestroy, OnInit, signal,
+  AfterViewChecked, ChangeDetectionStrategy, Component, computed, ElementRef,
+  inject, Input, OnDestroy, OnInit, signal, ViewChild,
 } from '@angular/core';
 import { Router, RouterLink }  from '@angular/router';
 import { FormsModule }         from '@angular/forms';
@@ -16,8 +17,11 @@ import { AuthService }         from '../../../core/services/auth/auth.service';
   templateUrl:     './room-detail.component.html',
   styleUrl:        './room-detail.component.scss',
 })
-export class RoomDetailComponent implements OnInit, OnDestroy {
+export class RoomDetailComponent implements OnInit, AfterViewChecked, OnDestroy {
   @Input() id = '';
+
+  @ViewChild('chatMessages') private chatMessagesRef?: ElementRef<HTMLElement>;
+  private lastMessageCount = 0;
 
   private readonly roomService  = inject(RoomService);
   private readonly authService  = inject(AuthService);
@@ -79,6 +83,19 @@ export class RoomDetailComponent implements OnInit, OnDestroy {
       this.roomService.startChatPolling(this.id);
     }
     this.loading.set(false);
+  }
+
+  ngAfterViewChecked(): void {
+    const count = this.messages().length;
+    if (count !== this.lastMessageCount) {
+      this.lastMessageCount = count;
+      this.scrollToBottom();
+    }
+  }
+
+  private scrollToBottom(): void {
+    const el = this.chatMessagesRef?.nativeElement;
+    if (el) el.scrollTop = el.scrollHeight;
   }
 
   ngOnDestroy(): void {
