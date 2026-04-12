@@ -94,8 +94,10 @@ export class RoomDetailComponent implements OnInit, AfterViewChecked, OnDestroy 
   }
 
   private scrollToBottom(): void {
-    const el = this.chatMessagesRef?.nativeElement;
-    if (el) el.scrollTop = el.scrollHeight;
+    setTimeout(() => {
+      const el = this.chatMessagesRef?.nativeElement;
+      if (el) el.scrollTop = el.scrollHeight;
+    }, 0);
   }
 
   ngOnDestroy(): void {
