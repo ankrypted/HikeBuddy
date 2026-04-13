@@ -1,5 +1,5 @@
 import {
-  AfterViewChecked, ChangeDetectionStrategy, Component, computed, ElementRef,
+  ChangeDetectionStrategy, Component, computed, effect, ElementRef,
   inject, Input, OnDestroy, OnInit, signal, ViewChild,
 } from '@angular/core';
 import { Router, RouterLink }  from '@angular/router';
@@ -17,11 +17,10 @@ import { AuthService }         from '../../../core/services/auth/auth.service';
   templateUrl:     './room-detail.component.html',
   styleUrl:        './room-detail.component.scss',
 })
-export class RoomDetailComponent implements OnInit, AfterViewChecked, OnDestroy {
+export class RoomDetailComponent implements OnInit, OnDestroy {
   @Input() id = '';
 
   @ViewChild('chatMessages') private chatMessagesRef?: ElementRef<HTMLElement>;
-  private lastMessageCount = 0;
 
   private readonly roomService  = inject(RoomService);
   private readonly authService  = inject(AuthService);
@@ -74,6 +73,16 @@ export class RoomDetailComponent implements OnInit, AfterViewChecked, OnDestroy 
 
   readonly hasPendingRequest = computed(() => !!this.room()?.pendingRequestId);
 
+  constructor() {
+    effect(() => {
+      this.messages(); // track signal
+      setTimeout(() => {
+        const el = this.chatMessagesRef?.nativeElement;
+        if (el) el.scrollTop = el.scrollHeight;
+      }, 50);
+    });
+  }
+
   ngOnInit(): void {
     this.roomService.resetChat();
     this.roomService.loadRoom(this.id);
@@ -83,21 +92,6 @@ export class RoomDetailComponent implements OnInit, AfterViewChecked, OnDestroy 
       this.roomService.startChatPolling(this.id);
     }
     this.loading.set(false);
-  }
-
-  ngAfterViewChecked(): void {
-    const count = this.messages().length;
-    if (count !== this.lastMessageCount) {
-      this.lastMessageCount = count;
-      this.scrollToBottom();
-    }
-  }
-
-  private scrollToBottom(): void {
-    setTimeout(() => {
-      const el = this.chatMessagesRef?.nativeElement;
-      if (el) el.scrollTop = el.scrollHeight;
-    }, 0);
   }
 
   ngOnDestroy(): void {
