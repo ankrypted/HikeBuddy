@@ -153,13 +153,15 @@
           @for (group of trailGroups(); track group.trailName) {
             <div class="trail-group">
               <h3 class="trail-group-heading">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/>
-                  <line x1="8" y1="2" x2="8" y2="18"/>
-                  <line x1="16" y1="6" x2="16" y2="22"/>
-                </svg>
-                {{ group.trailName }}
+                <a class="trail-group-link" [routerLink]="['/trails', group.rooms[0].trailId]">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                       stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/>
+                    <line x1="8" y1="2" x2="8" y2="18"/>
+                    <line x1="16" y1="6" x2="16" y2="22"/>
+                  </svg>
+                  {{ group.trailName }}
+                </a>
                 <span class="trail-group-count">{{ group.rooms.length }} {{ group.rooms.length === 1 ? 'room' : 'rooms' }}</span>
               </h3>
               <ul class="room-list">
