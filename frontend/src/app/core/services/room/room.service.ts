@@ -181,7 +181,7 @@ export class RoomService {
       id: r.id, trailId: r.trailId, trailName: r.trailName,
       plannedDate: r.plannedDate, title: r.title, status: r.status,
       creatorUsername: r.creatorUsername, memberCount: r.memberCount,
-      createdAt: r.createdAt,
+      createdAt: r.createdAt, durationDays: r.durationDays, deletesOn: r.deletesOn,
     };
   }
 }

@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -46,6 +47,7 @@ public class RoomService {
                 .trailName(req.trailName())
                 .plannedDate(req.plannedDate())
                 .title(req.title())
+                .durationDays(req.durationDays())
                 .status("OPEN")
                 .build();
         room = roomRepo.saveAndFlush(room);
@@ -370,6 +372,7 @@ public class RoomService {
                         (String) row[0],
                         (String) row[1]))
                 .toList();
+        LocalDate deletesOn = room.getPlannedDate().plusDays(room.getDurationDays() + 1L);
         return new RoomDetailDto(
                 room.getId().toString(),
                 room.getTrailId(),
@@ -381,12 +384,15 @@ public class RoomService {
                 members,
                 members.size(),
                 room.getCreatedAt().toString(),
-                pendingRequestId
+                pendingRequestId,
+                room.getDurationDays(),
+                deletesOn.toString()
         );
     }
 
     private RoomSummaryDto toSummary(Room room, String creatorUsername) {
         int count = memberRepo.countByIdRoomId(room.getId());
+        LocalDate deletesOn = room.getPlannedDate().plusDays(room.getDurationDays() + 1L);
         return new RoomSummaryDto(
                 room.getId().toString(),
                 room.getTrailId(),
@@ -396,7 +402,9 @@ public class RoomService {
                 room.getStatus(),
                 creatorUsername,
                 count,
-                room.getCreatedAt().toString()
+                room.getCreatedAt().toString(),
+                room.getDurationDays(),
+                deletesOn.toString()
         );
     }
 

@@ -307,6 +307,13 @@
                    maxlength="200" />
           </div>
 
+          <div class="form-group">
+            <label class="form-label">Trail Duration (days)</label>
+            <input class="form-input" type="number" [(ngModel)]="durationDays"
+                   min="1" max="30" placeholder="e.g. 5" />
+            <span class="form-hint">Room auto-deletes 1 day after the hike ends</span>
+          </div>
+
           @if (stepError()) {
             <p class="step-error">{{ stepError() }}</p>
           }
@@ -314,7 +321,7 @@
           <div class="stepper-actions">
             <button class="btn-back" (click)="goBack()">Back</button>
             <button class="btn-next" (click)="nextToConfirm()"
-                    [disabled]="!plannedDate || !roomTitle.trim()">
+                    [disabled]="!plannedDate || !roomTitle.trim() || !durationDays">
               Next
             </button>
           </div>
@@ -341,8 +348,16 @@
               <span class="confirm-value">{{ formatDate(plannedDate) }}</span>
             </div>
             <div class="confirm-row">
+              <span class="confirm-label">Duration</span>
+              <span class="confirm-value">{{ durationDays }} {{ durationDays === 1 ? 'day' : 'days' }}</span>
+            </div>
+            <div class="confirm-row">
               <span class="confirm-label">Countdown</span>
               <span class="confirm-value confirm-value--green">{{ countdown(plannedDate) }}</span>
+            </div>
+            <div class="confirm-row">
+              <span class="confirm-label">Auto-deletes</span>
+              <span class="confirm-value confirm-value--muted">{{ formatDate(computedDeletesOn()) }}</span>
             </div>
           </div>
 

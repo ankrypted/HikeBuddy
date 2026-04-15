@@ -35,6 +35,10 @@ public class Room {
     @Builder.Default
     private String status = "OPEN";
 
+    @Column(name = "duration_days", nullable = false)
+    @Builder.Default
+    private int durationDays = 1;
+
     @Column(name = "feed_post_id")
     private UUID feedPostId;
 

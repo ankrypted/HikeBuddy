@@ -74,6 +74,14 @@
                   [class.room-status-badge--open]="room()!.status === 'OPEN'">
               {{ room()!.status }}
             </span>
+            <span class="meta-chip meta-chip--expiry">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                   stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="23 4 23 10 17 10"/>
+                <path d="M20.49 15a9 9 0 1 1-.07-5.12"/>
+              </svg>
+              {{ daysUntilDeletion(room()!.deletesOn) }} day{{ daysUntilDeletion(room()!.deletesOn) === 1 ? '' : 's' }} until auto-delete
+            </span>
           </div>
 
           @if (!isMember()) {

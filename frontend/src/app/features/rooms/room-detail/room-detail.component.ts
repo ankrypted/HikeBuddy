@@ -229,6 +229,10 @@ export class RoomDetailComponent implements OnInit, OnDestroy {
     return d.toLocaleDateString('en-IN', { month: 'short', day: 'numeric' });
   }
 
+  daysUntilDeletion(deletesOn: string): number {
+    return Math.ceil((new Date(deletesOn).getTime() - Date.now()) / 86_400_000);
+  }
+
   initials(username: string): string {
     return username.slice(0, 2).toUpperCase();
   }

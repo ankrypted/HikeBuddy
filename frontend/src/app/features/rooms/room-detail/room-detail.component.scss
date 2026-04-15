@@ -98,6 +98,12 @@
   font-size:   0.82rem;
   color:       v.$text-muted;
   svg { width: 13px; height: 13px; }
+
+  &--expiry {
+    color:        rgba(255, 160, 80, 0.85);
+    font-weight:  600;
+    svg { color: rgba(255, 160, 80, 0.85); }
+  }
 }
 
 .room-status-badge {

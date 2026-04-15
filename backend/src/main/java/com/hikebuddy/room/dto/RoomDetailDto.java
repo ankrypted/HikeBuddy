@@ -13,7 +13,9 @@ public record RoomDetailDto(
         List<MemberDto> members,
         int memberCount,
         String createdAt,
-        String pendingRequestId
+        String pendingRequestId,
+        int    durationDays,
+        String deletesOn
 ) {
     public record MemberDto(String username, String avatarUrl) {}
 }
