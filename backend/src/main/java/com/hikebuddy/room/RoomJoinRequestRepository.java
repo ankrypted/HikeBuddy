@@ -20,5 +20,10 @@ public interface RoomJoinRequestRepository extends JpaRepository<RoomJoinRequest
     @Query("DELETE FROM RoomJoinRequest r WHERE r.roomId = :roomId AND r.requesterId = :requesterId")
     void deleteByRoomIdAndRequesterId(@Param("roomId") UUID roomId, @Param("requesterId") UUID requesterId);
 
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM RoomJoinRequest r WHERE r.roomId = :roomId")
+    void deleteByRoomId(@Param("roomId") UUID roomId);
+
     boolean existsByRoomIdAndRequesterIdAndStatus(UUID roomId, UUID requesterId, String status);
 }

@@ -1,0 +1,1 @@
+ALTER TABLE rooms ADD COLUMN duration_days INT NOT NULL DEFAULT 1;

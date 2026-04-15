@@ -8,6 +8,8 @@ export interface RoomSummaryDto {
   creatorUsername: string;
   memberCount:     number;
   createdAt:       string;
+  durationDays:    number;
+  deletesOn:       string;
 }
 
 export interface RoomDetailDto extends RoomSummaryDto {
@@ -35,8 +37,9 @@ export interface RoomUpdateDto {
 }
 
 export interface CreateRoomRequest {
-  trailId:     string;
-  trailName:   string;
-  plannedDate: string;
-  title:       string;
+  trailId:      string;
+  trailName:    string;
+  plannedDate:  string;
+  title:        string;
+  durationDays: number;
 }

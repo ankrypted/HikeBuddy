@@ -9,5 +9,7 @@ public record RoomSummaryDto(
         String status,
         String creatorUsername,
         int    memberCount,
-        String createdAt
+        String createdAt,
+        int    durationDays,
+        String deletesOn
 ) {}

@@ -77,8 +77,9 @@ export class RoomsListComponent implements OnInit {
   readonly stepError   = signal<string | null>(null);
 
   selectedTrail: TrailSummaryDto | null = null;
-  plannedDate = '';
-  roomTitle   = '';
+  plannedDate  = '';
+  roomTitle    = '';
+  durationDays = 1;
   readonly today = new Date().toISOString().split('T')[0];
 
   readonly filteredTrails = computed(() => {
@@ -105,6 +106,7 @@ export class RoomsListComponent implements OnInit {
     this.selectedTrail = null;
     this.plannedDate   = '';
     this.roomTitle     = '';
+    this.durationDays  = 1;
     this.trailSearch.set('');
     this.stepperOpen.set(true);
   }
@@ -123,7 +125,7 @@ export class RoomsListComponent implements OnInit {
   }
 
   nextToConfirm(): void {
-    if (!this.plannedDate || !this.roomTitle.trim()) {
+    if (!this.plannedDate || !this.roomTitle.trim() || !this.durationDays) {
       this.stepError.set('Please fill in all fields.');
       return;
     }
@@ -135,10 +137,11 @@ export class RoomsListComponent implements OnInit {
     if (!this.selectedTrail) return;
     this.submitting.set(true);
     this.roomService.createRoom({
-      trailId:     this.selectedTrail.slug,
-      trailName:   this.selectedTrail.name,
-      plannedDate: this.plannedDate,
-      title:       this.roomTitle.trim(),
+      trailId:      this.selectedTrail.slug,
+      trailName:    this.selectedTrail.name,
+      plannedDate:  this.plannedDate,
+      title:        this.roomTitle.trim(),
+      durationDays: this.durationDays,
     }).subscribe({
       next: () => {
         this.closeStepper();
@@ -164,6 +167,17 @@ export class RoomsListComponent implements OnInit {
     return new Date(iso).toLocaleDateString('en-IN', {
       day: 'numeric', month: 'short', year: 'numeric',
     });
+  }
+
+  computedDeletesOn(): string {
+    if (!this.plannedDate || !this.durationDays) return '';
+    const d = new Date(this.plannedDate);
+    d.setDate(d.getDate() + this.durationDays + 1);
+    return d.toISOString().split('T')[0];
+  }
+
+  daysUntilDeletion(deletesOn: string): number {
+    return Math.ceil((new Date(deletesOn).getTime() - Date.now()) / 86_400_000);
   }
 
   initials(username: string): string {

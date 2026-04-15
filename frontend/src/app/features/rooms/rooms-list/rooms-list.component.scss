@@ -696,6 +696,13 @@
   text-align:  right;
 
   &--green { color: v.$accent-green; }
+  &--muted { color: v.$text-muted; }
+}
+
+.form-hint {
+  font-size: 0.73rem;
+  color:     v.$text-muted;
+  margin-top: -0.1rem;
 }
 
 .confirm-note {
