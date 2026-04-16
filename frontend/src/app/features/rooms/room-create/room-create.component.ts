@@ -24,10 +24,11 @@ export class RoomCreateComponent implements OnInit {
   readonly submitting = signal(false);
   readonly error      = signal<string | null>(null);
 
-  trailId     = '';
-  trailName   = '';
-  plannedDate = '';
-  title       = '';
+  trailId      = '';
+  trailName    = '';
+  plannedDate  = '';
+  title        = '';
+  durationDays = 1;
 
   readonly today = new Date().toISOString().split('T')[0];
 
@@ -49,10 +50,11 @@ export class RoomCreateComponent implements OnInit {
     this.error.set(null);
 
     this.roomService.createRoom({
-      trailId:     this.trailId,
-      trailName:   this.trailName,
-      plannedDate: this.plannedDate,
-      title:       this.title.trim(),
+      trailId:      this.trailId,
+      trailName:    this.trailName,
+      plannedDate:  this.plannedDate,
+      title:        this.title.trim(),
+      durationDays: this.durationDays,
     }).subscribe({
       next: room => this.router.navigate(['/rooms', room.id]),
       error: err => {
