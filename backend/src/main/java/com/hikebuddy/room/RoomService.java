@@ -331,6 +331,42 @@ public class RoomService {
         joinRequestRepo.delete(req);
     }
 
+    // ── Pending requests (creator view) ──────────────────────────────────────
+
+    @Transactional(readOnly = true)
+    public List<JoinRequestDto> getPendingRequests(String email, UUID roomId) {
+        User creator = requireUser(email);
+        Room room    = requireRoom(roomId);
+        if (!room.getCreatorId().equals(creator.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the room creator can view join requests");
+        }
+        return joinRequestRepo.findByRoomIdAndStatus(roomId, "PENDING").stream()
+                .map(r -> {
+                    User requester = userRepo.findById(r.getRequesterId()).orElse(null);
+                    return new JoinRequestDto(
+                            r.getId().toString(),
+                            requester != null ? requester.getUsername() : "unknown",
+                            requester != null ? requester.getAvatarUrl() : null,
+                            r.getCreatedAt().toString()
+                    );
+                })
+                .toList();
+    }
+
+    // ── Status toggle ─────────────────────────────────────────────────────────
+
+    @Transactional
+    public RoomDetailDto toggleStatus(String email, UUID roomId) {
+        User creator = requireUser(email);
+        Room room    = requireRoom(roomId);
+        if (!room.getCreatorId().equals(creator.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the room creator can change room status");
+        }
+        room.setStatus("OPEN".equals(room.getStatus()) ? "CLOSED" : "OPEN");
+        roomRepo.save(room);
+        return toDetail(room, creator.getUsername(), null);
+    }
+
     // ── Followers (for invite panel) ─────────────────────────────────────────
 
     @Transactional(readOnly = true)

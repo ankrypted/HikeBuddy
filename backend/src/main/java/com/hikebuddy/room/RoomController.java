@@ -128,6 +128,19 @@ public class RoomController {
         return roomService.getMyFollowers(user.getUsername());
     }
 
+    @GetMapping("/{id}/requests")
+    public List<com.hikebuddy.room.dto.JoinRequestDto> getPendingRequests(
+            @AuthenticationPrincipal UserDetails user,
+            @PathVariable UUID id) {
+        return roomService.getPendingRequests(user.getUsername(), id);
+    }
+
+    @PatchMapping("/{id}/status")
+    public RoomDetailDto toggleStatus(@AuthenticationPrincipal UserDetails user,
+                                      @PathVariable UUID id) {
+        return roomService.toggleStatus(user.getUsername(), id);
+    }
+
     @GetMapping("/{id}/updates")
     public List<RoomUpdateDto> getUpdates(@AuthenticationPrincipal UserDetails user,
                                            @PathVariable UUID id) {

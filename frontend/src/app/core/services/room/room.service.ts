@@ -4,7 +4,7 @@ import { Observable, Subscription, interval } from 'rxjs';
 import { tap }                        from 'rxjs/operators';
 import {
   RoomSummaryDto, RoomDetailDto,
-  RoomMessageDto, RoomUpdateDto, CreateRoomRequest,
+  RoomMessageDto, RoomUpdateDto, CreateRoomRequest, JoinRequestDto,
 } from '../../../shared/models/room.dto';
 import { environment }                from '../../../../environments/environment';
 
@@ -13,11 +13,12 @@ export class RoomService {
   private readonly http = inject(HttpClient);
   private readonly base = `${environment.apiUrl}/rooms`;
 
-  readonly myRooms    = signal<RoomSummaryDto[]>([]);
-  readonly openRooms  = signal<RoomSummaryDto[]>([]);
-  readonly activeRoom = signal<RoomDetailDto | null>(null);
-  readonly messages   = signal<RoomMessageDto[]>([]);
-  readonly updates    = signal<RoomUpdateDto[]>([]);
+  readonly myRooms         = signal<RoomSummaryDto[]>([]);
+  readonly openRooms       = signal<RoomSummaryDto[]>([]);
+  readonly activeRoom      = signal<RoomDetailDto | null>(null);
+  readonly messages        = signal<RoomMessageDto[]>([]);
+  readonly updates         = signal<RoomUpdateDto[]>([]);
+  readonly pendingRequests = signal<JoinRequestDto[]>([]);
 
   private pollSub: Subscription | null = null;
   private lastMessageTime: string | null = null;
@@ -81,12 +82,34 @@ export class RoomService {
     );
   }
 
+  loadPendingRequests(roomId: string): void {
+    this.http.get<JoinRequestDto[]>(`${this.base}/${roomId}/requests`)
+      .subscribe({ next: list => this.pendingRequests.set(list), error: () => {} });
+  }
+
   approveJoinRequest(requestId: string): Observable<RoomDetailDto> {
-    return this.http.post<RoomDetailDto>(`${this.base}/join-requests/${requestId}/approve`, {});
+    return this.http.post<RoomDetailDto>(`${this.base}/join-requests/${requestId}/approve`, {}).pipe(
+      tap(room => {
+        this.activeRoom.set(room);
+        this.pendingRequests.update(list => list.filter(r => r.id !== requestId));
+      }),
+    );
+  }
+
+  toggleRoomStatus(id: string): Observable<RoomDetailDto> {
+    return this.http.patch<RoomDetailDto>(`${this.base}/${id}/status`, {}).pipe(
+      tap(room => {
+        this.activeRoom.set(room);
+        this.myRooms.update(list => list.map(r => r.id === id ? { ...r, status: room.status } : r));
+        this.openRooms.update(list => list.filter(r => r.id !== id || room.status === 'OPEN'));
+      }),
+    );
   }
 
   declineJoinRequest(requestId: string): Observable<void> {
-    return this.http.post<void>(`${this.base}/join-requests/${requestId}/decline`, {});
+    return this.http.post<void>(`${this.base}/join-requests/${requestId}/decline`, {}).pipe(
+      tap(() => this.pendingRequests.update(list => list.filter(r => r.id !== requestId))),
+    );
   }
 
   leaveRoom(id: string): Observable<void> {
