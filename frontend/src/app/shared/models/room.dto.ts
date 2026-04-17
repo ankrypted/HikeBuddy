@@ -36,6 +36,13 @@ export interface RoomUpdateDto {
   createdAt:      string;
 }
 
+export interface JoinRequestDto {
+  id:                  string;
+  requesterUsername:   string;
+  requesterAvatarUrl:  string | null;
+  createdAt:           string;
+}
+
 export interface CreateRoomRequest {
   trailId:      string;
   trailName:    string;

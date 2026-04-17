@@ -30,7 +30,7 @@ export class RoomDetailComponent implements OnInit, OnDestroy {
   readonly messages    = this.roomService.messages;
   readonly updates     = this.roomService.updates;
   readonly loading     = signal(true);
-  readonly activeTab   = signal<'chat' | 'updates' | 'members'>('chat');
+  readonly activeTab   = signal<'chat' | 'updates' | 'members' | 'requests'>('chat');
 
   // Chat
   readonly chatDraft  = signal('');
@@ -51,6 +51,14 @@ export class RoomDetailComponent implements OnInit, OnDestroy {
   // Join request
   readonly requesting        = signal(false);
   readonly cancelling        = signal(false);
+
+  // Status toggle
+  readonly togglingStatus = signal(false);
+
+  // Pending requests (creator only)
+  readonly pendingRequests  = this.roomService.pendingRequests;
+  readonly approvingId      = signal<string | null>(null);
+  readonly decliningId      = signal<string | null>(null);
 
   // Invite
   readonly showInvite      = signal(false);
@@ -81,6 +89,14 @@ export class RoomDetailComponent implements OnInit, OnDestroy {
         if (el) el.scrollTop = el.scrollHeight;
       }, 50);
     });
+
+    // Load pending requests once the room is known and user is creator
+    effect(() => {
+      const room = this.room();
+      if (room && this.isCreator()) {
+        this.roomService.loadPendingRequests(room.id);
+      }
+    });
   }
 
   ngOnInit(): void {
@@ -97,6 +113,7 @@ export class RoomDetailComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.roomService.stopChatPolling();
     this.roomService.activeRoom.set(null);
+    this.roomService.pendingRequests.set([]);
   }
 
   // ── Join Request ──────────────────────────────────────────────────────────
@@ -207,6 +224,37 @@ export class RoomDetailComponent implements OnInit, OnDestroy {
         this.deleteError.set(err.error?.message ?? 'Failed to delete room.');
         this.deleting.set(false);
       },
+    });
+  }
+
+  // ── Status toggle ────────────────────────────────────────────────────────
+
+  toggleStatus(): void {
+    if (this.togglingStatus()) return;
+    this.togglingStatus.set(true);
+    this.roomService.toggleRoomStatus(this.id).subscribe({
+      next:  () => this.togglingStatus.set(false),
+      error: () => this.togglingStatus.set(false),
+    });
+  }
+
+  // ── Pending requests (inline approve / decline) ───────────────────────────
+
+  approveInRoom(requestId: string): void {
+    if (this.approvingId()) return;
+    this.approvingId.set(requestId);
+    this.roomService.approveJoinRequest(requestId).subscribe({
+      next:  () => this.approvingId.set(null),
+      error: () => this.approvingId.set(null),
+    });
+  }
+
+  declineInRoom(requestId: string): void {
+    if (this.decliningId()) return;
+    this.decliningId.set(requestId);
+    this.roomService.declineJoinRequest(requestId).subscribe({
+      next:  () => this.decliningId.set(null),
+      error: () => this.decliningId.set(null),
     });
   }
 
