@@ -79,7 +79,7 @@
     <!-- Hamburger button — mobile only, shown only on child pages -->
     @if (!onOverview() && !onNotifications()) {
       <button class="mobile-ham" type="button" (click)="toggle()" aria-label="Open navigation">
-        <mat-icon>menu</mat-icon>
+        <mat-icon>{{ collapsed() ? 'chevron_right' : 'chevron_left' }}</mat-icon>
       </button>
     }
 
