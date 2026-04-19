@@ -21,6 +21,7 @@ export class RoomDetailComponent implements OnInit, OnDestroy {
   @Input() id = '';
 
   @ViewChild('chatMessages') private chatMessagesRef?: ElementRef<HTMLElement>;
+  @ViewChild('fileInput') private fileInputRef?: ElementRef<HTMLInputElement>;
 
   private readonly roomService  = inject(RoomService);
   private readonly authService  = inject(AuthService);
@@ -30,7 +31,7 @@ export class RoomDetailComponent implements OnInit, OnDestroy {
   readonly messages    = this.roomService.messages;
   readonly updates     = this.roomService.updates;
   readonly loading     = signal(true);
-  readonly activeTab   = signal<'chat' | 'updates' | 'members' | 'requests'>('chat');
+  readonly activeTab   = signal<'chat' | 'updates' | 'members' | 'requests' | 'files'>('chat');
 
   // Chat
   readonly chatDraft  = signal('');
@@ -59,6 +60,12 @@ export class RoomDetailComponent implements OnInit, OnDestroy {
   readonly pendingRequests  = this.roomService.pendingRequests;
   readonly approvingId      = signal<string | null>(null);
   readonly decliningId      = signal<string | null>(null);
+
+  // Itineraries
+  readonly itineraries    = this.roomService.itineraries;
+  readonly uploading      = signal(false);
+  readonly uploadError    = signal<string | null>(null);
+  readonly deletingFileId = signal<string | null>(null);
 
   // Invite
   readonly showInvite      = signal(false);
@@ -105,6 +112,7 @@ export class RoomDetailComponent implements OnInit, OnDestroy {
     if (this.authService.isLoggedIn()) {
       this.roomService.loadMessages(this.id);
       this.roomService.loadUpdates(this.id);
+      this.roomService.loadItineraries(this.id);
       this.roomService.startChatPolling(this.id);
     }
     this.loading.set(false);
@@ -114,6 +122,7 @@ export class RoomDetailComponent implements OnInit, OnDestroy {
     this.roomService.stopChatPolling();
     this.roomService.activeRoom.set(null);
     this.roomService.pendingRequests.set([]);
+    this.roomService.itineraries.set([]);
   }
 
   // ── Join Request ──────────────────────────────────────────────────────────
@@ -256,6 +265,51 @@ export class RoomDetailComponent implements OnInit, OnDestroy {
       next:  () => this.decliningId.set(null),
       error: () => this.decliningId.set(null),
     });
+  }
+
+  // ── Itinerary upload ──────────────────────────────────────────────────────
+
+  triggerFileInput(): void {
+    this.fileInputRef?.nativeElement.click();
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+    this.uploadError.set(null);
+    this.uploading.set(true);
+    this.roomService.uploadItinerary(this.id, file).subscribe({
+      next:  () => { this.uploading.set(false); input.value = ''; },
+      error: err => {
+        this.uploading.set(false);
+        input.value = '';
+        this.uploadError.set(err.error?.message ?? 'Upload failed. Check file type and size (max 10 MB).');
+      },
+    });
+  }
+
+  deleteFile(itineraryId: string): void {
+    if (this.deletingFileId()) return;
+    this.deletingFileId.set(itineraryId);
+    this.roomService.deleteItinerary(this.id, itineraryId).subscribe({
+      next:  () => this.deletingFileId.set(null),
+      error: () => this.deletingFileId.set(null),
+    });
+  }
+
+  formatFileSize(bytes: number): string {
+    if (bytes < 1024)       return `${bytes} B`;
+    if (bytes < 1048576)    return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / 1048576).toFixed(1)} MB`;
+  }
+
+  fileIcon(contentType: string): string {
+    if (contentType === 'application/pdf')    return 'pdf';
+    if (contentType.includes('spreadsheet') || contentType.includes('excel')) return 'xls';
+    if (contentType.includes('wordprocessing') || contentType.includes('msword')) return 'doc';
+    if (contentType.includes('gpx') || contentType.includes('xml')) return 'gpx';
+    return 'txt';
   }
 
   // ── Helpers ───────────────────────────────────────────────────────────────

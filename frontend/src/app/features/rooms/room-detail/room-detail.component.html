@@ -203,6 +203,18 @@
                 }
               </button>
             }
+            <button class="tab" [class.tab--active]="activeTab() === 'files'"
+                    (click)="activeTab.set('files')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                   stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+              </svg>
+              Files
+              @if (itineraries().length > 0) {
+                <span class="tab-badge tab-badge--neutral">{{ itineraries().length }}</span>
+              }
+            </button>
           </div>
 
           <!-- ── Chat tab ─────────────────────────────────────────────── -->
@@ -347,6 +359,89 @@
                                 (click)="declineInRoom(req.id)">
                           {{ decliningId() === req.id ? '…' : 'Decline' }}
                         </button>
+                      </div>
+                    </li>
+                  }
+                </ul>
+              }
+            </div>
+          }
+
+          <!-- ── Files tab ───────────────────────────────────────── -->
+          @if (activeTab() === 'files') {
+            <div class="files-panel glass">
+              <h2 class="panel-title">Itinerary &amp; Files</h2>
+              <p class="panel-sub">Documents shared for this hike — routes, itineraries, permits.</p>
+
+              <!-- Upload zone (creator only) -->
+              @if (isCreator()) {
+                <div class="upload-zone" [class.upload-zone--loading]="uploading()"
+                     (click)="triggerFileInput()" (keydown.enter)="triggerFileInput()" tabindex="0">
+                  <input #fileInput type="file" class="file-input-hidden"
+                         accept=".pdf,.txt,.csv,.md,.docx,.doc,.xlsx,.xls,.gpx,.xml"
+                         (change)="onFileSelected($event)" />
+                  @if (uploading()) {
+                    <div class="upload-spinner"></div>
+                    <span class="upload-hint">Uploading…</span>
+                  } @else {
+                    <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="16 16 12 12 8 16"/>
+                      <line x1="12" y1="12" x2="12" y2="21"/>
+                      <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/>
+                    </svg>
+                    <span class="upload-hint">Click to upload a file</span>
+                    <span class="upload-types">PDF · DOCX · XLSX · TXT · CSV · GPX · XML — max 10 MB</span>
+                  }
+                </div>
+                @if (uploadError()) {
+                  <p class="upload-error">{{ uploadError() }}</p>
+                }
+              }
+
+              <!-- Files list -->
+              @if (itineraries().length === 0) {
+                <p class="files-empty">No files uploaded yet.</p>
+              } @else {
+                <ul class="files-list">
+                  @for (file of itineraries(); track file.id) {
+                    <li class="file-item">
+                      <div class="file-type-badge file-type-badge--{{ fileIcon(file.contentType) }}">
+                        {{ fileIcon(file.contentType).toUpperCase() }}
+                      </div>
+                      <div class="file-info">
+                        <span class="file-name">{{ file.originalFilename }}</span>
+                        <span class="file-meta">
+                          {{ formatFileSize(file.fileSize) }} &middot; by {{ file.uploaderUsername }} &middot; {{ formatTime(file.uploadedAt) }}
+                        </span>
+                      </div>
+                      <div class="file-actions">
+                        <a class="btn-download" [href]="file.fileUrl" target="_blank" rel="noopener noreferrer"
+                           [download]="file.originalFilename" aria-label="Download file">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <polyline points="8 17 12 21 16 17"/>
+                            <line x1="12" y1="12" x2="12" y2="21"/>
+                            <path d="M20.88 18.09A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.29"/>
+                          </svg>
+                        </a>
+                        @if (isCreator()) {
+                          <button class="btn-delete-file"
+                                  [disabled]="deletingFileId() === file.id"
+                                  (click)="deleteFile(file.id)"
+                                  aria-label="Delete file">
+                            @if (deletingFileId() === file.id) {
+                              …
+                            } @else {
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                   stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <polyline points="3 6 5 6 21 6"/>
+                                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                                <path d="M10 11v6M14 11v6"/>
+                              </svg>
+                            }
+                          </button>
+                        }
                       </div>
                     </li>
                   }

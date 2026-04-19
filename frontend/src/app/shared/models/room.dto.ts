@@ -50,3 +50,14 @@ export interface CreateRoomRequest {
   title:        string;
   durationDays: number;
 }
+
+export interface RoomItineraryDto {
+  id:                string;
+  roomId:            string;
+  uploaderUsername:  string;
+  originalFilename:  string;
+  fileSize:          number;
+  contentType:       string;
+  uploadedAt:        string;
+  fileUrl:           string;
+}

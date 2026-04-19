@@ -1,5 +1,6 @@
 package com.hikebuddy.room;
 
+import com.hikebuddy.storage.S3Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -14,11 +15,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RoomCleanupScheduler {
 
-    private final RoomRepository          roomRepo;
-    private final RoomMemberRepository    memberRepo;
-    private final RoomMessageRepository   messageRepo;
-    private final RoomUpdateRepository    updateRepo;
-    private final RoomJoinRequestRepository joinRequestRepo;
+    private final RoomRepository             roomRepo;
+    private final RoomMemberRepository       memberRepo;
+    private final RoomMessageRepository      messageRepo;
+    private final RoomUpdateRepository       updateRepo;
+    private final RoomJoinRequestRepository  joinRequestRepo;
+    private final RoomItineraryRepository    itineraryRepo;
+    private final S3Service                  s3Service;
 
     /**
      * Runs every day at 02:00 UTC.
@@ -33,6 +36,9 @@ public class RoomCleanupScheduler {
                 .toList();
 
         for (Room room : expired) {
+            itineraryRepo.findByRoomIdOrderByUploadedAtDesc(room.getId())
+                    .forEach(i -> s3Service.deleteObject(i.getS3Key()));
+            itineraryRepo.deleteByRoomId(room.getId());
             joinRequestRepo.deleteByRoomId(room.getId());
             messageRepo.deleteByRoomId(room.getId());
             updateRepo.deleteByRoomId(room.getId());
