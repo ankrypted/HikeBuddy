@@ -5,6 +5,7 @@ import com.hikebuddy.hikepost.HikePostService;
 import com.hikebuddy.notification.Notification;
 import com.hikebuddy.notification.NotificationService;
 import com.hikebuddy.room.dto.*;
+import com.hikebuddy.storage.S3Service;
 import com.hikebuddy.subscription.UserSubscriptionId;
 import com.hikebuddy.subscription.UserSubscriptionRepository;
 import com.hikebuddy.user.User;
@@ -13,12 +14,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -30,10 +34,26 @@ public class RoomService {
     private final RoomMessageRepository       messageRepo;
     private final RoomUpdateRepository        updateRepo;
     private final RoomJoinRequestRepository   joinRequestRepo;
+    private final RoomItineraryRepository     itineraryRepo;
     private final UserRepository              userRepo;
     private final UserSubscriptionRepository  subscriptionRepo;
     private final HikePostService             hikePostService;
     private final NotificationService         notificationService;
+    private final S3Service                   s3Service;
+
+    private static final Set<String> ALLOWED_ITINERARY_TYPES = Set.of(
+            "application/pdf",
+            "text/plain",
+            "text/csv",
+            "text/markdown",
+            "text/xml",
+            "application/xml",
+            "application/gpx+xml",
+            "application/msword",
+            "application/vnd.ms-excel",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
 
     // ── Create ────────────────────────────────────────────────────────────────
 
@@ -72,6 +92,9 @@ public class RoomService {
         if (!room.getCreatorId().equals(user.getId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the room creator can delete this room");
         }
+        itineraryRepo.findByRoomIdOrderByUploadedAtDesc(roomId)
+                .forEach(i -> s3Service.deleteObject(i.getS3Key()));
+        itineraryRepo.deleteByRoomId(roomId);
         messageRepo.deleteByRoomId(roomId);
         updateRepo.deleteByRoomId(roomId);
         memberRepo.deleteByIdRoomId(roomId);
@@ -378,6 +401,65 @@ public class RoomService {
                 .toList();
     }
 
+    // ── Itineraries ───────────────────────────────────────────────────────────
+
+    @Transactional
+    public RoomItineraryDto uploadItinerary(String email, UUID roomId, MultipartFile file) throws IOException {
+        User creator = requireUser(email);
+        Room room    = requireRoom(roomId);
+        if (!room.getCreatorId().equals(creator.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the room creator can upload files");
+        }
+
+        String contentType = file.getContentType();
+        if (contentType == null || !ALLOWED_ITINERARY_TYPES.contains(contentType)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "File type not allowed. Supported: PDF, TXT, CSV, DOCX, XLSX, GPX, XML");
+        }
+
+        String s3Key  = s3Service.uploadItinerary(file, roomId.toString());
+        String fileUrl = s3Service.buildPublicUrl(s3Key);
+
+        RoomItinerary itinerary = RoomItinerary.builder()
+                .roomId(roomId)
+                .uploaderUsername(creator.getUsername())
+                .originalFilename(file.getOriginalFilename() != null ? file.getOriginalFilename() : "file")
+                .s3Key(s3Key)
+                .fileSize(file.getSize())
+                .contentType(contentType)
+                .build();
+        itinerary = itineraryRepo.saveAndFlush(itinerary);
+        return toItineraryDto(itinerary, fileUrl);
+    }
+
+    @Transactional(readOnly = true)
+    public List<RoomItineraryDto> getItineraries(String email, UUID roomId) {
+        User user = requireUser(email);
+        assertMember(roomId, user.getId());
+
+        return itineraryRepo.findByRoomIdOrderByUploadedAtDesc(roomId).stream()
+                .map(i -> toItineraryDto(i, s3Service.buildPublicUrl(i.getS3Key())))
+                .toList();
+    }
+
+    @Transactional
+    public void deleteItinerary(String email, UUID roomId, UUID itineraryId) {
+        User creator = requireUser(email);
+        Room room    = requireRoom(roomId);
+        if (!room.getCreatorId().equals(creator.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the room creator can delete files");
+        }
+
+        RoomItinerary itinerary = itineraryRepo.findById(itineraryId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "File not found"));
+        if (!itinerary.getRoomId().equals(roomId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "File does not belong to this room");
+        }
+
+        s3Service.deleteObject(itinerary.getS3Key());
+        itineraryRepo.delete(itinerary);
+    }
+
     // ── Helpers ───────────────────────────────────────────────────────────────
 
     private User requireUser(String email) {
@@ -471,5 +553,18 @@ public class RoomService {
         List<RoomMessage> result = new ArrayList<>(msgs);
         java.util.Collections.reverse(result);
         return result;
+    }
+
+    private RoomItineraryDto toItineraryDto(RoomItinerary i, String fileUrl) {
+        return new RoomItineraryDto(
+                i.getId().toString(),
+                i.getRoomId().toString(),
+                i.getUploaderUsername(),
+                i.getOriginalFilename(),
+                i.getFileSize(),
+                i.getContentType(),
+                i.getUploadedAt().toString(),
+                fileUrl
+        );
     }
 }

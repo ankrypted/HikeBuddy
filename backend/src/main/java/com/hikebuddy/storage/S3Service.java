@@ -8,6 +8,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.IOException;
@@ -76,5 +77,44 @@ public class S3Service {
     /** Returns true if the URL already points to our own S3 bucket. */
     public boolean isOwnedUrl(String url) {
         return url != null && url.contains(bucket + ".s3.");
+    }
+
+    /**
+     * Uploads a document/itinerary file to S3 under itineraries/{roomId}/{uuid}.{ext}
+     * and returns the S3 object key.
+     */
+    public String uploadItinerary(MultipartFile file, String roomId) throws IOException {
+        String ext = StringUtils.getFilenameExtension(file.getOriginalFilename());
+        String key = "itineraries/" + roomId + "/" + UUID.randomUUID() + (ext != null ? "." + ext : "");
+
+        s3Client.putObject(
+                PutObjectRequest.builder()
+                        .bucket(bucket)
+                        .key(key)
+                        .contentType(file.getContentType())
+                        .build(),
+                RequestBody.fromBytes(file.getBytes())
+        );
+
+        return key;
+    }
+
+    /** Constructs the public HTTPS URL for a given S3 object key. */
+    public String buildPublicUrl(String key) {
+        return "https://" + bucket + ".s3." + region + ".amazonaws.com/" + key;
+    }
+
+    /**
+     * Deletes an object from S3 by key. No-op if the object does not exist.
+     */
+    public void deleteObject(String key) {
+        try {
+            s3Client.deleteObject(DeleteObjectRequest.builder()
+                    .bucket(bucket)
+                    .key(key)
+                    .build());
+        } catch (Exception e) {
+            log.warn("Failed to delete S3 object key={}: {}", key, e.getMessage());
+        }
     }
 }

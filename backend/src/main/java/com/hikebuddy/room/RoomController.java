@@ -4,10 +4,13 @@ import com.hikebuddy.room.dto.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
@@ -153,5 +156,27 @@ public class RoomController {
                                      @PathVariable UUID id,
                                      @Valid @RequestBody CreateUpdateRequest req) {
         return roomService.postUpdate(user.getUsername(), id, req);
+    }
+
+    @PostMapping(value = "/{id}/itineraries", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
+    public RoomItineraryDto uploadItinerary(@AuthenticationPrincipal UserDetails user,
+                                            @PathVariable UUID id,
+                                            @RequestParam("file") MultipartFile file) throws IOException {
+        return roomService.uploadItinerary(user.getUsername(), id, file);
+    }
+
+    @GetMapping("/{id}/itineraries")
+    public List<RoomItineraryDto> getItineraries(@AuthenticationPrincipal UserDetails user,
+                                                  @PathVariable UUID id) {
+        return roomService.getItineraries(user.getUsername(), id);
+    }
+
+    @DeleteMapping("/{id}/itineraries/{itineraryId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteItinerary(@AuthenticationPrincipal UserDetails user,
+                                @PathVariable UUID id,
+                                @PathVariable UUID itineraryId) {
+        roomService.deleteItinerary(user.getUsername(), id, itineraryId);
     }
 }

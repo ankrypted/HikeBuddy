@@ -4,7 +4,7 @@ import { Observable, Subscription, interval } from 'rxjs';
 import { tap }                        from 'rxjs/operators';
 import {
   RoomSummaryDto, RoomDetailDto,
-  RoomMessageDto, RoomUpdateDto, CreateRoomRequest, JoinRequestDto,
+  RoomMessageDto, RoomUpdateDto, CreateRoomRequest, JoinRequestDto, RoomItineraryDto,
 } from '../../../shared/models/room.dto';
 import { environment }                from '../../../../environments/environment';
 
@@ -19,6 +19,7 @@ export class RoomService {
   readonly messages        = signal<RoomMessageDto[]>([]);
   readonly updates         = signal<RoomUpdateDto[]>([]);
   readonly pendingRequests = signal<JoinRequestDto[]>([]);
+  readonly itineraries     = signal<RoomItineraryDto[]>([]);
 
   private pollSub: Subscription | null = null;
   private lastMessageTime: string | null = null;
@@ -195,6 +196,27 @@ export class RoomService {
 
   getUpdatesForTrail(slug: string): Observable<RoomUpdateDto[]> {
     return this.http.get<RoomUpdateDto[]>(`${this.base}/updates/trail/${slug}`);
+  }
+
+  // ── Itineraries ───────────────────────────────────────────────────────────
+
+  loadItineraries(roomId: string): void {
+    this.http.get<RoomItineraryDto[]>(`${this.base}/${roomId}/itineraries`)
+      .subscribe({ next: list => this.itineraries.set(list), error: () => {} });
+  }
+
+  uploadItinerary(roomId: string, file: File): Observable<RoomItineraryDto> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<RoomItineraryDto>(`${this.base}/${roomId}/itineraries`, formData).pipe(
+      tap(dto => this.itineraries.update(list => [dto, ...list])),
+    );
+  }
+
+  deleteItinerary(roomId: string, itineraryId: string): Observable<void> {
+    return this.http.delete<void>(`${this.base}/${roomId}/itineraries/${itineraryId}`).pipe(
+      tap(() => this.itineraries.update(list => list.filter(i => i.id !== itineraryId))),
+    );
   }
 
   // ── Helpers ───────────────────────────────────────────────────────────────
