@@ -141,6 +141,28 @@
           }
         </div>
 
+        <!-- Date range filter -->
+        <div class="date-filter-row">
+          <div class="date-filter-group">
+            <label class="date-filter-label">From</label>
+            <input class="date-filter-input" type="date"
+                   [value]="dateFrom()"
+                   (change)="dateFrom.set($any($event.target).value)" />
+          </div>
+          <div class="date-filter-group">
+            <label class="date-filter-label">To</label>
+            <input class="date-filter-input" type="date"
+                   [value]="dateTo()"
+                   [min]="dateFrom() || ''"
+                   (change)="dateTo.set($any($event.target).value)" />
+          </div>
+          @if (dateFrom() || dateTo()) {
+            <button class="date-filter-clear" (click)="dateFrom.set(''); dateTo.set('')">
+              Clear dates
+            </button>
+          }
+        </div>
+
         @if (trailGroups().length === 0) {
           <div class="empty-state">
             <p class="empty-title">No open rooms found</p>
