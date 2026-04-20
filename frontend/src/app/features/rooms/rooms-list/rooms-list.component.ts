@@ -35,6 +35,8 @@ export class RoomsListComponent implements OnInit {
 
   readonly activeTab   = signal<Tab>('my');
   readonly trailFilter = signal('');
+  readonly dateFrom    = signal('');
+  readonly dateTo      = signal('');
 
   // ── Upcoming strip: next 5 rooms across all open rooms by date ────────────
   readonly upcomingRooms = computed(() => {
@@ -50,13 +52,15 @@ export class RoomsListComponent implements OnInit {
 
   // ── Trail-first: group open rooms by trail ────────────────────────────────
   readonly filteredOpenRooms = computed(() => {
-    const q = this.trailFilter().toLowerCase().trim();
-    return q
-      ? this.openRooms().filter(r =>
-          r.trailName.toLowerCase().includes(q) ||
-          r.title.toLowerCase().includes(q) ||
-          r.creatorUsername.toLowerCase().includes(q))
-      : this.openRooms();
+    const q    = this.trailFilter().toLowerCase().trim();
+    const from = this.dateFrom();
+    const to   = this.dateTo();
+    return this.openRooms().filter(r => {
+      if (q && !(r.trailName.toLowerCase().includes(q) || r.title.toLowerCase().includes(q) || r.creatorUsername.toLowerCase().includes(q))) return false;
+      if (from && r.plannedDate < from) return false;
+      if (to   && r.plannedDate > to)   return false;
+      return true;
+    });
   });
 
   readonly trailGroups = computed(() => {
