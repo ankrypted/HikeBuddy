@@ -113,13 +113,13 @@ export class RoomDetailComponent implements OnInit, OnDestroy {
       this.roomService.loadMessages(this.id);
       this.roomService.loadUpdates(this.id);
       this.roomService.loadItineraries(this.id);
-      this.roomService.startChatPolling(this.id);
+      this.roomService.connectChat(this.id);
     }
     this.loading.set(false);
   }
 
   ngOnDestroy(): void {
-    this.roomService.stopChatPolling();
+    this.roomService.disconnectChat();
     this.roomService.activeRoom.set(null);
     this.roomService.pendingRequests.set([]);
     this.roomService.itineraries.set([]);
@@ -152,7 +152,7 @@ export class RoomDetailComponent implements OnInit, OnDestroy {
       next: () => {
         this.roomService.loadMessages(this.id);
         this.roomService.loadUpdates(this.id);
-        this.roomService.startChatPolling(this.id);
+        this.roomService.connectChat(this.id);
       },
       error: () => {},
     });
@@ -163,12 +163,8 @@ export class RoomDetailComponent implements OnInit, OnDestroy {
   sendMessage(): void {
     const text = this.chatDraft().trim();
     if (!text || this.sending()) return;
-    this.sending.set(true);
     this.chatDraft.set('');
-    this.roomService.sendMessage(this.id, text).subscribe({
-      next:  () => this.sending.set(false),
-      error: () => { this.chatDraft.set(text); this.sending.set(false); },
-    });
+    this.roomService.sendMessage(this.id, text);
   }
 
   onChatKey(event: KeyboardEvent): void {
