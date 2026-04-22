@@ -1,17 +1,20 @@
 import { Injectable, signal, inject } from '@angular/core';
 import { HttpClient }                 from '@angular/common/http';
-import { Observable, Subscription, interval } from 'rxjs';
+import { Observable, Subscription }  from 'rxjs';
 import { tap }                        from 'rxjs/operators';
+import { RxStomp }                   from '@stomp/rx-stomp';
 import {
   RoomSummaryDto, RoomDetailDto,
   RoomMessageDto, RoomUpdateDto, CreateRoomRequest, JoinRequestDto, RoomItineraryDto,
 } from '../../../shared/models/room.dto';
 import { environment }                from '../../../../environments/environment';
+import { AuthService }                from '../auth/auth.service';
 
 @Injectable({ providedIn: 'root' })
 export class RoomService {
-  private readonly http = inject(HttpClient);
-  private readonly base = `${environment.apiUrl}/rooms`;
+  private readonly http        = inject(HttpClient);
+  private readonly authService = inject(AuthService);
+  private readonly base        = `${environment.apiUrl}/rooms`;
 
   readonly myRooms         = signal<RoomSummaryDto[]>([]);
   readonly openRooms       = signal<RoomSummaryDto[]>([]);
@@ -21,8 +24,8 @@ export class RoomService {
   readonly pendingRequests = signal<JoinRequestDto[]>([]);
   readonly itineraries     = signal<RoomItineraryDto[]>([]);
 
-  private pollSub: Subscription | null = null;
-  private lastMessageTime: string | null = null;
+  private rxStomp: RxStomp | null = null;
+  private chatSub: Subscription | null = null;
 
   // ── Rooms ────────────────────────────────────────────────────────────────
 
@@ -138,47 +141,56 @@ export class RoomService {
     return this.http.get<RoomSummaryDto[]>(`${this.base}/trail/${slug}`);
   }
 
-  // ── Messages ─────────────────────────────────────────────────────────────
+  // ── Messages — initial load via REST, real-time via WebSocket ────────────
 
   loadMessages(roomId: string): void {
-    const url = this.lastMessageTime
-      ? `${this.base}/${roomId}/messages?since=${encodeURIComponent(this.lastMessageTime)}`
-      : `${this.base}/${roomId}/messages`;
-
-    this.http.get<RoomMessageDto[]>(url).subscribe(msgs => {
-      if (msgs.length) {
-        if (this.lastMessageTime) {
-          this.messages.update(existing => [...existing, ...msgs]);
-        } else {
-          this.messages.set(msgs);
-        }
-        this.lastMessageTime = msgs[msgs.length - 1].sentAt;
-      }
+    this.http.get<RoomMessageDto[]>(`${this.base}/${roomId}/messages`).subscribe(msgs => {
+      this.messages.set(msgs);
     });
   }
 
-  sendMessage(roomId: string, content: string): Observable<RoomMessageDto> {
-    return this.http.post<RoomMessageDto>(`${this.base}/${roomId}/messages`, { content }).pipe(
-      tap(msg => {
-        this.messages.update(list => [...list, msg]);
-        this.lastMessageTime = msg.sentAt;
-      }),
-    );
+  sendMessage(roomId: string, content: string): void {
+    this.rxStomp?.publish({
+      destination: `/app/rooms/${roomId}/chat`,
+      body: JSON.stringify({ content }),
+    });
   }
 
-  startChatPolling(roomId: string): void {
-    this.stopChatPolling();
-    this.pollSub = interval(5_000).subscribe(() => this.loadMessages(roomId));
+  connectChat(roomId: string): void {
+    const token = this.authService.accessToken();
+    if (!token) return;
+
+    this.rxStomp = new RxStomp();
+    this.rxStomp.configure({
+      brokerURL:      environment.wsUrl,
+      connectHeaders: { Authorization: `Bearer ${token}` },
+      reconnectDelay: 5_000,
+    });
+    this.rxStomp.activate();
+
+    const currentUsername = this.authService.currentUser()?.username;
+
+    this.chatSub = this.rxStomp
+      .watch(`/topic/rooms/${roomId}/chat`)
+      .subscribe(frame => {
+        const msg: RoomMessageDto = JSON.parse(frame.body);
+        const withMine: RoomMessageDto = {
+          ...msg,
+          mine: msg.senderUsername === currentUsername,
+        };
+        this.messages.update(list => [...list, withMine]);
+      });
   }
 
-  stopChatPolling(): void {
-    this.pollSub?.unsubscribe();
-    this.pollSub = null;
+  disconnectChat(): void {
+    this.chatSub?.unsubscribe();
+    this.chatSub = null;
+    this.rxStomp?.deactivate();
+    this.rxStomp = null;
   }
 
   resetChat(): void {
     this.messages.set([]);
-    this.lastMessageTime = null;
   }
 
   // ── Updates ───────────────────────────────────────────────────────────────

@@ -53,6 +53,8 @@ public class SecurityConfig {
                         // issue in Spring Security 6.4 that breaks permitAll() for
                         // other routes when AntPathRequestMatcher is used on the first rule.
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        // WebSocket upgrade — auth happens inside the STOMP channel interceptor
+                        .requestMatchers("/ws/**").permitAll()
                         // Public auth endpoints
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         // OAuth2 endpoints must be fully open
