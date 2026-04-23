@@ -2,7 +2,7 @@ import {
   Component, signal, effect, viewChild, ElementRef,
   ChangeDetectionStrategy, inject, OnDestroy,
 } from '@angular/core';
-import { Subscription, interval } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { MessageService }   from '../../../core/services/message/message.service';
 import { ConversationDto, MessageDto } from '../../models/message.dto';
 import { RouterLink } from '@angular/router'
@@ -31,8 +31,8 @@ export class ChatWidgetComponent implements OnDestroy {
   readonly conversations = this.messageService.conversations;
   readonly totalUnread   = this.messageService.totalUnread;
 
-  // ── Thread polling (5 s while a thread is open) ───────────────────────────
-  private threadPollSub: Subscription | null = null;
+  // ── WebSocket subscription for the open thread ────────────────────────────
+  private dmSub: Subscription | null = null;
 
   // ── Auto-scroll to bottom when messages change ────────────────────────────
   private readonly messagesEl = viewChild<ElementRef<HTMLDivElement>>('msgContainer');
@@ -50,8 +50,6 @@ export class ChatWidgetComponent implements OnDestroy {
     });
 
     // React to requestOpenPanel() calls (e.g. from navbar / bottom nav).
-    // Only track openPanelRequest — NOT open() — to avoid the effect
-    // re-firing (and re-opening) when toggle() closes the panel.
     effect(() => {
       if (this.messageService.openPanelRequest() > 0) {
         this.open.set(true);
@@ -83,7 +81,7 @@ export class ChatWidgetComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.stopThreadPoll();
+    this.closeThread();
   }
 
   // ── Toggle widget ─────────────────────────────────────────────────────────
@@ -100,6 +98,8 @@ export class ChatWidgetComponent implements OnDestroy {
 
   // ── Open a conversation thread ────────────────────────────────────────────
   openThread(convo: ConversationDto): void {
+    this.closeThread(); // disconnect any previous WebSocket first
+
     this.activeConvo.set(convo);
     this.messages.set([]);
     this.draft.set('');
@@ -111,49 +111,29 @@ export class ChatWidgetComponent implements OnDestroy {
     });
 
     this.messageService.markRead(convo.id);
-    this.startThreadPoll(convo.id);
+
+    this.dmSub = this.messageService.connectDm(convo.id).subscribe(msg => {
+      this.messages.update(list => [...list, msg]);
+      // Refresh conversation list so unread counts + last message stay current
+      this.messageService.loadConversations();
+    });
   }
 
   closeThread(): void {
+    this.dmSub?.unsubscribe();
+    this.dmSub = null;
+    this.messageService.disconnectDm();
     this.activeConvo.set(null);
     this.messages.set([]);
-    this.stopThreadPoll();
   }
 
   // ── Send a message ────────────────────────────────────────────────────────
   sendMessage(): void {
     const text  = this.draft().trim();
     const convo = this.activeConvo();
-    if (!text || !convo || this.sending()) return;
-
-    this.sending.set(true);
+    if (!text || !convo) return;
     this.draft.set('');
-    this.messageService.sendMessage(convo.id, text).subscribe({
-      next: msg => {
-        this.messages.update(list => [...list, msg]);
-        this.messageService.loadConversations();
-        this.sending.set(false);
-      },
-      error: () => {
-        this.draft.set(text);
-        this.sending.set(false);
-      },
-    });
-  }
-
-  // ── Thread polling helpers ────────────────────────────────────────────────
-  private startThreadPoll(conversationId: string): void {
-    this.stopThreadPoll();
-    this.threadPollSub = interval(5_000).subscribe(() => {
-      this.messageService.getMessages(conversationId).subscribe(msgs => {
-        this.messages.set(msgs);
-      });
-    });
-  }
-
-  private stopThreadPoll(): void {
-    this.threadPollSub?.unsubscribe();
-    this.threadPollSub = null;
+    this.messageService.sendDm(convo.id, text);
   }
 
   // ── Helpers ───────────────────────────────────────────────────────────────
@@ -175,5 +155,4 @@ export class ChatWidgetComponent implements OnDestroy {
       this.sendMessage();
     }
   }
-
 }
