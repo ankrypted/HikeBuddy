@@ -1,6 +1,8 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient }                           from '@angular/common/http';
-import { Observable, Subscription, interval }   from 'rxjs';
+import { Observable, Subscription, interval, EMPTY } from 'rxjs';
+import { map }                                  from 'rxjs/operators';
+import { RxStomp }                              from '@stomp/rx-stomp';
 import { AuthService }                          from '../auth/auth.service';
 import { environment }                          from '../../../../environments/environment';
 import { ConversationDto, MessageDto }          from '../../../shared/models/message.dto';
@@ -24,6 +26,7 @@ export class MessageService {
   requestOpenPanel(): void { this.openPanelRequest.update(n => n + 1); }
 
   private pollSub: Subscription | null = null;
+  private rxStomp: RxStomp | null = null;
 
   loadConversations(): void {
     if (!this.authService.isLoggedIn()) return;
@@ -39,10 +42,6 @@ export class MessageService {
     return this.http.post<ConversationDto>(`${this.base}/conversations/with/${username}`, {});
   }
 
-  sendMessage(conversationId: string, body: string): Observable<MessageDto> {
-    return this.http.post<MessageDto>(`${this.base}/conversations/${conversationId}`, { body });
-  }
-
   markRead(conversationId: string): void {
     this.http.put<void>(`${this.base}/conversations/${conversationId}/read`, {}).subscribe();
     this.conversations.update(list =>
@@ -54,7 +53,44 @@ export class MessageService {
     this.pendingChatUser.set(username);
   }
 
-  /** Poll every 30 s to refresh conversation list (unread counts + last messages). */
+  // ── WebSocket DM ──────────────────────────────────────────────────────────
+
+  connectDm(conversationId: string): Observable<MessageDto> {
+    const token = this.authService.accessToken();
+    if (!token) return EMPTY;
+
+    this.rxStomp = new RxStomp();
+    this.rxStomp.configure({
+      brokerURL:      environment.wsUrl,
+      connectHeaders: { Authorization: `Bearer ${token}` },
+      reconnectDelay: 5_000,
+    });
+    this.rxStomp.activate();
+
+    const myUsername = this.authService.currentUser()?.username;
+
+    return this.rxStomp.watch(`/topic/dm/${conversationId}`).pipe(
+      map(frame => {
+        const raw: MessageDto = JSON.parse(frame.body);
+        return { ...raw, mine: raw.senderUsername === myUsername };
+      }),
+    );
+  }
+
+  disconnectDm(): void {
+    this.rxStomp?.deactivate();
+    this.rxStomp = null;
+  }
+
+  sendDm(conversationId: string, body: string): void {
+    this.rxStomp?.publish({
+      destination: `/app/dm/${conversationId}`,
+      body: JSON.stringify({ body }),
+    });
+  }
+
+  // ── Conversation list polling (30 s) ──────────────────────────────────────
+
   startPolling(): void {
     if (this.pollSub) return;
     this.pollSub = interval(30_000).subscribe(() => this.loadConversations());
